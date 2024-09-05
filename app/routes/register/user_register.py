@@ -3,7 +3,7 @@ from ..forms import UserRegisterForm
 
 user_register_bp = Blueprint('user_register', __name__)
 
-@user_register_bp.route('/register', methods=['GET', 'POST'])
+@user_register_bp.route('', methods=['GET', 'POST'])
 def user_register():
     form = UserRegisterForm()
     if form.validate_on_submit():
