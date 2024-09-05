@@ -3,7 +3,7 @@ from ..forms import AdminLoginForm
 
 admin_login_bp = Blueprint('admin_login', __name__)
 
-@admin_login_bp.route('/login', methods=['GET', 'POST'])
+@admin_login_bp.route('', methods=['GET', 'POST'])
 def admin_login():
     form = AdminLoginForm()
     if form.validate_on_submit():
