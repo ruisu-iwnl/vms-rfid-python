@@ -1,18 +1,23 @@
-tests/
-
-__pycache__
-*.pyc
-*.pyc
-*.pyc
-__pycache__/app.cpython-311.pyc
-*.py[cod]
-
 myenv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
 
-.ipynb_checkpoints/
+instance/
 
-*.egg-info/
+# npm
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+.env
+
 dist/
 build/
+*.egg-info/
 
-.vscode/
+app/static/css/styles.css
+
+tests/
