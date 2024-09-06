@@ -13,8 +13,13 @@ class UserLoginForm(FlaskForm):
     submit = SubmitField('Login')
 
 class AdminRegisterForm(FlaskForm):
+    employeenumber = StringField('Employee Number', validators=[DataRequired()])
+    firstname = StringField('First Name', validators=[DataRequired()])
+    lastname = StringField('Last Name', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email()])
+    contactnumber = StringField('Contact Number', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired(), Length(min=6)])
+    password_confirmation = PasswordField('Confirm Password', validators=[DataRequired(), Length(min=6)])
     submit = SubmitField('Register')
 
 class UserRegisterForm(FlaskForm):
