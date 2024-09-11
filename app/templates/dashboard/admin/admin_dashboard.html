@@ -1,0 +1,192 @@
+{% extends 'dashboard/admin/layout.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block header_title %}Data Analysis{% endblock %}
+
+{% block content %}
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <div class="container mx-auto px-4">
+        <!-- Statistics Section -->
+        <div class="flex flex-wrap -mx-2 mb-8">
+            <div class="w-full md:w-1/4 px-2 mb-4 md:mb-0">
+                <div class="bg-green-500 p-6 rounded-lg shadow-md text-white">
+                    <h2 class="text-lg font-semibold mb-2">Total Users</h2>
+                    <p class="text-3xl font-bold">0</p>
+                </div>
+            </div>
+            <div class="w-full md:w-1/4 px-2">
+                <div class="bg-white p-6 rounded-lg shadow-md text-gray-700 border border-gray-200">
+                    <h2 class="text-lg font-semibold mb-2">?Total Visits</h2>
+                    <p class="text-3xl font-bold">0</p>
+                </div>
+            </div>
+            <div class="w-full md:w-1/4 px-2 mb-4 md:mb-0">
+                <div class="bg-cyan-500 p-6 rounded-lg shadow-md text-white">
+                    <h2 class="text-lg font-semibold mb-2">?Total New Users</h2>
+                    <p class="text-3xl font-bold">0</p>
+                </div>
+            </div>
+            <div class="w-full md:w-1/4 px-2 mb-4 md:mb-0">
+                <div class="bg-blue-500 p-6 rounded-lg shadow-md text-white">
+                    <h2 class="text-lg font-semibold mb-2">?Active Users</h2>
+                    <p class="text-3xl font-bold">0</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-8">
+            <!-- First Line: Vehicle Utilization Analysis and Peak Usage Times -->
+            <div class="flex flex-wrap -mx-2 mb-8">
+                <div class="w-full md:w-1/2 px-2 mb-4 md:mb-0">
+                    <div class="bg-white p-6 rounded-lg shadow shadow-gray-500 h-full">
+                        <h3 class="text-xl font-semibold mb-2">Vehicle Utilization Analysis</h3>
+                        <canvas id="VehicleUtilizationChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="w-full md:w-1/2 px-2">
+                    <div class="bg-white p-6 rounded-lg shadow shadow-gray-500 h-full">
+                        <h3 class="text-xl font-semibold mb-2">Peak Usage Times</h3>
+                        <p class="text-gray-700">Heatmap showing time in/out patterns throughout the day.</p>
+                        <div id="heatmapPlaceholder" class="bg-gray-200 h-64 flex items-center justify-center rounded-lg shadow">
+                            <span class="text-gray-500">Heatmap Placeholder</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Second Line: Duration of Stay, Frequent Visitors, and Daily/Weekly Trends -->
+            <div class="flex flex-wrap -mx-2 mb-8">
+                <div class="w-full md:w-1/3 px-2 mb-4 md:mb-0">
+                    <div class="bg-white p-6 rounded-lg shadow shadow-gray-500">
+                        <h3 class="text-xl font-semibold mb-2">Duration of Stay</h3>
+                        <canvas id="durationHistogram"></canvas>
+                    </div>
+                </div>
+
+                <div class="w-full md:w-1/3 px-2 mb-4 md:mb-0">
+                    <div class="bg-white p-6 rounded-lg shadow shadow-gray-500">
+                        <h3 class="text-xl font-semibold mb-2">Frequent Visitors</h3>
+                        <canvas id="frequentVisitorsChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="w-full md:w-1/3 px-2">
+                    <div class="bg-white p-6 rounded-lg shadow shadow-gray-500">
+                        <h3 class="text-xl font-semibold mb-2">Daily/Weekly Trends</h3>
+                        <canvas id="dailyWeeklyTrendsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Vehicle Utilization Analysis: Bar Chart with Separate Time In/Out
+            const vehicleUtilizationCtx = document.getElementById('VehicleUtilizationChart').getContext('2d');
+            new Chart(vehicleUtilizationCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Vehicle 1', 'Vehicle 2', 'Vehicle 3', 'Vehicle 4', 'Vehicle 5'],
+                    datasets: [
+                        {
+                            label: 'Time In Frequency',
+                            data: [8, 15, 5, 7, 3], // Time In data
+                            backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Time Out Frequency',
+                            data: [6, 12, 8, 5, 4], // Time Out data
+                            backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Duration of Stay: Histogram
+            const durationHistogramCtx = document.getElementById('durationHistogram').getContext('2d');
+            new Chart(durationHistogramCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['0-30 min', '30-60 min', '1-2 hrs', '2-3 hrs', '3+ hrs'],
+                    datasets: [{
+                        label: 'Number of Vehicles',
+                        data: [5, 10, 15, 20, 25],
+                        backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Frequent Visitors: Bar Chart
+            const frequentVisitorsCtx = document.getElementById('frequentVisitorsChart').getContext('2d');
+            new Chart(frequentVisitorsCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Mon', 'Tues', 'Wed', 'Thurs', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Number of Visitors',
+                        data: [12, 40, 55, 70, 30, 20, 60],
+                        backgroundColor: 'rgba(11, 9, 200, 0.9)', // Single color for all bars
+                        borderColor: 'rgba(75, 192, 192, 1)', // Single border color
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    }
+                }
+            });
+
+            // Daily/Weekly Trends: Line Chart
+            const dailyWeeklyTrendsCtx = document.getElementById('dailyWeeklyTrendsChart').getContext('2d');
+            new Chart(dailyWeeklyTrendsCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+                    datasets: [{
+                        label: 'Visitor Trend',
+                        data: [30, 50, 40, 60, 70, 90, 100],
+                        backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                        borderColor: 'rgba(153, 102, 255, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+{% endblock %}
