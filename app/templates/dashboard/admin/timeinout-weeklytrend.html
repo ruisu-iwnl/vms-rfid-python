@@ -1,0 +1,69 @@
+{% extends 'dashboard/admin/layout.html' %}
+
+{% block title %}User Dashboard{% endblock %}
+
+{% block content %}
+    <!-- Tailwind CSS -->
+    <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
+
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <body class="bg-gray-100 min-h-screen flex flex-col" style="background-image: url('/static/images/CCV.jpg'); background-size: cover; background-position: center;">
+        <!-- Fixed Header -->
+        <header class="bg-blue-800 text-white p-4 flex items-center justify-between fixed top-0 left-0 w-full z-10 shadow-lg rounded-b-lg">
+            <img src="{{ url_for('static', filename='images/CelcorCircle.png') }}" alt="logo" class="h-12"/>
+            <h1 class="text-xl font-bold mx-auto">Weekly Entry/Exit Statistics</h1>
+        </header>
+
+        <!-- Centered Container with Chart -->
+        <div class="flex-1 flex flex-col justify-center items-center mt-20 px-4">
+            <!-- Chart Container -->
+            <div class="bg-white p-6 rounded-lg shadow-md flex flex-col w-full max-w-3xl mb-8 relative">
+                <h2 class="text-xl font-bold mb-4">Total Entry/Exit</h2>
+                <canvas id="entryExitChart"></canvas>
+            </div>
+        </div>
+
+        <script>
+            const ctx = document.getElementById('entryExitChart').getContext('2d');
+            const entryExitChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+                    datasets: [{
+                        label: 'This year',
+                        data: [500, 1200, 1500, 800, 2000, 2500, 3000],
+                        borderColor: 'black',
+                        backgroundColor: 'rgba(0, 0, 0, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }, {
+                        label: 'Last year',
+                        data: [400, 1100, 1000, 700, 1900, 2200, 2800],
+                        borderColor: 'lightblue',
+                        backgroundColor: 'rgba(173, 216, 230, 0.2)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 3000
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            labels: {
+                                color: 'black'
+                            }
+                        }
+                    }
+                }
+            });
+        </script>
+    </body>
+{% endblock %}
