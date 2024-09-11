@@ -14,8 +14,15 @@
 <body class="bg-gray-100 min-h-screen flex flex-col">
     <!-- Fixed Header -->
     <header class="bg-blue-800 text-white p-4 flex items-center justify-between fixed top-0 left-0 w-full z-10 shadow-lg rounded-b-lg">
-        <img src="{{ url_for('static', filename='Images/CelcorCircle.png') }}" alt="logo" class="h-12"/>
-        <h1 class="text-xl font-bold">Dashboard</h1>
+        <!-- Logo -->
+        <div class="flex-shrink-0">
+            <img src="{{ url_for('static', filename='Images/CelcorCircle.png') }}" alt="logo" class="h-12"/>
+        </div>
+        
+        <!-- Centered Header Title -->
+        <div class="flex-1 text-center">
+            <h1 class="text-xl font-bold">{% block header_title %}Dashboard{% endblock %}</h1>
+        </div>
     </header>
 
     <!-- Main Container with Flex Layout -->
