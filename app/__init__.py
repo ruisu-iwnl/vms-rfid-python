@@ -11,6 +11,7 @@ from .routes.register.user_register import user_register_bp
 # admin dashboard routes
 from .routes.dashboard.admin.admin_dashboard import admin_dashboard_bp  
 from .routes.dashboard.admin.timeinout import timeinout_bp
+from .routes.dashboard.admin.userlist import userlist_bp
 # user dashboard routes
 from .routes.dashboard.user.user_dashboard import user_dashboard_bp
 
@@ -30,6 +31,7 @@ def create_app():
     app.register_blueprint(admin_dashboard_bp, url_prefix='/dashboard/admin')  
     app.register_blueprint(user_dashboard_bp, url_prefix='/dashboard/user')
     app.register_blueprint(timeinout_bp, url_prefix='/dashboard/timeinout')
+    app.register_blueprint(userlist_bp, url_prefix='/dashboard/userlist')
 
     return app
 
