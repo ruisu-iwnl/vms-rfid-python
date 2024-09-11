@@ -6,16 +6,35 @@
     <title>Admin Registration</title>
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
+    </style>
 </head>
 
-<body class="h-screen flex items-center justify-center">
-    <div class="bg-opacity-80 shadow-lg rounded-lg flex max-w-4xl mx-auto overflow-hidden">
+<body class="relative flex items-center justify-center min-h-screen bg-cover bg-center" style="background-image: url('/static/images/bg.jpg');">
+    <!-- Subtle overlay for enhanced visibility -->
+    <div class="absolute inset-0 bg-black opacity-50"></div>
+
+    <!-- Main Content Area -->
+    <div class="relative z-10 max-w-6xl p-8 md:p-10 bg-white/20 rounded-3xl shadow-2xl backdrop-blur-md flex flex-col md:flex-row">
+        
+        <!-- Icon Button in the Top Left Corner -->
+        <a href="{{ url_for('admin_login.admin_login') }}" class="absolute top-4 left-4 flex items-center justify-center w-10 h-10 rounded-full bg-white shadow-md hover:bg-gray-100 transition duration-300 ease-in-out">
+            <svg class="w-6 h-6 text-blue-500 hover:text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l-7-7 7-7"></path>
+            </svg>
+        </a>
+
         <!-- Left Side: Registration Form -->
         <div class="w-full md:w-1/2 p-8">
-            <div class="text-center mb-8">
+            <div class="text-center mb-6">
                 <img src="{{ url_for('static', filename='images/CELCOR.png') }}" alt="logo" width="120" class="mx-auto mb-4"/>
-                <h1 class="text-2xl font-bold">Vehicle Management System</h1>
-                <h2 class="mt-4 text-xl">Admin Registration</h2>
+                <h1 class="text-xl font-bold">Vehicle Management System</h1>
+                <h2 class="mt-2 text-lg">Admin Registration</h2>
                 <hr class="border-gray-300 my-4">
             </div>
 
@@ -97,7 +116,7 @@
         </div>
 
         <!-- Right Side: Image -->
-        <div class="hidden md:flex w-1/2 relative">
+        <div class="hidden md:flex w-1/2 relative overflow-hidden rounded-r-3xl">
             <img src="{{ url_for('static', filename='images/EmpFix.png') }}" alt="Right Side Image" class="object-cover w-full h-full">
         </div>
     </div>
