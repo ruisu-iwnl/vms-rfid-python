@@ -15,6 +15,7 @@ from .routes.dashboard.admin.userlist import userlist_bp
 from .routes.dashboard.admin.activitylog import activitylog_bp
 # user dashboard routes
 from .routes.dashboard.user.user_dashboard import user_dashboard_bp
+from .routes.dashboard.user.vehicles import vehicles_bp
 
 
 def create_app():
@@ -34,6 +35,7 @@ def create_app():
     app.register_blueprint(timeinout_bp, url_prefix='/dashboard/timeinout')
     app.register_blueprint(userlist_bp, url_prefix='/dashboard/userlist')
     app.register_blueprint(activitylog_bp, url_prefix='/dashboard/activitylog')
+    app.register_blueprint(vehicles_bp, url_prefix='/dashboard/vehicles')
 
     return app
 
