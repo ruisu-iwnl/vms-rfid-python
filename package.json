@@ -7,13 +7,15 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build:css": "npx postcss app/static/css/tailwind.css -o app/static/css/styles.css"
+    "build:css": "npx postcss app/static/css/tailwind.css -o app/static/css/styles.css",
+    "copy-iconify": "node copy-iconify.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@iconify/iconify": "^3.1.1",
     "autoprefixer": "^10.4.20",
     "postcss": "^8.4.45",
     "postcss-cli": "^11.0.0",

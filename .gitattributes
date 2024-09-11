@@ -2,4 +2,5 @@
 *.sh text eol=lf
 *.bat text eol=crlf
 *.sql text eol=lf
+*.js text eol=lf
 setup_files/*.exe filter=lfs diff=lfs merge=lfs -text
