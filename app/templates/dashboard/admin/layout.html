@@ -106,7 +106,7 @@
             loadingScreen.classList.add('hidden');
         }
 
-        document.querySelectorAll('aside nav a, aside nav button').forEach((element) => {
+        document.querySelectorAll('aside nav a').forEach((element) => {
             element.addEventListener('click', function() {
                 showLoading();
                 setTimeout(() => { 
@@ -119,9 +119,11 @@
             logoutModal.classList.remove('hidden');
         });
 
-        logoutButtonDesktop.addEventListener('click', function() {
-            logoutModal.classList.remove('hidden');
-        });
+        if (logoutButtonDesktop) {
+            logoutButtonDesktop.addEventListener('click', function() {
+                logoutModal.classList.remove('hidden');
+            });
+        }
 
         cancelLogout.addEventListener('click', function() {
             logoutModal.classList.add('hidden');
