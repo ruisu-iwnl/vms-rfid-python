@@ -8,7 +8,7 @@
     <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
     <script src="{{ url_for('static', filename='js/iconify.min.js') }}"></script>
 </head>
-<body class="relative bg-cover bg-center min-h-screen" style="background-image: url('/static/images/bg.jpg');">
+<body class="relative bg-cover bg-center min-h-screen flex flex-col" style="background-image: url('/static/images/bg.jpg');">
     <header class="bg-blue-900 text-white p-5 flex justify-between items-center fixed top-0 left-0 w-full z-30 shadow-md bg-black/50 backdrop-blur-md">
         <!-- Logo -->
         <div class="flex items-center space-x-3">
@@ -33,7 +33,7 @@
         </nav>
     </aside>
 
-    <div class="flex flex-1 mt-20 bg-black/10 p-8 shadow-md backdrop-blur-md">
+    <div class="flex flex-1 mt-20 bg-black/10 p-8 shadow-md backdrop-blur-md flex-grow">
         <!-- Desktop Sidebar -->
         <aside class="hidden sm:block w-64 bg-gray-800 bg-opacity-70 shadow-md p-6 z-20 fixed top-0 left-0 bottom-0 backdrop-blur-lg text-white">
             <h2 class="text-lg font-bold mb-4">Vehicle Management System</h2>
@@ -47,15 +47,13 @@
         </aside>
     
         <!-- Main Content -->
-        <main class="flex-1 ml-0 sm:ml-64">
-            <div class="flex-1 flex flex-col justify-center items-center min-h-screen px-4">
+        <main class="flex-1 ml-0 sm:ml-64 flex flex-col">
+            <div class="flex-1 flex flex-col justify-between items-center m-4 sm:m-6 md:m-8 lg:m-10 xl:m-12">
                 {% block content %}{% endblock %}
             </div>
         </main>
     </div>
     
-    
-
     <!-- Logout Confirmation Modal -->
     <div id="logout-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 z-40 hidden">
         <div class="flex items-center justify-center min-h-screen">
