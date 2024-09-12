@@ -7,6 +7,16 @@
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
     <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
     <script src="{{ url_for('static', filename='js/iconify.min.js') }}"></script>
+    <style>
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .animate-spin {
+            animation: spin 0.5s linear infinite; 
+        }
+    </style>
 </head>
 <body class="relative bg-cover bg-center min-h-screen flex flex-col" style="background-image: url('/static/images/bg.jpg');">
     <header class="bg-blue-900 text-white p-5 flex justify-between items-center fixed top-0 left-0 w-full z-30 shadow-md bg-black/50 backdrop-blur-md">
@@ -67,6 +77,14 @@
         </div>
     </div>
 
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="fixed inset-0 bg-transparent flex items-center justify-center z-50 hidden">
+        <div class="flex items-center space-x-2">
+            <div class="w-12 h-12 border-t-4 border-black border-solid rounded-full animate-spin"></div>
+            <span class="text-black text-lg">Loading...</span>
+        </div>
+    </div>
+
     <script>
         const menuToggle = document.getElementById('menu-toggle');
         const mobileMenu = document.getElementById('mobile-menu');
@@ -79,6 +97,24 @@
         const logoutButtonDesktop = document.getElementById('logout-button-desktop');
         const logoutModal = document.getElementById('logout-modal');
         const cancelLogout = document.getElementById('cancel-logout');
+        const loadingScreen = document.getElementById('loading-screen');
+
+        function showLoading() {
+            loadingScreen.classList.remove('hidden');
+        }
+
+        function hideLoading() {
+            loadingScreen.classList.add('hidden');
+        }
+
+        document.querySelectorAll('aside nav a, aside nav button').forEach((element) => {
+            element.addEventListener('click', function() {
+                showLoading();
+                setTimeout(() => { 
+                    hideLoading();
+                }, 1000);
+            });
+        });
 
         logoutButton.addEventListener('click', function() {
             logoutModal.classList.remove('hidden');
