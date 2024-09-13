@@ -7,7 +7,6 @@
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
     <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
     <script src="{{ url_for('static', filename='js/library/iconify.min.js') }}"></script>
-
 </head>
 <body class="relative flex items-center justify-center min-h-screen bg-cover bg-center" style="background-image: url('/static/images/bg.jpg');">
     <!-- Subtle overlay for enhanced visibility -->
@@ -63,11 +62,13 @@
                     {% if form.password.errors %}
                         <p class="text-red-500 text-xs italic mt-1">{{ form.password.errors[0] }}</p>
                     {% endif %}
-<!--                     
-                    NOT YET
--->
-                    <!-- <a href="#" class="text-blue-500 hover:text-blue-700 text-sm block mt-2">Forgot Password?</a> -->
                 </div>
+
+                <!-- Recaptcha Error -->
+                {% if recaptcha_error %}
+                    <div class="mb-4 text-red-500 text-xs italic">{{ recaptcha_error }}</div>
+                {% endif %}
+                <div class="g-recaptcha" data-sitekey="6LcxWkIqAAAAAEycwl1Z3tWFBg3BeIFe4pQxhpoY"></div>
 
                 <!-- Submit Button -->
                 <button type="submit" class="w-full py-3 bg-gradient-to-r from-blue-500 to-green-500 text-white font-semibold rounded hover:from-blue-600 hover:to-green-600 transition duration-300 ease-in-out focus:outline-none">Login</button>
@@ -79,5 +80,6 @@
             </form>
         </div>
     </div>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </body>
 </html>

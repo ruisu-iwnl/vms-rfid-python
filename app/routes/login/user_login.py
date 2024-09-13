@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, session, request
-from ..forms import UserLoginForm
+from ..forms import BaseLoginForm  # Import the new base form
 from app.models.database import get_cursor, close_db_connection
 from ..utils import verify_password, verify_recaptcha
 
@@ -10,7 +10,7 @@ def user_login():
     # Print session before login attempt
     print(f"Session before login attempt: {session}")
     
-    form = UserLoginForm()
+    form = BaseLoginForm()  
     recaptcha_error = None
 
     if form.validate_on_submit():

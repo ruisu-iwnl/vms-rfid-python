@@ -6,12 +6,17 @@ import phonenumbers
 from phonenumbers.phonenumberutil import NumberParseException
 from app.models.database import get_cursor
 
-class AdminLoginForm(FlaskForm):
-    email = StringField('Email', validators=[DataRequired(), Email()])
-    password = PasswordField('Password', validators=[DataRequired()])
-    submit = SubmitField('Login')
+# class AdminLoginForm(FlaskForm):
+#     email = StringField('Email', validators=[DataRequired(), Email()])
+#     password = PasswordField('Password', validators=[DataRequired()])
+#     submit = SubmitField('Login')
 
-class UserLoginForm(FlaskForm):
+# class UserLoginForm(FlaskForm):
+#     email = StringField('Email', validators=[DataRequired(), Email()])
+#     password = PasswordField('Password', validators=[DataRequired()])
+#     submit = SubmitField('Login')
+
+class BaseLoginForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired()])
     submit = SubmitField('Login')
