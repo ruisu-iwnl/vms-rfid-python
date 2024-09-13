@@ -5,24 +5,30 @@
 {% block header_title %}Time In/Out{% endblock %}
 
 {% block content %}
-    <div class="">
-<!-- Time In/Out RFID Section -->
-<div class="bg-white p-6 rounded-lg shadow-md w-full max-w-4xl mb-8 relative">
-    <h2 class="flex text-xl font-bold mb-4">Time In/Out RFID</h2>
-    <div class="flex flex-col items-center justify-center">
-        <!-- RFID Button -->
-        <div class="flex flex-col items-center justify-center relative mb-4">
-            <button id="rfid-button" class="p-0 bg-transparent border-0 cursor-pointer relative z-10 mb-4">
-                <img src="{{ url_for('static', filename='images/rfid-logo.jpg') }}" alt="RFID Logo" class="w-72 h-42">
-            </button>
-            <!-- Hidden RFID Input Field -->
-            <input type="text" id="rfid-input" name="rfid" class="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer z-0"
-                   placeholder="RFID Number" autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="off">
-        </div>
-        <!-- Status Message -->
-        <p id="status-message" class="flex ml-4 text-sm text-black-600">CLICK THE IMAGE TO SCAN RFID</p>
+<div class="">
+
+    <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-4xl mb-4 relative">
+        <h1 id="date" class="flex text-4xl justify-center font-bold mb-4">Date Placeholder</h1>
+        <h1 id="time" class="flex text-4xl justify-center font-bold mb-4">Time Placeholder</h1>
     </div>
-</div>
+
+    <!-- Time In/Out RFID Section -->
+    <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-4xl mb-8 relative">
+        <h2 class="flex text-xl font-bold mb-4">Time In/Out RFID</h2>
+        <div class="flex flex-col items-center justify-center">
+            <!-- RFID Button -->
+            <div class="flex flex-col items-center justify-center relative mb-4">
+                <button id="rfid-button" class="p-0 bg-transparent border-0 cursor-pointer relative z-10 mb-4">
+                    <img src="{{ url_for('static', filename='images/rfid-logo.jpg') }}" alt="RFID Logo" class="w-72 h-42">
+                </button>
+                <!-- Hidden RFID Input Field -->
+                <input type="text" id="rfid-input" name="rfid" class="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer z-0"
+                    placeholder="RFID Number" autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="off">
+            </div>
+            <!-- Status Message -->
+            <p id="status-message" class="flex ml-4 text-sm text-black-600">CLICK THE IMAGE TO SCAN RFID</p>
+        </div>
+    </div>
 
         <!-- Table Container -->
         <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-4xl mb-8 relative">
