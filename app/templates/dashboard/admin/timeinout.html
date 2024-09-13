@@ -6,20 +6,23 @@
 
 {% block content %}
     <div class="">
-        <!-- Time In/Out RFID Section -->
-        <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-4xl mb-8 relative">
-            <h2 class="text-xl font-bold mb-4">Time In/Out RFID</h2>
-            <div class="flex items-center justify-center">
-                <!-- RFID Logo -->
-                <div class="relative">
-                    <img src="{{ url_for('static', filename='images/rfid-logo.jpg') }}" alt="RFID Logo" class="w-24 h-24 cursor-pointer" id="rfid-logo">
-                    <!-- Hidden RFID Input Field -->
-                    <input type="text" id="rfid-input" name="rfid" class="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer" placeholder="RFID Number">
-                </div>
-                <!-- Status Message -->
-                <p id="status-message" class="ml-4 text-sm text-gray-600">Scan your RFID card to Time In/Out</p>
-            </div>
+<!-- Time In/Out RFID Section -->
+<div class="bg-white p-6 rounded-lg shadow-md w-full max-w-4xl mb-8 relative">
+    <h2 class="text-xl font-bold mb-4">Time In/Out RFID</h2>
+    <div class="flex items-center justify-center">
+        <!-- RFID Button -->
+        <div class="relative">
+            <button id="rfid-button" class="p-0 bg-transparent border-0 cursor-pointer relative z-10">
+                <img src="{{ url_for('static', filename='images/rfid-logo.jpg') }}" alt="RFID Logo" class="w-24 h-24">
+            </button>
+            <!-- Hidden RFID Input Field -->
+            <input type="text" id="rfid-input" name="rfid" class="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer z-0" placeholder="RFID Number">
         </div>
+        <!-- Status Message -->
+        <p id="status-message" class="ml-4 text-sm text-gray-600">Click the image to start scanning</p>
+    </div>
+</div>
+
 
         <!-- Table Container -->
         <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-4xl mb-8 relative">
@@ -72,41 +75,55 @@
         </div>
     </div>
 
-    <!-- JavaScript for RFID Interaction -->
     <script>
+        function handleRFIDClick() {
+            console.log('RFID Button clicked');
+            const rfidInput = document.getElementById('rfid-input');
+            const statusMessage = document.getElementById('status-message');
+            
+            rfidInput.focus();
+            statusMessage.textContent = 'Tap your card now';
+        }
+        
+        function processRFID() {
+            const rfidInput = document.getElementById('rfid-input');
+            const statusMessage = document.getElementById('status-message');
+            const rfidNumber = rfidInput.value.trim();
+    
+            if (rfidNumber) {
+                console.log('Input was detected');
+                statusMessage.textContent = `RFID scanned: ${rfidNumber}`;
+                // Clear the input field after processing
+                rfidInput.value = '';
+            }
+        }
+    
         document.addEventListener('DOMContentLoaded', function() {
             const rfidInput = document.getElementById('rfid-input');
-            const rfidLogo = document.getElementById('rfid-logo');
+            const rfidButton = document.getElementById('rfid-button');
             const statusMessage = document.getElementById('status-message');
-
-            // Simulate RFID scan
-            rfidLogo.addEventListener('click', function() {
-                // Focus the hidden input to accept RFID number
-                rfidInput.focus();
+    
+            // Attach click event to the button
+            rfidButton.addEventListener('click', function() {
+                handleRFIDClick();
             });
-
-            // Listen for input changes
+    
+            // Debounced input handling
+            let debounceTimeout;
             rfidInput.addEventListener('input', function() {
-                const rfidNumber = rfidInput.value.trim();
-
-                if (rfidNumber) {
-                    // Update status message (this could be a call to backend to validate RFID)
-                    statusMessage.textContent = `RFID scanned: ${rfidNumber}`;
-                    // Here you would typically send the RFID number to the backend for validation
-                    // e.g., using fetch or AJAX to submit the RFID number
-                }
+                clearTimeout(debounceTimeout);
+                debounceTimeout = setTimeout(processRFID, 300); // Adjust debounce time if necessary
             });
-
+    
             // Optional: handle RFID number submission (e.g., when pressing Enter)
             rfidInput.addEventListener('keydown', function(event) {
                 if (event.key === 'Enter') {
-                    // Prevent form submission if using in a form
                     event.preventDefault();
-                    // Trigger RFID processing
-                    statusMessage.textContent = `RFID submitted: ${rfidInput.value.trim()}`;
-                    // Handle the RFID submission (send to backend, etc.)
+                    processRFID();
                 }
             });
         });
     </script>
+    
+    
 {% endblock %}
