@@ -10,13 +10,13 @@ def user_register():
     form = UserRegisterForm()
     if form.validate_on_submit():
         try:
-            print("Form validated successfully.")
+            # print("Form validated successfully.")
 
             cursor, connection = get_cursor()
-            print("Database cursor and connection established.")
+            # print("Database cursor and connection established.")
 
             hashed_password = hash_password(form.password.data)
-            print(f"Hashed password: {hashed_password}")
+            # print(f"Hashed password: {hashed_password}")
 
             query = """
                 INSERT INTO user (emp_no, lastname, firstname, email, contactnumber, password)
@@ -30,7 +30,7 @@ def user_register():
                 form.contactnumber.data,
                 hashed_password
             )
-            print(f"Executing query: {query} with values {values}")
+            # print(f"Executing query: {query} with values {values}")
 
             cursor.execute(query, values)
             connection.commit()
@@ -38,8 +38,8 @@ def user_register():
 
             cursor.close()
             close_db_connection(connection)
-            print("Cursor and connection closed.")
 
+            #hindi pa gumagana to sa user_dashboard
             flash("Registration successful", "success")
             return redirect(url_for('user_dashboard.user_dashboard'))
 
