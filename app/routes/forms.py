@@ -16,17 +16,7 @@ class UserLoginForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
     submit = SubmitField('Login')
 
-class AdminRegisterForm(FlaskForm):
-    employeenumber = StringField('Employee Number', validators=[DataRequired()])
-    firstname = StringField('First Name', validators=[DataRequired()])
-    lastname = StringField('Last Name', validators=[DataRequired()])
-    email = StringField('Email', validators=[DataRequired(), Email()])
-    contactnumber = StringField('Contact Number', validators=[DataRequired()])
-    password = PasswordField('Password', validators=[DataRequired(), Length(min=6)])
-    password_confirmation = PasswordField('Confirm Password', validators=[DataRequired(), Length(min=6)])
-    submit = SubmitField('Register')
-
-class UserRegisterForm(FlaskForm):
+class BaseRegisterForm(FlaskForm):
     employeenumber = StringField('Employee Number', validators=[DataRequired()])
     firstname = StringField('First Name', validators=[DataRequired()])
     lastname = StringField('Last Name', validators=[DataRequired()])
@@ -34,14 +24,18 @@ class UserRegisterForm(FlaskForm):
     contactnumber = StringField('Contact Number', validators=[DataRequired()])
     password = PasswordField('Password', validators=[
         DataRequired(),
+        Length(min=6),
         EqualTo('password_confirmation', message='Passwords must match')
     ])
-    password_confirmation = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password', message='Passwords must match')])
+    password_confirmation = PasswordField('Confirm Password', validators=[
+        DataRequired(),
+        Length(min=6)
+    ])
     submit = SubmitField('Register')
 
     def validate_contactnumber(self, contactnumber):
         """
-        Custom contact number validation to check if the number can be texted.
+        Custom contact number validation to ensure it matches the expected format.
         """
         try:
             parsed_number = phonenumbers.parse(contactnumber.data, "PH")
@@ -73,11 +67,17 @@ class UserRegisterForm(FlaskForm):
         """
         Custom email validation to check for uniqueness.
         """
-        cursor, connection = get_cursor() 
-        query = "SELECT COUNT(*) FROM user WHERE email = %s"
+        cursor, connection = get_cursor()
+        query = "SELECT COUNT(*) FROM {} WHERE email = %s".format(self.table_name)
         cursor.execute(query, (email.data,))
         result = cursor.fetchone()[0]
         cursor.close()
         connection.close()
         if result > 0:
             raise ValidationError('Email address is already in use. Please use a different email.')
+
+class UserRegisterForm(BaseRegisterForm):
+    table_name = 'user'
+
+class AdminRegisterForm(BaseRegisterForm):
+    table_name = 'admin'
