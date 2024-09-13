@@ -39,7 +39,15 @@
                     <label for="employeenumber" class="block text-gray-700 text-sm font-bold mb-2">Employee Number</label>
                     <input type="text" id="employeenumber" name="employeenumber" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500" value="{{ form.employeenumber.data or '' }}" placeholder="Employee Number" >
                     {% if form.employeenumber.errors %}
-                        <p class="text-red-500 text-xs italic">{{ form.employeenumber.errors[0] }}</p>
+                    <div class="mb-4 text-red-500 text-xs italic">
+                        {% for error in form.employeenumber.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    
+                    {% if duplicate_entry_error %}
+                        <div class="mb-4 text-red-500 text-xs italic">{{ duplicate_entry_error }}</div>
                     {% endif %}
                 </div>
 
@@ -98,8 +106,14 @@
                     <label for="togglePasswordCheckbox" class="text-gray-700 text-sm">Show Password</label>
                 </div>
 
+                <!--  Google reCAPTCHA  -->
+                {% if recaptcha_error %}
+                    <div class="mb-4 text-red-500 text-xs italic">{{ recaptcha_error }}</div>
+                {% endif %}
+                <div class="g-recaptcha" data-sitekey="6LcxWkIqAAAAAEycwl1Z3tWFBg3BeIFe4pQxhpoY"></div>
+
                 <!-- Register Button -->
-                <button type="submit" id="registerButton" class="w-full py-3 bg-gradient-to-r from-blue-500 to-green-500 text-white font-semibold rounded hover:from-blue-600 hover:to-green-600 focus:outline-none">Register</button>
+                <button type="submit" id="registerButton" class="w-full py-3 bg-gradient-to-r from-blue-500 to-green-500 text-white font-semibold rounded hover:from-blue-600 hover:to-green-600 focus:outline-none mt-10">Register</button>
 
                 <!-- Login Link -->
                 <div class="text-center mt-4">
@@ -132,6 +146,8 @@
     <script src="{{ url_for('static', filename='js/library/sweetalert.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     <script src="{{ url_for('static', filename='js/sweetalertHandling.js') }}"></script>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
     
 </body>
 </html>
