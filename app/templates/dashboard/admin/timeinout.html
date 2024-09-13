@@ -80,8 +80,10 @@
             </div>
         </div>
     </div>
+    
+    <script src="{{ url_for('static', filename='js/rfidHandling.js') }}"></script>
 
-    <script>
+    <!-- <script>
         document.addEventListener('DOMContentLoaded', function() {
             const rfidInput = document.getElementById('rfid-input');
             const rfidButton = document.getElementById('rfid-button');
@@ -131,5 +133,5 @@
                 }, 300); 
             });
         });
-    </script>
+    </script> -->
 {% endblock %}
