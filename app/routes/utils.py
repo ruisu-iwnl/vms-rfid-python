@@ -2,8 +2,17 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
 import os
 import requests
+from flask import session,redirect,url_for
 
 load_dotenv()
+
+def logout():
+    """
+    Logs out the current user by clearing the session.
+    """
+    session.clear()
+    print("User logged out. Session cleared.")
+    return redirect(url_for('main.index'))
 
 def verify_password(stored_password_hash, provided_password):
     """

@@ -7,8 +7,10 @@ user_login_bp = Blueprint('user_login', __name__)
 
 @user_login_bp.route('', methods=['GET', 'POST'])
 def user_login():
+    # Print session before login attempt
+    print(f"Session before login attempt: {session}")
+    
     form = UserLoginForm()
-
     recaptcha_error = None
 
     if form.validate_on_submit():
@@ -37,13 +39,13 @@ def user_login():
 
                 if user:
                     user_id, hashed_password = user
-                    print(f"User found. User ID: {user_id}, Hashed Password: {hashed_password}")
+                    print(f"User found. User ID: {user_id}, Hashed Password: [PROTECTED]")
                     
                     if verify_password(hashed_password, password):
                         print("Password verified successfully.")
                         session['user_id'] = user_id
                         session['email'] = email
-                        print(f"Current session: {session}")
+                        print(f"Session after login: {session}")  # Print session data here
                         flash('Login successful!', 'success')
                         return redirect(url_for('user_dashboard.user_dashboard'))
                     else:
