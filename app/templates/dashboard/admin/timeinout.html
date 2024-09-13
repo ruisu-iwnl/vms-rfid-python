@@ -82,39 +82,47 @@
             const statusMessage = document.getElementById('status-message');
             
             let debounceTimeout;
-    
-            // Handle button click
+            const initialMessage = statusMessage.textContent;  
+            const scanPromptMessage = 'TAP YOUR CARD ON THE RFID READER';  
+            
+            rfidInput.disabled = true;  
+        
             rfidButton.addEventListener('click', function() {
+                rfidInput.disabled = false; 
                 rfidInput.focus();
-                statusMessage.textContent = 'TAP YOUR CARD ON THE RFID READER';
+                statusMessage.textContent = scanPromptMessage;  
             });
-    
-            // Handle input change and submit via AJAX after debounce period
+        
             rfidInput.addEventListener('input', function() {
                 clearTimeout(debounceTimeout);
                 debounceTimeout = setTimeout(() => {
                     const rfidNumber = rfidInput.value.trim();
-    
+        
                     if (rfidNumber) {
                         fetch('/dashboard/timeinout/process_rfid', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
-                                'X-CSRFToken': '{{ csrf_token() }}' // Include CSRF token for security
+                                'X-CSRFToken': '{{ csrf_token() }}' 
                             },
                             body: JSON.stringify({ rfid: rfidNumber })
                         })
                         .then(response => response.json())
                         .then(data => {
                             statusMessage.textContent = `RFID SCANNED: ${data.rfid_number}`;
-                            rfidInput.value = ''; // Clear the input field
+                            rfidInput.value = ''; 
+                            rfidInput.disabled = true;  
+        
+                            setTimeout(() => {
+                                statusMessage.textContent = initialMessage;
+                            }, 5000); 
                         })
                         .catch(error => {
                             console.error('Error:', error);
                             statusMessage.textContent = 'An error occurred while processing the RFID.';
                         });
                     }
-                }, 300); // Adjust debounce time if necessary
+                }, 300); 
             });
         });
     </script>
