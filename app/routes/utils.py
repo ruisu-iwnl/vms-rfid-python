@@ -1,9 +1,22 @@
-from werkzeug.security import generate_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
 import os
 import requests
 
 load_dotenv()
+
+def verify_password(stored_password_hash, provided_password):
+    """
+    Verifies if the provided password matches the stored hashed password.
+    
+    Args:
+        stored_password_hash (str): The hashed password stored in the database.
+        provided_password (str): The password provided by the user trying to log in.
+    
+    Returns:
+        bool: True if passwords match, False otherwise.
+    """
+    return check_password_hash(stored_password_hash, provided_password)
 
 def hash_password(password):
     """
