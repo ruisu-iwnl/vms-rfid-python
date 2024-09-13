@@ -1,51 +1,69 @@
-from flask import Blueprint, render_template, redirect, url_for, flash
+from flask import Blueprint, render_template, redirect, url_for, flash, request
 from ..forms import UserRegisterForm
 from app.models.database import get_cursor, close_db_connection
-from ..utils import hash_password
+from ..utils import hash_password, verify_recaptcha
+import mysql.connector
 
 user_register_bp = Blueprint('user_register', __name__)
 
 @user_register_bp.route('', methods=['GET', 'POST'])
 def user_register():
     form = UserRegisterForm()
+    recaptcha_error = None
+    duplicate_entry_error = None
+
     if form.validate_on_submit():
-        try:
-            # print("Form validated successfully.")
+        recaptcha_response = request.form.get('g-recaptcha-response')
+        # print(f"Received reCAPTCHA response: {recaptcha_response}")
 
-            cursor, connection = get_cursor()
-            # print("Database cursor and connection established.")
+        if not verify_recaptcha(recaptcha_response):
+            recaptcha_error = 'reCAPTCHA verification failed. Please try again.'
+            # print("reCAPTCHA verification failed.")
+        else:
+            try:
+                print("reCAPTCHA verified. Proceeding with registration.")
 
-            hashed_password = hash_password(form.password.data)
-            # print(f"Hashed password: {hashed_password}")
+                cursor, connection = get_cursor()
+                # print("Database cursor and connection obtained.")
 
-            query = """
-                INSERT INTO user (emp_no, lastname, firstname, email, contactnumber, password)
-                VALUES (%s, %s, %s, %s, %s, %s)
-            """
-            values = (
-                form.employeenumber.data,
-                form.lastname.data,
-                form.firstname.data,
-                form.email.data,
-                form.contactnumber.data,
-                hashed_password
-            )
-            # print(f"Executing query: {query} with values {values}")
+                hashed_password = hash_password(form.password.data)
+                # print(f"Hashed password: {hashed_password}")
 
-            cursor.execute(query, values)
-            connection.commit()
-            print("Data committed to the database.")
+                query = """
+                    INSERT INTO user (emp_no, lastname, firstname, email, contactnumber, password)
+                    VALUES (%s, %s, %s, %s, %s, %s)
+                """
+                values = (
+                    form.employeenumber.data,
+                    form.lastname.data,
+                    form.firstname.data,
+                    form.email.data,
+                    form.contactnumber.data,
+                    hashed_password
+                )
+                # print(f"Executing query with values: {values}")
 
-            cursor.close()
-            close_db_connection(connection)
+                cursor.execute(query, values)
+                connection.commit()
+                print("Data committed to the database.")
 
-            #hindi pa gumagana to sa user_dashboard
-            flash("Registration successful", "success")
-            return redirect(url_for('user_dashboard.user_dashboard'))
+                cursor.close()
+                close_db_connection(connection)
+                # print("Database connection closed.")
 
-        except Exception as e:
-            print(f"Exception occurred: {e}")
-            flash(f"Error: {e}", "whats up danger")
-            return redirect(url_for('user_register.user_register'))
+                flash("Registration successful", "success")
+                return redirect(url_for('user_dashboard.user_dashboard'))
 
-    return render_template('register/user_register.html', form=form)
+            except mysql.connector.IntegrityError as e:
+                if e.args[0] == 1062:  # Duplicate entry error code
+                    duplicate_entry_error = "An employee with this number already exists. Please use a different number."
+                else:
+                    flash(f"Database error: {e}", "danger")
+                return render_template('register/user_register.html', form=form, recaptcha_error=recaptcha_error, duplicate_entry_error=duplicate_entry_error)
+
+            except Exception as e:
+                print(f"Exception occurred: {e}")
+                flash(f"An unexpected error occurred: {e}", "danger")
+                return render_template('register/user_register.html', form=form, recaptcha_error=recaptcha_error, duplicate_entry_error=duplicate_entry_error)
+
+    return render_template('register/user_register.html', form=form, recaptcha_error=recaptcha_error, duplicate_entry_error=duplicate_entry_error)
