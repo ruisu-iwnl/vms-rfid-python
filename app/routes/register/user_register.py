@@ -52,7 +52,7 @@ def user_register():
                 # print("Database connection closed.")
 
                 flash("Registration successful", "success")
-                return redirect(url_for('user_dashboard.user_dashboard'))
+                return redirect(url_for('user_login.user_login'))
 
             except mysql.connector.IntegrityError as e:
                 if e.args[0] == 1062:  # Duplicate entry error code
