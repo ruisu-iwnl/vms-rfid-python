@@ -76,5 +76,6 @@
         ```bash
         python app.py
         ```
+        - Ensure that XAMPP Control Panel is also running with Apache and MySQL turned on.
 
 That's it! The app should now be running locally on your system.
