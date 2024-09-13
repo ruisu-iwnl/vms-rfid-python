@@ -7,13 +7,23 @@
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
     <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
     <script src="{{ url_for('static', filename='js/iconify.min.js') }}"></script>
+    <style>
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .animate-spin {
+            animation: spin 0.5s linear infinite; 
+        }
+    </style>
 </head>
-<body class="relative bg-cover bg-center min-h-screen" style="background-image: url('/static/images/bg.jpg');">
+<body class="relative bg-cover bg-center min-h-screen flex flex-col" style="background-image: url('/static/images/bg.jpg');">
     <header class="bg-blue-900 text-white p-5 flex justify-between items-center fixed top-0 left-0 w-full z-30 shadow-md bg-black/50 backdrop-blur-md">
         <!-- Logo -->
         <div class="flex items-center space-x-3">
             <img src="{{ url_for('static', filename='Images/CelcorCircle.png') }}" alt="logo" class="h-10">
-            <span class="font-bold text-xl">Dashboard</span>
+            <span class="font-bold text-xl">{% block header_title %}Dashboard{% endblock %}</span>
         </div>
         <!-- Hamburger Menu for Mobile -->
         <div class="sm:hidden">
@@ -22,6 +32,7 @@
             </button>
         </div>
     </header>
+
     <aside id="mobile-menu" class="bg-white text-gray-800 fixed inset-y-0 left-0 transform -translate-x-full transition-transform sm:hidden w-64 shadow-lg z-20 mt-16 backdrop-blur-md bg-white/30">
         <nav class="p-6 space-y-6">
             <a href="{{ url_for('user_dashboard.user_dashboard') }}" class="block py-2 px-4 rounded hover:bg-gray-100">Home</a>
@@ -29,26 +40,27 @@
             <button id="logout-button" class="block py-2 px-4 rounded hover:bg-gray-100">Logout</button>
         </nav>
     </aside>
-    <div class="flex flex-1 mt-20 bg-black/10 p-8 shadow-md backdrop-blur-md">
+
+    <div class="flex flex-1 mt-20 bg-black/10 p-8 shadow-md backdrop-blur-md flex-grow">
         <!-- Desktop Sidebar -->
         <aside class="hidden sm:block w-64 bg-gray-800 bg-opacity-70 shadow-md p-6 z-20 fixed top-0 left-0 bottom-0 backdrop-blur-lg text-white">
             <h2 class="text-lg font-bold mb-4">Vehicle Management System</h2>
             <nav class="space-y-2">
-                <a href="{{ url_for('user_dashboard.user_dashboard') }}" class="block py-2 px-4 rounded hover:bg-white-200">Home</a>
-                <a href="{{ url_for('vehicles.vehicles') }}" class="block py-2 px-4 rounded hover:bg-white-200">Vehicles</a>
-                <button id="logout-button-desktop" class="block py-2 px-4 rounded hover:bg-white-200">Logout</button>
+                <a href="{{ url_for('user_dashboard.user_dashboard') }}" class="block py-2 px-4 rounded hover:bg-gray-700">Home</a>
+                <a href="{{ url_for('vehicles.vehicles') }}" class="block py-2 px-4 rounded hover:bg-gray-700">Vehicles</a>
+                <button id="logout-button-desktop" class="block py-2 px-4 rounded hover:bg-gray-700">Logout</button>
             </nav>
         </aside>
     
         <!-- Main Content -->
-        <main class="flex-1 ml-0 sm:ml-64">
-            <div class="flex-1 flex flex-col justify-center items-center min-h-screen px-4">
+        <main class="flex-1 ml-0 sm:ml-64 flex flex-col">
+            <div class="flex-1 flex flex-col justify-between items-center m-4 sm:m-6 md:m-8 lg:m-10 xl:m-12">
                 {% block content %}{% endblock %}
             </div>
         </main>
     </div>
     
-    
+    <!-- Logout Confirmation Modal -->
     <div id="logout-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 z-40 hidden">
         <div class="flex items-center justify-center min-h-screen">
             <div class="bg-white p-6 rounded-lg shadow-lg w-96">
@@ -65,6 +77,14 @@
         </div>
     </div>
 
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="fixed inset-0 bg-transparent flex items-center justify-center z-50 hidden">
+        <div class="flex items-center space-x-2">
+            <div class="w-12 h-12 border-t-4 border-black border-solid rounded-full animate-spin"></div>
+            <span class="text-black text-lg">Loading...</span>
+        </div>
+    </div>
+
     <script>
         const menuToggle = document.getElementById('menu-toggle');
         const mobileMenu = document.getElementById('mobile-menu');
@@ -77,14 +97,35 @@
         const logoutButtonDesktop = document.getElementById('logout-button-desktop');
         const logoutModal = document.getElementById('logout-modal');
         const cancelLogout = document.getElementById('cancel-logout');
+        const loadingScreen = document.getElementById('loading-screen');
 
+        function showLoading() {
+            loadingScreen.classList.remove('hidden');
+        }
+
+        function hideLoading() {
+            loadingScreen.classList.add('hidden');
+        }
+
+        document.querySelectorAll('aside nav a').forEach((element) => {
+            element.addEventListener('click', function() {
+                showLoading();
+                setTimeout(() => { 
+                    hideLoading();
+                }, 1000);
+            });
+        });
+
+        // Add separate handling for the logout buttons
         logoutButton.addEventListener('click', function() {
             logoutModal.classList.remove('hidden');
         });
 
-        logoutButtonDesktop.addEventListener('click', function() {
-            logoutModal.classList.remove('hidden');
-        });
+        if (logoutButtonDesktop) {
+            logoutButtonDesktop.addEventListener('click', function() {
+                logoutModal.classList.remove('hidden');
+            });
+        }
 
         cancelLogout.addEventListener('click', function() {
             logoutModal.classList.add('hidden');
