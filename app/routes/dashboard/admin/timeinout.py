@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, request, jsonify, render_template
 
 timeinout_bp = Blueprint('timeinout', __name__, url_prefix='/dashboard/timeinout')
 
@@ -37,3 +37,16 @@ def timeinout(page):
     paginated_records = records[start:end]
 
     return render_template('dashboard/admin/timeinout.html', records=paginated_records, page=page, total_pages=total_pages)
+
+@timeinout_bp.route('/process_rfid', methods=['POST'])
+def process_rfid():
+    data = request.get_json()
+    rfid_number = data.get('rfid', '').strip()
+
+    if rfid_number:
+        print(f'RFID Number scanned: {rfid_number}')  # Handle the RFID number (e.g., save to database)
+        response = {'rfid_number': rfid_number}
+    else:
+        response = {'rfid_number': 'RFID not detected'}
+
+    return jsonify(response)
