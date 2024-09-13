@@ -38,13 +38,9 @@
         ```
 
    3. **Activate the virtual environment**:
-      - On Windows:
+      - Type in console:
         ```bash
         myenv\Scripts\activate
-        ```
-      - On macOS/Linux:
-        ```bash
-        source myenv/bin/activate
         ```
 
    4. **Install the dependencies from `requirements.txt`**:
@@ -52,7 +48,15 @@
       pip install -r requirements.txt
       ```
 
-### 7. Install npm Dependencies and Build CSS
+### 7. Set Up Environment Variables
+
+   1. **Copy the `.env.example` file to `.env`**:
+      ```bash
+      cp .env.example .env
+      ```
+      - This will create a new `.env` file with default settings. You need to update the `.env` file with your actual database credentials and other environment variables.
+
+### 8. Install npm Dependencies and Build CSS
 
    1. **Install npm dependencies**:
       ```bash
@@ -63,8 +67,9 @@
       ```bash
       npm run build:css
       ```
+      - Note that you may have to run this every time you make an update with the design.
 
-### 8. Run the Flask App
+### 9. Run the Flask App
 
    1. **Run the Flask app**:
       - Run the application with:
