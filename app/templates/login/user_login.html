@@ -6,7 +6,7 @@
     <title>User Login</title>
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
     <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
-    <script src="{{ url_for('static', filename='js/iconify.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/library/iconify.min.js') }}"></script>
 
 </head>
 <body class="relative flex items-center justify-center min-h-screen bg-cover bg-center" style="background-image: url('/static/images/bg.jpg');">
@@ -63,7 +63,10 @@
                     {% if form.password.errors %}
                         <p class="text-red-500 text-xs italic mt-1">{{ form.password.errors[0] }}</p>
                     {% endif %}
-                    <a href="#" class="text-blue-500 hover:text-blue-700 text-sm block mt-2">Forgot Password?</a>
+<!--                     
+                    NOT YET
+-->
+                    <!-- <a href="#" class="text-blue-500 hover:text-blue-700 text-sm block mt-2">Forgot Password?</a> -->
                 </div>
 
                 <!-- Submit Button -->
