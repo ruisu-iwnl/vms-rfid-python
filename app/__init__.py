@@ -31,7 +31,7 @@ def create_app():
     app.register_blueprint(admin_register_bp, url_prefix='/register/admin')
     app.register_blueprint(user_register_bp, url_prefix='/register/user')
     #user dashboard
-    app.register_blueprint(user_dashboard_bp, url_prefix='/dashboard/guide')
+    app.register_blueprint(user_dashboard_bp, url_prefix='/dashboard/user')
     app.register_blueprint(vehicles_bp, url_prefix='/dashboard/vehicles')
     #admin dashboard
     app.register_blueprint(admin_dashboard_bp, url_prefix='/dashboard/admin')  
