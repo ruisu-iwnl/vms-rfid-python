@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, flash, request
+from flask import Blueprint, render_template
 
 timeinout_bp = Blueprint('timeinout', __name__, url_prefix='/dashboard/timeinout')
 
@@ -35,9 +35,5 @@ def timeinout(page):
     start = (page - 1) * per_page
     end = start + per_page
     paginated_records = records[start:end]
-
-    flash_message = request.args.get('flash_message', None)
-    if flash_message:
-        flash(flash_message, 'success')
 
     return render_template('dashboard/admin/timeinout.html', records=paginated_records, page=page, total_pages=total_pages)

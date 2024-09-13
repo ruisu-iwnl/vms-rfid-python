@@ -6,29 +6,15 @@
 
 {% block content %}
     <div class="">
-        <!-- Display Flash Messages -->
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                <div class="mb-4">
-                    {% for category, message in messages %}
-                        <div class="bg-{{ category }}-100 border border-{{ category }}-400 text-{{ category }}-700 px-4 py-3 rounded relative" role="alert">
-                            <strong class="font-bold">{{ category|capitalize }}!</strong>
-                            <span class="block sm:inline">{{ message }}</span>
-                        </div>
-                    {% endfor %}
-                </div>
-            {% endif %}
-        {% endwith %}
-
         <!-- Time In/Out RFID Section -->
         <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-4xl mb-8 relative">
             <h2 class="text-xl font-bold mb-4">Time In/Out RFID</h2>
             <div class="flex items-center justify-center">
                 <!-- RFID Logo -->
                 <div class="relative">
-                    <img src="{{ url_for('static', filename='images/rfid-logo.jpg') }}" alt="RFID Logo" class="w-24 h-24" id="rfid-logo">
+                    <img src="{{ url_for('static', filename='images/rfid-logo.jpg') }}" alt="RFID Logo" class="w-24 h-24 cursor-pointer" id="rfid-logo">
                     <!-- Hidden RFID Input Field -->
-                    <input type="text" id="rfid-input" name="rfid" class="absolute top-0 left-0 w-full h-full opacity-0" placeholder="RFID Number" autocomplete="off">
+                    <input type="text" id="rfid-input" name="rfid" class="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer" placeholder="RFID Number">
                 </div>
                 <!-- Status Message -->
                 <p id="status-message" class="ml-4 text-sm text-gray-600">Scan your RFID card to Time In/Out</p>
@@ -90,49 +76,24 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const rfidInput = document.getElementById('rfid-input');
+            const rfidLogo = document.getElementById('rfid-logo');
             const statusMessage = document.getElementById('status-message');
-            let isProcessing = false;
 
-            // Automatically focus the RFID input field on page load
-            rfidInput.focus();
-
-            // Handle RFID input
-            function handleRFIDInput() {
-                const rfidNumber = rfidInput.value.trim();
-
-                if (rfidNumber && !isProcessing) {
-                    isProcessing = true;
-                    // Update status message with RFID number
-                    statusMessage.textContent = `RFID scanned: ${rfidNumber}`;
-                    
-                    // Simulate sending data to backend and processing
-                    fetch('/dashboard/timeinout', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRFToken': '{{ csrf_token() }}'
-                        },
-                        body: JSON.stringify({ rfid: rfidNumber })
-                    }).then(response => response.json())
-                    .then(data => {
-                        // Handle flash message response from backend
-                        if (data.flash_message) {
-                            window.location.href = `{{ url_for('timeinout.timeinout') }}?flash_message=${encodeURIComponent(data.flash_message)}`;
-                        }
-                        statusMessage.textContent = `RFID submitted: ${rfidNumber}`;
-                        rfidInput.value = ''; // Clear input field after processing
-                        isProcessing = false;
-                    }).catch(() => {
-                        statusMessage.textContent = 'An error occurred while processing the RFID.';
-                        isProcessing = false;
-                    });
-                }
-            }
+            // Simulate RFID scan
+            rfidLogo.addEventListener('click', function() {
+                // Focus the hidden input to accept RFID number
+                rfidInput.focus();
+            });
 
             // Listen for input changes
             rfidInput.addEventListener('input', function() {
-                if (!isProcessing) {
-                    handleRFIDInput();
+                const rfidNumber = rfidInput.value.trim();
+
+                if (rfidNumber) {
+                    // Update status message (this could be a call to backend to validate RFID)
+                    statusMessage.textContent = `RFID scanned: ${rfidNumber}`;
+                    // Here you would typically send the RFID number to the backend for validation
+                    // e.g., using fetch or AJAX to submit the RFID number
                 }
             });
 
@@ -141,9 +102,9 @@
                 if (event.key === 'Enter') {
                     // Prevent form submission if using in a form
                     event.preventDefault();
-                    if (!isProcessing) {
-                        handleRFIDInput();
-                    }
+                    // Trigger RFID processing
+                    statusMessage.textContent = `RFID submitted: ${rfidInput.value.trim()}`;
+                    // Handle the RFID submission (send to backend, etc.)
                 }
             });
         });
