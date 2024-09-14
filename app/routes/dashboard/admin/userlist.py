@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template,session
 
 userlist_bp = Blueprint('userlist', __name__)
 
@@ -38,4 +38,5 @@ def userlist(page):
     end = start + per_page
     paginated_users = users[start:end]
 
+    print(f"Session active in userlist: {session}")
     return render_template('dashboard/admin/userlist.html', users=paginated_users, page=page, total_pages=total_pages)

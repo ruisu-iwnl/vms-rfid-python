@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template,session
 
 activitylog_bp = Blueprint('activitylog', __name__)
 
@@ -36,4 +36,6 @@ def activitylog(page):
     end = start + per_page
     paginated_records = records[start:end]
 
+
+    print(f"Session active in activitylogs: {session}")
     return render_template('dashboard/admin/activitylog.html', records=paginated_records, page=page, total_pages=total_pages)

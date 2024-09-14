@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, render_template
+from flask import Blueprint, request, jsonify, render_template,session
 
 timeinout_bp = Blueprint('timeinout', __name__, url_prefix='/dashboard/timeinout')
 
@@ -36,6 +36,7 @@ def timeinout(page):
     end = start + per_page
     paginated_records = records[start:end]
 
+    print(f"Session active in timelogs: {session}")
     return render_template('dashboard/admin/timeinout.html', records=paginated_records, page=page, total_pages=total_pages)
 
 @timeinout_bp.route('/process_rfid', methods=['POST'])
