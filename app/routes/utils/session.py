@@ -23,7 +23,6 @@ def check_session(role='admin'):
             print(f"Redirecting to: {redirect_url}")
             return redirect(redirect_url)
 
-        # Check for role conflict only if user is logged in
         return check_role_conflict(role, user_logged_in)
     except Exception as e:
         flash(f"An error occurred: {str(e)}", 'danger')
@@ -41,13 +40,13 @@ def check_role_conflict(required_role, logged_in_role):
     try:
         if required_role == 'admin' and logged_in_role == 'user':
             print('User logged in but trying to access an admin route!', session)
-            redirect_url = request.referrer or url_for('user_dashboard.user_dashboard')
+            redirect_url = url_for('user_dashboard.user_dashboard')
             print(f"Redirecting to: {redirect_url}")
             return redirect(redirect_url)
         
         if required_role == 'user' and logged_in_role == 'admin':
             print('Admin logged in but trying to access a user route!', session)
-            redirect_url = request.referrer or url_for('admin_dashboard.admin_dashboard')
+            redirect_url = url_for('admin_dashboard.admin_dashboard')
             print(f"Redirecting to: {redirect_url}")
             return redirect(redirect_url)
     except Exception as e:
@@ -67,22 +66,14 @@ def check_access(role='admin'):
 def check_logged_in_redirect():
     try:
         current_endpoint = request.endpoint
-        if 'admin_id' in session:
-            if current_endpoint != 'admin_dashboard.admin_dashboard':
-                flash('You are already logged in as an admin!', 'warning')
-                redirect_url = url_for('admin_dashboard.admin_dashboard')
-                print(f"Redirecting to: {redirect_url}")
-                return redirect(redirect_url)
+        if 'admin_id' in session and current_endpoint != 'admin_dashboard.admin_dashboard':
+            flash('You are already logged in as an admin!', 'warning')
+            return redirect(url_for('admin_dashboard.admin_dashboard'))
         
-        if 'user_id' in session:
-            if current_endpoint != 'user_dashboard.user_dashboard':
-                flash('You are already logged in as a user!', 'warning')
-                redirect_url = url_for('user_dashboard.user_dashboard')
-                print(f"Redirecting to: {redirect_url}")
-                return redirect(redirect_url)
+        if 'user_id' in session and current_endpoint != 'user_dashboard.user_dashboard':
+            flash('You are already logged in as a user!', 'warning')
+            return redirect(url_for('user_dashboard.user_dashboard'))
     except Exception as e:
         flash(f"An error occurred: {str(e)}", 'danger')
         print(f"An error occurred: {str(e)}")
-        redirect_url = request.referrer or url_for('main.index')
-        print(f"Redirecting to: {redirect_url}")
-        return redirect(redirect_url)
+        return redirect(url_for('main.index'))
