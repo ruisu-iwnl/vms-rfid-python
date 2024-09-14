@@ -7,43 +7,63 @@
     <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/custom.css') }}" rel="stylesheet">
 </head>
-<body class="relative flex items-center justify-center min-h-screen bg-cover bg-center" style="background-image: url('/static/images/bg.jpg');">
+<body class="relative min-h-screen text-gray-900">
+
     <!-- Subtle overlay for enhanced visibility -->
-    <div class="absolute inset-0 bg-black opacity-50"></div>
-    
-    <!-- Redesigned Main Content Area -->
-    <div class="relative z-10 max-w-4xl p-8 md:p-12 bg-white/20 rounded-3xl shadow-2xl backdrop-blur-md flex flex-col md:flex-row">
-        
-        <!-- Left Section: Logo & Title -->
-        <div class="flex flex-col items-center justify-center text-center space-y-6 md:w-1/2">
-            <!-- Logo -->
-            <img src="/static/images/CELCOR.png" alt="CELCOR Logo" class="w-28 h-28 object-contain mx-auto opacity-90"/>
-            
-            <!-- Title -->
-            <h1 class="text-4xl md:text-5xl font-extrabold text-white leading-tight">
-                Vehicle Management System
-            </h1>
-            <p class="text-lg md:text-xl text-gray-200">
-                Effortlessly manage and track all your vehicle data in one place.
-            </p>
-        </div>
+    <div class="absolute inset-0 bg-black opacity-65"></div>
 
-        <!-- Right Section: Buttons & Call to Action -->
-        <div class="flex flex-col justify-center items-center space-y-6 md:w-1/2">
-            <p class="text-xl text-gray-200 text-center">
-                Choose your login option below:
-            </p>
+    <!-- Container to hold both sections -->
+    <div class="flex flex-col min-h-screen justify-center items-center bg-opacity-30 backdrop-blur-md p-4">
 
-            <!-- Buttons -->
-            <div class="w-full flex flex-col space-y-4">
-                <a href="{{ url_for('user_login.user_login') }}" class="w-full text-center bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-lg py-3 rounded-full font-semibold shadow-md hover:from-indigo-400 hover:to-purple-400 transition duration-300 ease-in-out">
-                    Login as User
-                </a>
-                <a href="{{ url_for('admin_login.admin_login') }}" class="w-full text-center bg-gradient-to-r from-teal-500 to-green-500 text-white text-lg py-3 rounded-full font-semibold shadow-md hover:from-teal-400 hover:to-green-400 transition duration-300 ease-in-out">
-                    Login as Admin
-                </a>
+        <!-- Combined Sections -->
+        <div class="flex flex-col items-center justify-center space-y-4">
+
+            <!-- Left Section: Logo & Title -->
+            <div class="flex flex-col items-center justify-center p-2 md:p-4">
+                <!-- Logo -->
+                <img src="/static/images/CELCOR.png" alt="CELCOR Logo" class="w-28 h-28 object-contain mx-auto mb-4 opacity-80 backdrop-blur-md"/>
+
+                <!-- Title with custom shadow -->
+                <h1 class="text-6xl md:text-6xl font-extrabold custom-shadow leading-tight mb-1 text-center soft-white">
+                    Vehicle Management System
+                </h1>
+                <p class="text-base md:text-lg soft-white text-center drop-shadow-md">
+                    Effortlessly manage and track all your vehicle data in one place with our intuitive platform.
+                </p>
+            </div>
+
+            <!-- Right Section: Buttons & Call to Action -->
+            <div class="flex flex-col justify-center items-center p-2 md:p-4">
+                <p class="text-lg md:text-xl soft-white text-center mb-2 font-semibold drop-shadow-lg">
+                    Choose your login option below:
+                </p>
+
+                <!-- Button for User Login -->
+                <div class="container mt-4">
+                    <div class="center">
+                        <a href="{{ url_for('user_login.user_login') }}" class="btn btn-admin">
+                            <svg width="300px" height="100px" viewBox="0 0 300 100">
+                            </svg>                            
+                            <span>Login as User</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Button for Admin Login -->
+                <div class="container mt-4">
+                    <div class="center">
+                        <a href="{{ url_for('admin_login.admin_login') }}" class="btn btn-admin">
+                            <svg width="300px" height="100px" viewBox="0 0 300 100">
+                            </svg>                            
+                            <span>Login as Admin</span>
+                        </a>
+                    </div>
+                </div>
+
+
             </div>
         </div>
     </div>
+
 </body>
 </html>
