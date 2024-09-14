@@ -1,12 +1,12 @@
 from flask import Blueprint, render_template,session
-from app.routes.utils.session import check_session
+from app.routes.utils.session import check_access
 
 admin_dashboard_bp = Blueprint('admin_dashboard', __name__)
 
 @admin_dashboard_bp.route('')
 def admin_dashboard():
 
-    response = check_session('admin')
+    response = check_access('admin')
     
     if response:
         return response

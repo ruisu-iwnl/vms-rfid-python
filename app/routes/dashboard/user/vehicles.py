@@ -1,12 +1,12 @@
 from flask import Blueprint, render_template, session
-from app.routes.utils.session import check_session
+from app.routes.utils.session import check_access
 
 vehicles_bp = Blueprint('vehicles', __name__, url_prefix='/dashboard/vehicles')
 
 @vehicles_bp.route('/', defaults={'page': 1})
 @vehicles_bp.route('/<int:page>')
 def vehicles(page):
-    response = check_session('user')
+    response = check_access('user')
     if response:
         return response
     

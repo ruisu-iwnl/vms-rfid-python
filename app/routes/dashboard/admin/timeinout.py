@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify, render_template,session
-from app.routes.utils.session import check_session
+from app.routes.utils.session import check_access
 
 timeinout_bp = Blueprint('timeinout', __name__, url_prefix='/dashboard/timeinout')
 
@@ -7,7 +7,7 @@ timeinout_bp = Blueprint('timeinout', __name__, url_prefix='/dashboard/timeinout
 @timeinout_bp.route('/<int:page>')
 def timeinout(page):
 
-    response = check_session('admin')
+    response = check_access('admin')
     
     if response:
         return response

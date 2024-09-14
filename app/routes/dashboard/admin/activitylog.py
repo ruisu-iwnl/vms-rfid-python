@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template,session
-from app.routes.utils.session import check_session
+from app.routes.utils.session import check_access
 
 activitylog_bp = Blueprint('activitylog', __name__)
 
@@ -7,7 +7,7 @@ activitylog_bp = Blueprint('activitylog', __name__)
 @activitylog_bp.route('/<int:page>')
 def activitylog(page):
 
-    response = check_session('admin')
+    response = check_access('admin')
     
     if response:
         return response

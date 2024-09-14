@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template,session
-from app.routes.utils.session import check_session
+from app.routes.utils.session import check_access
 
 userlist_bp = Blueprint('userlist', __name__)
 
@@ -7,7 +7,7 @@ userlist_bp = Blueprint('userlist', __name__)
 @userlist_bp.route('/<int:page>')
 def userlist(page):
 
-    response = check_session('admin')
+    response = check_access('admin')
     
     if response:
         return response
