@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template
-from app.routes.utils import logout
+from app.routes.utils.utils import logout
 
 main_bp = Blueprint('main', __name__)
 

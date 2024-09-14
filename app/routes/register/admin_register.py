@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from ..forms import AdminRegisterForm
 from app.models.database import get_cursor, close_db_connection
-from ..utils import hash_password, verify_recaptcha
+from ..utils.utils import hash_password, verify_recaptcha
 import mysql.connector
 
 admin_register_bp = Blueprint('admin_register', __name__)

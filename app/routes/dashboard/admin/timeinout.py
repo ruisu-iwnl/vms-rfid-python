@@ -1,10 +1,17 @@
 from flask import Blueprint, request, jsonify, render_template,session
+from app.routes.utils.session import check_session
 
 timeinout_bp = Blueprint('timeinout', __name__, url_prefix='/dashboard/timeinout')
 
 @timeinout_bp.route('/', defaults={'page': 1})
 @timeinout_bp.route('/<int:page>')
 def timeinout(page):
+
+    response = check_session('admin')
+    
+    if response:
+        return response
+    
     records = [
         {'date': '2024-09-01', 'time_in': '08:00', 'time_out': '17:00', 'employee_id': 'E001', 'name': 'John Doe', 'phone_number': '555-0100'},
         {'date': '2024-09-02', 'time_in': '09:00', 'time_out': '18:00', 'employee_id': 'E002', 'name': 'Jane Smith', 'phone_number': '555-0101'},
@@ -45,7 +52,7 @@ def process_rfid():
     rfid_number = data.get('rfid', '').strip()
 
     if rfid_number:
-        print(f'RFID Number scanned: {rfid_number}')  # Handle the RFID number (e.g., save to database)
+        print(f'RFID Number scanned: {rfid_number}')
         response = {'rfid_number': rfid_number}
     else:
         response = {'rfid_number': 'RFID not detected'}

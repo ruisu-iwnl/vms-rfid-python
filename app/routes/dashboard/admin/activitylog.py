@@ -1,10 +1,17 @@
 from flask import Blueprint, render_template,session
+from app.routes.utils.session import check_session
 
 activitylog_bp = Blueprint('activitylog', __name__)
 
 @activitylog_bp.route('/', defaults={'page': 1})
 @activitylog_bp.route('/<int:page>')
 def activitylog(page):
+
+    response = check_session('admin')
+    
+    if response:
+        return response
+
     records = [
         {'activity_id': 1, 'user_id': 101, 'activity_type': 'Login', 'timestamp': '2024-09-01 08:00:00'},
         {'activity_id': 2, 'user_id': 102, 'activity_type': 'Logout', 'timestamp': '2024-09-01 09:00:00'},

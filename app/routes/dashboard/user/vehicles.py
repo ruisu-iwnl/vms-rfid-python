@@ -1,10 +1,15 @@
 from flask import Blueprint, render_template, session
+from app.routes.utils.session import check_session
 
 vehicles_bp = Blueprint('vehicles', __name__, url_prefix='/dashboard/vehicles')
 
 @vehicles_bp.route('/', defaults={'page': 1})
 @vehicles_bp.route('/<int:page>')
 def vehicles(page):
+    response = check_session('user')
+    if response:
+        return response
+    
     vehicles = [
         {'car_model': 'Toyota Camry', 'car_color': 'Red', 'plate_number': 'ABC-1234'},
         {'car_model': 'Honda Accord', 'car_color': 'Blue', 'plate_number': 'XYZ-5678'},

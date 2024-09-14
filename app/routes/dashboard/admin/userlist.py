@@ -1,10 +1,18 @@
 from flask import Blueprint, render_template,session
+from app.routes.utils.session import check_session
 
 userlist_bp = Blueprint('userlist', __name__)
 
 @userlist_bp.route('/', defaults={'page': 1})
 @userlist_bp.route('/<int:page>')
 def userlist(page):
+
+    response = check_session('admin')
+    
+    if response:
+        return response
+
+
     # Sample data for demonstration. Replace this with your actual data source.
     users = [
         {'employee_number': '001', 'full_name': 'John Doe', 'contact_number': '555-0100', 'vehicle': 'Car'},
