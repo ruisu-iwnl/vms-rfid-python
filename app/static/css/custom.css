@@ -1,0 +1,5 @@
+/* this is for my error html */
+.scrollable-container {
+    max-height: 400px; 
+    overflow-y: auto;
+}

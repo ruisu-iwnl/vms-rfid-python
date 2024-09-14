@@ -16,7 +16,7 @@ from .routes.dashboard.admin.activitylog import activitylog_bp
 # user dashboard routes
 from .routes.dashboard.user.user_dashboard import user_dashboard_bp
 from .routes.dashboard.user.vehicles import vehicles_bp
-
+from .routes.error import error_bp
 
 def create_app():
     app = Flask(__name__)
@@ -39,6 +39,7 @@ def create_app():
     app.register_blueprint(userlist_bp, url_prefix='/dashboard/userlist')
     app.register_blueprint(activitylog_bp, url_prefix='/dashboard/activitylog')
 
+    app.register_blueprint(error_bp)
 
 
     return app
