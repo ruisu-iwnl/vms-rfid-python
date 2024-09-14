@@ -35,6 +35,24 @@
             <form action="{{ url_for('admin_register.admin_register') }}" method="POST">
                 {{ form.hidden_tag() }}
 
+                <!-- Display error messages -->
+                {% if recaptcha_error %}
+                    <div class="mb-4 text-red-500 text-xs italic">{{ recaptcha_error }}</div>
+                {% endif %}
+
+                {% if duplicate_entry_error %}
+                    <div class="mb-4 text-red-500 text-xs italic">{{ duplicate_entry_error }}</div>
+                {% endif %}
+
+                <!-- Display error messages for already registered user/admin -->
+                {% if is_registered_as_user %}
+                    <div class="mb-4 text-red-500 text-xs italic">{{ is_registered_as_user }}</div>
+                {% endif %}
+
+                {% if is_registered_as_admin %}
+                    <div class="mb-4 text-red-500 text-xs italic">{{ is_registered_as_admin }}</div>
+                {% endif %}
+
                 <!-- Employee Number -->
                 <div class="mb-4">
                     <label for="employeenumber" class="block text-gray-700 text-sm font-bold mb-2">Employee Number</label>
@@ -45,10 +63,6 @@
                             {{ error }}
                         {% endfor %}
                     </div>
-                    {% endif %}
-
-                    {% if duplicate_entry_error %}
-                        <div class="mb-4 text-red-500 text-xs italic">{{ duplicate_entry_error }}</div>
                     {% endif %}
                 </div>
 
@@ -108,10 +122,9 @@
                 </div>
 
                 <!-- Google reCAPTCHA -->
-                {% if recaptcha_error %}
-                    <div class="mb-4 text-red-500 text-xs italic">{{ recaptcha_error }}</div>
-                {% endif %}
-                <div class="g-recaptcha" data-sitekey="6LcxWkIqAAAAAEycwl1Z3tWFBg3BeIFe4pQxhpoY"></div>
+                <div class="mb-4">
+                    <div class="g-recaptcha" data-sitekey="6LcxWkIqAAAAAEycwl1Z3tWFBg3BeIFe4pQxhpoY"></div>
+                </div>
 
                 <!-- Register Button -->
                 <button type="submit" id="registerButton" class="w-full py-3 bg-gradient-to-r from-blue-500 to-green-500 text-white font-semibold rounded hover:from-blue-600 hover:to-green-600 focus:outline-none mt-10">Register</button>

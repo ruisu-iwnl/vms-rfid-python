@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 import os
 import requests
 from flask import session,redirect,url_for
+from app.models.database import get_cursor, close_db_connection
 
 load_dotenv()
 
@@ -52,3 +53,22 @@ def verify_recaptcha(recaptcha_response):
     result = response.json()
     
     return result.get('success')
+
+def check_existing_registration(email):
+    """
+    Checks if the email is already registered as a user or admin.
+    Returns a tuple (is_registered_as_user, is_registered_as_admin).
+    """
+    cursor, connection = get_cursor()
+    try:
+        cursor.execute("SELECT 1 FROM user WHERE email = %s LIMIT 1", (email,))
+        is_registered_as_user = cursor.fetchone() is not None
+
+        cursor.execute("SELECT 1 FROM admin WHERE email = %s LIMIT 1", (email,))
+        is_registered_as_admin = cursor.fetchone() is not None
+
+        return is_registered_as_user, is_registered_as_admin
+    finally:
+        cursor.close()
+        close_db_connection(connection)
+

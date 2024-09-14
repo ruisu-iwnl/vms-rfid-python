@@ -34,6 +34,20 @@
             <!-- Registration Form -->
             <form action="{{ url_for('user_register.user_register') }}" method="POST">
                 {{ form.hidden_tag() }}
+
+                <!-- Display error message for already registered user/admin -->
+                {% if is_registered_as_user %}
+                    <div class="mb-4 text-red-500 text-xs italic">
+                        {{ is_registered_as_user }}
+                    </div>
+                {% endif %}
+
+                {% if is_registered_as_admin %}
+                    <div class="mb-4 text-red-500 text-xs italic">
+                        {{ is_registered_as_admin }}
+                    </div>
+                {% endif %}
+
                 <!-- Employee Number -->
                 <div class="mb-4">
                     <label for="employeenumber" class="block text-gray-700 text-sm font-bold mb-2">Employee Number</label>
@@ -147,7 +161,6 @@
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     <script src="{{ url_for('static', filename='js/sweetalertHandling.js') }}"></script>
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-
     
 </body>
 </html>

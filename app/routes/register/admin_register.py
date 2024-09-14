@@ -1,7 +1,7 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request, make_response
+from flask import Blueprint, render_template, redirect, flash, request, make_response
 from ..utils.forms import AdminRegisterForm
 from app.models.database import get_cursor, close_db_connection
-from ..utils.utils import hash_password, verify_recaptcha
+from ..utils.utils import hash_password, verify_recaptcha, check_existing_registration
 import mysql.connector
 from ..utils.session import check_logged_in_redirect
 from ..utils.cache import disable_caching, redirect_to
@@ -21,6 +21,8 @@ def admin_register():
     form = AdminRegisterForm()
     recaptcha_error = None
     duplicate_entry_error = None
+    is_registered_as_user = None
+    is_registered_as_admin = None
 
     if form.validate_on_submit():
         print("Form validated on submit. Proceeding with registration.")
@@ -33,6 +35,16 @@ def admin_register():
         else:
             try:
                 print("reCAPTCHA verified. Proceeding with registration.")
+
+                is_registered_as_user, is_registered_as_admin = check_existing_registration(form.email.data)
+
+                if is_registered_as_user:
+                    is_registered_as_user = "This email is already registered as a user. Cannot register as an admin with the same email."
+                if is_registered_as_admin:
+                    is_registered_as_admin = "This email is already registered as an admin."
+
+                if is_registered_as_user or is_registered_as_admin:
+                    return render_template('register/admin_register.html', form=form, recaptcha_error=recaptcha_error, is_registered_as_user=is_registered_as_user, is_registered_as_admin=is_registered_as_admin)
 
                 cursor, connection = get_cursor()
                 print("Database cursor and connection obtained.")
@@ -71,18 +83,18 @@ def admin_register():
                     duplicate_entry_error = "An admin with this employee ID already exists. Please use a different ID."
                 else:
                     flash(f"Database error: {e}", "danger")
-                response = make_response(render_template('register/admin_register.html', form=form, recaptcha_error=recaptcha_error, duplicate_entry_error=duplicate_entry_error))
+                response = make_response(render_template('register/admin_register.html', form=form, recaptcha_error=recaptcha_error, duplicate_entry_error=duplicate_entry_error, is_registered_as_user=is_registered_as_user, is_registered_as_admin=is_registered_as_admin))
                 response = disable_caching(response)
                 return response
 
             except Exception as e:
                 print(f"Exception occurred: {e}")
                 flash(f"An unexpected error occurred: {e}", "danger")
-                response = make_response(render_template('register/admin_register.html', form=form, recaptcha_error=recaptcha_error, duplicate_entry_error=duplicate_entry_error))
+                response = make_response(render_template('register/admin_register.html', form=form, recaptcha_error=recaptcha_error, duplicate_entry_error=duplicate_entry_error, is_registered_as_user=is_registered_as_user, is_registered_as_admin=is_registered_as_admin))
                 response = disable_caching(response)
                 return response
 
     print("Rendering registration form.")
-    response = make_response(render_template('register/admin_register.html', form=form, recaptcha_error=recaptcha_error, duplicate_entry_error=duplicate_entry_error))
+    response = make_response(render_template('register/admin_register.html', form=form, recaptcha_error=recaptcha_error, duplicate_entry_error=duplicate_entry_error, is_registered_as_user=is_registered_as_user, is_registered_as_admin=is_registered_as_admin))
     response = disable_caching(response)
     return response
