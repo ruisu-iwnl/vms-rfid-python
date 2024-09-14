@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, session
 
 vehicles_bp = Blueprint('vehicles', __name__, url_prefix='/dashboard/vehicles')
 
@@ -35,4 +35,5 @@ def vehicles(page):
     end = start + per_page
     paginated_vehicles = vehicles[start:end]
 
+    print(f"Session active in vehicles: {session}")
     return render_template('dashboard/user/vehicles.html', vehicles=paginated_vehicles, page=page, total_pages=total_pages)
