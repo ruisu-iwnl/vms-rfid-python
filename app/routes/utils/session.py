@@ -66,17 +66,20 @@ def check_access(role='admin'):
 
 def check_logged_in_redirect():
     try:
+        current_endpoint = request.endpoint
         if 'admin_id' in session:
-            flash('You are already logged in as an admin!', 'warning')
-            redirect_url = request.referrer or url_for('admin_dashboard.admin_dashboard')
-            print(f"Redirecting to: {redirect_url}")
-            return redirect(redirect_url)
+            if current_endpoint != 'admin_dashboard.admin_dashboard':
+                flash('You are already logged in as an admin!', 'warning')
+                redirect_url = url_for('admin_dashboard.admin_dashboard')
+                print(f"Redirecting to: {redirect_url}")
+                return redirect(redirect_url)
         
         if 'user_id' in session:
-            flash('You are already logged in as a user!', 'warning')
-            redirect_url = request.referrer or url_for('user_dashboard.user_dashboard')
-            print(f"Redirecting to: {redirect_url}")
-            return redirect(redirect_url)
+            if current_endpoint != 'user_dashboard.user_dashboard':
+                flash('You are already logged in as a user!', 'warning')
+                redirect_url = url_for('user_dashboard.user_dashboard')
+                print(f"Redirecting to: {redirect_url}")
+                return redirect(redirect_url)
     except Exception as e:
         flash(f"An error occurred: {str(e)}", 'danger')
         print(f"An error occurred: {str(e)}")
