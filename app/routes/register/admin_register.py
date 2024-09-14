@@ -3,11 +3,18 @@ from ..utils.forms import AdminRegisterForm
 from app.models.database import get_cursor, close_db_connection
 from ..utils.utils import hash_password, verify_recaptcha
 import mysql.connector
+from ..utils.session import check_logged_in_redirect
 
 admin_register_bp = Blueprint('admin_register', __name__)
 
 @admin_register_bp.route('', methods=['GET', 'POST'])
 def admin_register():
+    
+    response = check_logged_in_redirect()
+    if response:
+        return response
+
+
     form = AdminRegisterForm()
     recaptcha_error = None
     duplicate_entry_error = None

@@ -2,11 +2,18 @@ from flask import Blueprint, render_template, redirect, url_for, flash, session,
 from ..utils.forms import BaseLoginForm
 from app.models.database import get_cursor, close_db_connection
 from ..utils.utils import verify_password, verify_recaptcha
+from ..utils.session import check_logged_in_redirect
 
 user_login_bp = Blueprint('user_login', __name__)
 
 @user_login_bp.route('', methods=['GET', 'POST'])
 def user_login():
+    print(f"Session before login attempt: {session}") 
+
+    response = check_logged_in_redirect()
+    if response:
+        return response
+
     form = BaseLoginForm()  
     recaptcha_error = None
     login_error = None 

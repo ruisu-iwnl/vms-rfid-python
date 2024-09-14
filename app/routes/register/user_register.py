@@ -3,11 +3,18 @@ from ..utils.forms import UserRegisterForm
 from app.models.database import get_cursor, close_db_connection
 from ..utils.utils import hash_password, verify_recaptcha
 import mysql.connector
+from ..utils.session import check_logged_in_redirect
 
 user_register_bp = Blueprint('user_register', __name__)
 
 @user_register_bp.route('', methods=['GET', 'POST'])
 def user_register():
+
+    response = check_logged_in_redirect()
+    if response:
+        return response
+
+
     form = UserRegisterForm()
     recaptcha_error = None
     duplicate_entry_error = None
