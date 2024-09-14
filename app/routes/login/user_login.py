@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, session, request
-from ..forms import BaseLoginForm
+from ..utils.forms import BaseLoginForm
 from app.models.database import get_cursor, close_db_connection
 from ..utils.utils import verify_password, verify_recaptcha
 
