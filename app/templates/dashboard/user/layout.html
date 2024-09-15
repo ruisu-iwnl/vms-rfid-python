@@ -7,7 +7,7 @@
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
     <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/custom.css') }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename='css/auth-login-register.css') }}" rel="stylesheet">
+    <!-- <link href="{{ url_for('static', filename='css/auth-login-register.css') }}" rel="stylesheet"> -->
     
     <style>
         @keyframes spin {
@@ -32,7 +32,7 @@
             <!-- Logo -->
             <div class="flex items-center space-x-3">
                 <img src="{{ url_for('static', filename='Images/CelcorCircle.png') }}" alt="logo" class="h-10">
-                <span class="font-bold text-xl soft-white custom-shadow">{% block header_title %}Dashboard{% endblock %}</span>
+                <span class="font-bold text-xl text-off-white custom-shadow">{% block header_title %}Dashboard{% endblock %}</span>
             </div>
             <!-- Hamburger Menu for Mobile -->
             <div class="sm:hidden">
@@ -56,7 +56,7 @@
             <!-- Desktop Sidebar -->
             <aside class="hidden sm:block w-64 bg-gray-800 bg-opacity-70 shadow-md p-6 z-20 fixed top-0 left-0 bottom-0 backdrop-blur-lg text-white">
                 <h2 class="text-lg font-bold mb-4">Vehicle Management System</h2>
-                <nav class="space-y-2">
+                <nav class="space-y-2 text-off-white">
                     <a href="{{ url_for('user_dashboard.user_dashboard') }}" class="block py-2 px-4 rounded hover:bg-gray-700">Home</a>
                     <a href="{{ url_for('vehicles.vehicles') }}" class="block py-2 px-4 rounded hover:bg-gray-700">Vehicles</a>
                     <button id="logout-button-desktop" class="block py-2 px-4 rounded hover:bg-gray-700">Logout</button>

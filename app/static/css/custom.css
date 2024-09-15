@@ -29,3 +29,7 @@
     #vehicleModal.show .modal-content {
         opacity: 1;
     }
+
+    .text-off-white {
+        color: #dbdee4; /* Off white color */
+    }
