@@ -1,8 +1,5 @@
 {
     "vscord.status.state.enabled": false,
     "vscord.status.state.idle.enabled": false,
-    "vscord.app.name": "VSCodium",
-    "vscord.status.idle.enabled": false,
-    "vscord.status.details.enabled": false,
-    "vscord.status.details.idle.enabled": false
+    "vscord.app.name": "VSCodium"
 }
