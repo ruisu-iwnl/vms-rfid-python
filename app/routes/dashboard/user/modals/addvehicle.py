@@ -20,6 +20,11 @@ def add_vehicle():
     user_id = session.get('user_id')
     print(f"User ID from session: {user_id}")
     
+    if not user_id:
+        print("User ID is not set in the session. User might not be logged in.")
+        flash("You need to be logged in to add a vehicle.", "danger")
+        return redirect(url_for('main.index'))
+    
     form = AddVehicleForm()
 
     if form.validate_on_submit():
@@ -44,7 +49,8 @@ def add_vehicle():
             if existing_vehicle:
                 duplicate_entry_error = "This license plate is already registered."
                 print(duplicate_entry_error)
-                raise ValueError(duplicate_entry_error)
+                flash(duplicate_entry_error, "danger")
+                return redirect(url_for('vehicles.vehicles'))
 
             query = """
                 INSERT INTO vehicle (user_id, licenseplate, model)
@@ -60,20 +66,23 @@ def add_vehicle():
             connection.commit()
             flash("Vehicle added successfully", "success")
             print("Vehicle added successfully, redirecting...")
+
             return redirect(url_for('vehicles.vehicles'))
 
         except mysql.connector.IntegrityError as e:
             print(f"Database integrity error: {e}")
             if e.args[0] == 1062:
-                duplicate_entry_error = "An entry with this value already exists. Please use a different value."
+                duplicate_entry_error = "An RFID number is already associated with another vehicle. Please use a different RFID number."
                 flash(duplicate_entry_error, "danger")
             else:
                 database_error = f"Database error: {e}"
                 flash(database_error, "danger")
+            return redirect(url_for('vehicles.vehicles'))
 
         except Exception as e:
             print(f"Exception occurred: {e}")
             flash(f"An unexpected error occurred: {e}", "danger")
+            return redirect(url_for('vehicles.vehicles'))
 
         finally:
             cursor.close()
@@ -82,5 +91,4 @@ def add_vehicle():
 
     else:
         print("Form did not validate")
-
-    return render_template('dashboard/user/modals/addvehicle.html', form=form)
+        return redirect(url_for('vehicles.vehicles'))

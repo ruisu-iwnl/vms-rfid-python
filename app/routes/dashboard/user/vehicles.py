@@ -43,6 +43,8 @@ def vehicles(page):
     end = start + per_page
     paginated_vehicles = vehicles[start:end]
 
+    print(f"Session active in vehicles: {session}")
+
     return render_template(
         'dashboard/user/vehicles.html', 
         vehicles=paginated_vehicles, 

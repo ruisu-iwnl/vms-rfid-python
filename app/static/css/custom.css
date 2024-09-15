@@ -33,3 +33,19 @@
     .text-off-white {
         color: #dbdee4; /* Off white color */
     }
+
+    #flashMessages {
+        transition: opacity 0.3s ease-in-out;
+    }
+    
+
+        /* Flash message styling and animation */
+    .flash-message {
+        opacity: 1;
+        transition: opacity 0.3s ease-out;
+    }
+
+    .flash-message.hidden {
+        opacity: 0;
+        display: none;
+    }

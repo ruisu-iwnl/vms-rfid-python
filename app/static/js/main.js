@@ -42,6 +42,18 @@ document.getElementById('openModalBtn').addEventListener('click', function() {
 document.getElementById('closeModalBtn').addEventListener('click', function() {
     const modal = document.getElementById('vehicleModal');
     modal.classList.remove('show');
-    // Delay hiding the modal to let transition complete
-    setTimeout(() => modal.classList.add('hidden'), 300); // match the transition duration
+    setTimeout(() => modal.classList.add('hidden'), 300); 
+});
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    var flashMessages = document.getElementById('flashMessages');
+    if (flashMessages) {
+        setTimeout(function() {
+            flashMessages.style.opacity = 0; 
+            setTimeout(function() {
+                flashMessages.style.display = 'none'; 
+            }, 300);
+        }, 3000); 
+    }
 });
