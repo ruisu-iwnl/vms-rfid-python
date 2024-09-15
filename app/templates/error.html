@@ -21,7 +21,6 @@
 
     <div class="absolute inset-0 bg-black opacity-60 backdrop-blur-md"></div>
 
-
     <div class="relative z-10 flex flex-col items-center justify-center text-center p-12 max-w-4xl mx-auto space-y-12">
         <img src="{{ url_for('static', filename='images/error.gif') }}" alt="Error" class="w-26 h-26">
 
@@ -34,6 +33,9 @@
                 The page you are looking for does not exist. Please check the URL or return to the homepage.
             {% elif error_code == 500 %}
                 A server error occurred. We are working on it. Please try again later.
+            {% elif error_code == 499 %}
+                {{ message }} <br>
+                <button onclick="window.location.reload();" class="text-lg font-semibold bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white py-2 px-6 rounded-lg shadow-md transition duration-300">Reload</button>
             {% else %}
                 An unexpected error occurred. Our team has been notified and will resolve the issue as soon as possible.
             {% endif %}
@@ -46,8 +48,7 @@
             {% endif %}
             <pre class="whitespace-pre-wrap text-gray-100">{{ traceback }}</pre>
         </div>
-    {% endif %}
-    
+        {% endif %}
 
         <div class="mt-10 space-y-4">
             <a href="{{ url_for('main.index') }}" class="text-lg font-semibold bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white py-2 px-6 rounded-lg shadow-md transition duration-300">Return to Home</a>
