@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session
 from app.routes.utils.session import check_access
+from app.routes.utils.forms import AddVehicleForm 
 
 vehicles_bp = Blueprint('vehicles', __name__, url_prefix='/dashboard/vehicles')
 
@@ -9,7 +10,9 @@ def vehicles(page):
     response = check_access('user')
     if response:
         return response
-    
+
+    form = AddVehicleForm()
+
     vehicles = [
         {'car_model': 'Toyota Camry', 'car_color': 'Red', 'plate_number': 'ABC-1234'},
         {'car_model': 'Honda Accord', 'car_color': 'Blue', 'plate_number': 'XYZ-5678'},
@@ -40,22 +43,10 @@ def vehicles(page):
     end = start + per_page
     paginated_vehicles = vehicles[start:end]
 
-    print(f"Session active in vehicles: {session}")
-    return render_template('dashboard/user/vehicles.html', vehicles=paginated_vehicles, page=page, total_pages=total_pages)
-
-@vehicles_bp.route('/add', methods=['POST'])
-def add_vehicle():
-    response = check_access('user')
-    if response:
-        return response
-    
-    car_model = request.form.get('car_model')
-    car_color = request.form.get('car_color')
-    plate_number = request.form.get('plate_number')
-
-    # Here you would typically add the vehicle to the database
-    # For example: db.add_vehicle(car_model, car_color, plate_number)
-
-    print(f"Adding vehicle: Model={car_model}, Color={car_color}, Plate={plate_number}")
-    
-    return redirect(url_for('vehicles.vehicles'))
+    return render_template(
+        'dashboard/user/vehicles.html', 
+        vehicles=paginated_vehicles, 
+        page=page, 
+        total_pages=total_pages,
+        form=form  
+    )

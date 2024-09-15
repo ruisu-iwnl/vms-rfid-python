@@ -1,19 +1,64 @@
-<div id="vehicleModal" class="fixed inset-0 flex items-center justify-center hidden z-50">
-    <div class="modal-content bg-white p-6 rounded-lg w-full max-w-md">
-        <h2 class="text-xl font-bold mb-4">Add New Vehicle</h2>
-        <form action="{{ url_for('vehicles.add_vehicle') }}" method="POST">
+<div id="vehicleModal" class="fixed inset-0 flex items-center justify-center hidden z-50 transition-all duration-500 ease-in-out">
+    <div class="bg-gray-800 bg-opacity-80 backdrop-blur-md p-6 rounded-lg shadow-lg w-full max-w-md transition-all duration-500 ease-in-out">
+        <h2 class="text-2xl font-semibold mb-4 text-white">Add New Vehicle</h2>
+        <form action="{{ url_for('add_vehicle.add_vehicle') }}" method="POST">
+            {{ form.hidden_tag() }}
+        
+            <!-- Car Model -->
             <div class="mb-4">
-                <label for="car_model" class="block text-sm font-medium text-gray-700">Car Model</label>
-                <input type="text" id="car_model" name="car_model" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" required>
+                <label for="car_model" class="block text-sm font-medium text-gray-300">Car Model</label>
+                {{ form.car_model(class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0") }}
+                {% if form.car_model.errors %}
+                    <p class="text-red-700 text-sm italic mt-1">{{ form.car_model.errors[0] }}</p>
+                {% endif %}
             </div>
+        
+            <!-- Plate Number -->
             <div class="mb-4">
-                <label for="plate_number" class="block text-sm font-medium text-gray-700">Plate Number</label>
-                <input type="text" id="plate_number" name="plate_number" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" required>
+                <label for="plate_number" class="block text-sm font-medium text-gray-300">Plate Number</label>
+                {{ form.plate_number(class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0") }}
+                {% if form.plate_number.errors %}
+                    <p class="text-red-700 text-sm italic mt-1">{{ form.plate_number.errors[0] }}</p>
+                {% endif %}
             </div>
+        
+            <!-- RFID Number -->
+            <div class="mb-4">
+                <label for="rfid_number" class="block text-sm font-medium text-gray-300">RFID Number</label>
+                {{ form.rfid_number(class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0") }}
+                {% if form.rfid_number.errors %}
+                    <p class="text-red-700 text-sm italic mt-1">{{ form.rfid_number.errors[0] }}</p>
+                {% endif %}
+            </div>
+        
+            <!-- Error Messages -->
+            {% if form.errors %}
+                <div class="mb-4 text-red-700 text-sm italic">
+                    {% for field, errors in form.errors.items() %}
+                        {% for error in errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+        
             <div class="flex justify-end">
-                <button type="button" id="closeModalBtn" class="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-700 mr-2">Cancel</button>
-                <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700">Add Vehicle</button>
+                <button type="button" id="closeModalBtn" class="bg-gray-600 text-white py-2 px-4 rounded hover:bg-gray-700 transition duration-200 ease-in-out">Cancel</button>
+                <button type="submit" class="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition duration-200 ease-in-out ml-2">Add Vehicle</button>
             </div>
         </form>
+        
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const rfidInput = document.getElementById('rfid_number');
+
+        rfidInput.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault(); 
+            }
+        });
+    });
+</script>

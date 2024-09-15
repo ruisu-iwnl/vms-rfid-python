@@ -16,6 +16,11 @@ from app.models.database import get_cursor
 #     password = PasswordField('Password', validators=[DataRequired()])
 #     submit = SubmitField('Login')
 
+class AddVehicleForm(FlaskForm):
+    car_model = StringField('Car Model', validators=[DataRequired()])
+    plate_number = StringField('Plate Number', validators=[DataRequired()])
+    rfid_number = PasswordField('RFID Number', validators=[DataRequired()])
+
 class BaseLoginForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired()])
