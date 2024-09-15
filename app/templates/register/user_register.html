@@ -4,141 +4,121 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Registration</title>
-    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
     <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/custom.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/auth-login-register.css') }}" rel="stylesheet">
 </head>
+<body class="relative min-h-screen bg-cover bg-center" style="background-image: url('/static/images/bg.jpg');">
 
-<body class="relative flex items-center justify-center min-h-screen bg-cover bg-center" style="background-image: url('/static/images/bg.jpg');">
-    <div class="absolute inset-0 bg-black opacity-50"></div>
+    <div class="absolute inset-0 bg-black opacity-65"></div>
 
-    <!-- Main Content Area -->
-    <div class="relative z-10 max-w-6xl p-8 md:p-10 bg-white/20 rounded-3xl shadow-2xl backdrop-blur-md flex flex-col md:flex-row">
+    <div class="relative flex flex-col min-h-screen justify-center bg-opacity-30 backdrop-blur-md p-4">
 
-        <!-- Icon Button in the Top Left Corner -->
-        <a href="{{ url_for('user_login.user_login') }}" class="absolute top-4 left-4 flex items-center justify-center w-10 h-10 rounded-full bg-white shadow-md hover:bg-gray-100 transition duration-300 ease-in-out">
-            <svg class="w-6 h-6 text-blue-500 hover:text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l-7-7 7-7"></path>
-            </svg>
-        </a>
+        <!-- Registration Form Section -->
+        <div class="w-full md:w-1/4 p-4 flex flex-col items-center bg-transparent rounded-lg mx-auto">
+            <a href="{{ url_for('user_login.user_login') }}" class="absolute top-2 left-2 flex items-center justify-center w-6 h-6 rounded-full bg-transparent shadow-md hover:bg-gray-100 transition duration-300 ease-in-out">
+                <svg class="w-4 h-4 text-blue-600 hover:text-blue-800" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l-7-7 7-7"></path>
+                </svg>
+            </a>
 
-        <!-- Left Side: Registration Form -->
-        <div class="w-full md:w-1/2 p-8">
-            <div class="text-center mb-6">
-                <img src="{{ url_for('static', filename='images/CELCOR.png') }}" alt="logo" width="120" class="mx-auto mb-4"/>
-                <h1 class="text-xl font-bold">Vehicle Management System</h1>
-                <h2 class="mt-2 text-lg">User Registration</h2>
-                <hr class="border-gray-300 my-4">
-            </div>
-
-            <!-- Registration Form -->
-            <form action="{{ url_for('user_register.user_register') }}" method="POST">
+            <h2 class="text-2xl font-bold mb-4 text-off-white custom-shadow text-center">User Registration</h2>
+            <form action="{{ url_for('user_register.user_register') }}" method="POST" class="w-full flex flex-col">
                 {{ form.hidden_tag() }}
 
-                <!-- Display error message for already registered user/admin -->
                 {% if is_registered_as_user %}
-                    <div class="mb-4 text-red-500 text-xs italic">
-                        {{ is_registered_as_user }}
-                    </div>
+                    <div class="text-red-700 text-sm italic mt-2 text-center">{{ is_registered_as_user }}</div>
                 {% endif %}
 
                 {% if is_registered_as_admin %}
-                    <div class="mb-4 text-red-500 text-xs italic">
-                        {{ is_registered_as_admin }}
-                    </div>
+                    <div class="text-red-700 text-sm italic mt-2 text-center">{{ is_registered_as_admin }}</div>
                 {% endif %}
 
                 <!-- Employee Number -->
-                <div class="mb-4">
-                    <label for="employeenumber" class="block text-gray-700 text-sm font-bold mb-2">Employee Number</label>
-                    <input type="text" id="employeenumber" name="employeenumber" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500" value="{{ form.employeenumber.data or '' }}" placeholder="Employee Number" >
+                <div class="mb-4 w-full">
+                    <label for="employeenumber" class="block text-left text-off-white custom-shadow text-base font-semibold mb-1">Employee Number</label>
+                    <input type="text" id="employeenumber" name="employeenumber" class="shadow-sm appearance-none border border-gray-400 rounded-lg w-full py-2 px-3 text-gray-900 leading-tight focus:outline-none focus:ring-1 focus:ring-blue-600" value="{{ form.employeenumber.data or '' }}" placeholder="Employee Number">
                     {% if form.employeenumber.errors %}
-                    <div class="mb-4 text-red-500 text-xs italic">
-                        {% for error in form.employeenumber.errors %}
-                            {{ error }}
-                        {% endfor %}
-                    </div>
+                        <p class="text-red-700 text-sm italic mt-1">{{ form.employeenumber.errors[0] }}</p>
                     {% endif %}
-                    
                     {% if duplicate_entry_error %}
-                        <div class="mb-4 text-red-500 text-xs italic">{{ duplicate_entry_error }}</div>
+                        <p class="text-red-700 text-sm italic mt-1">{{ duplicate_entry_error }}</p>
                     {% endif %}
                 </div>
 
                 <!-- Name Fields -->
-                <div class="flex mb-4 space-x-4">
-                    <div class="flex-1">
-                        <label for="firstname" class="block text-gray-700 text-sm font-bold mb-2">First Name</label>
-                        <input type="text" id="firstname" name="firstname" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500" value="{{ form.firstname.data or '' }}" placeholder="First Name"  >
+                <div class="mb-4 w-full flex space-x-4">
+                    <div class="w-1/2">
+                        <label for="firstname" class="block text-left text-off-white custom-shadow text-base font-semibold mb-1">First Name</label>
+                        <input type="text" id="firstname" name="firstname" class="shadow-sm appearance-none border border-gray-400 rounded-lg w-full py-2 px-3 text-gray-900 leading-tight focus:outline-none focus:ring-1 focus:ring-blue-600" value="{{ form.firstname.data or '' }}" placeholder="First Name">
                         {% if form.firstname.errors %}
-                            <p class="text-red-500 text-xs italic">{{ form.firstname.errors[0] }}</p>
+                            <p class="text-red-700 text-sm italic mt-1">{{ form.firstname.errors[0] }}</p>
                         {% endif %}
                     </div>
-                    <div class="flex-1">
-                        <label for="lastname" class="block text-gray-700 text-sm font-bold mb-2">Last Name</label>
-                        <input type="text" id="lastname" name="lastname" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500" value="{{ form.lastname.data or '' }}" placeholder="Last Name"  >
+
+                    <div class="w-1/2">
+                        <label for="lastname" class="block text-left text-off-white custom-shadow text-base font-semibold mb-1">Last Name</label>
+                        <input type="text" id="lastname" name="lastname" class="shadow-sm appearance-none border border-gray-400 rounded-lg w-full py-2 px-3 text-gray-900 leading-tight focus:outline-none focus:ring-1 focus:ring-blue-600" value="{{ form.lastname.data or '' }}" placeholder="Last Name">
                         {% if form.lastname.errors %}
-                            <p class="text-red-500 text-xs italic">{{ form.lastname.errors[0] }}</p>
+                            <p class="text-red-700 text-sm italic mt-1">{{ form.lastname.errors[0] }}</p>
                         {% endif %}
                     </div>
                 </div>
 
+
                 <!-- Email Address -->
-                <div class="mb-4">
-                    <label for="email" class="block text-gray-700 text-sm font-bold mb-2">Email Address</label>
-                    <input type="email" id="email" name="email" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500" value="{{ form.email.data or '' }}" placeholder="Email Address"  >
+                <div class="mb-4 w-full">
+                    <label for="email" class="block text-left text-off-white custom-shadow text-base font-semibold mb-1">Email Address</label>
+                    <input type="email" id="email" name="email" class="shadow-sm appearance-none border border-gray-400 rounded-lg w-full py-2 px-3 text-gray-900 leading-tight focus:outline-none focus:ring-1 focus:ring-blue-600" value="{{ form.email.data or '' }}" placeholder="Email">
                     {% if form.email.errors %}
-                        <p class="text-red-500 text-xs italic">{{ form.email.errors[0] }}</p>
+                        <p class="text-red-700 text-sm italic mt-1">{{ form.email.errors[0] }}</p>
                     {% endif %}
                 </div>
 
                 <!-- Contact Number -->
-                <div class="mb-4">
-                    <label for="contactnumber" class="block text-gray-700 text-sm font-bold mb-2">Contact Number</label>
-                    <input type="text" id="contactnumber" name="contactnumber" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500" value="{{ form.contactnumber.data or '' }}" placeholder="Contact Number"  >
+                <div class="mb-4 w-full">
+                    <label for="contactnumber" class="block text-left text-off-white custom-shadow text-base font-semibold mb-1">Contact Number</label>
+                    <input type="text" id="contactnumber" name="contactnumber" class="shadow-sm appearance-none border border-gray-400 rounded-lg w-full py-2 px-3 text-gray-900 leading-tight focus:outline-none focus:ring-1 focus:ring-blue-600" value="{{ form.contactnumber.data or '' }}" placeholder="Contact Number">
                     {% if form.contactnumber.errors %}
-                        <p class="text-red-500 text-xs italic">{{ form.contactnumber.errors[0] }}</p>
+                        <p class="text-red-700 text-sm italic mt-1">{{ form.contactnumber.errors[0] }}</p>
                     {% endif %}
                 </div>
 
                 <!-- Password Fields -->
-                <div class="mb-4">
-                    <label for="password" class="block text-gray-700 text-sm font-bold mb-2">Password</label>
-                    <input type="password" id="password" name="password" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Password"  >
-                    {% if form.password.errors %}
-                        <p class="text-red-500 text-xs italic">{{ form.password.errors[0] }}</p>
-                    {% endif %}
+                <div class="mb-4 w-full flex space-x-4">
+                    <div class="w-1/2">
+                        <label for="password" class="block text-left text-off-white custom-shadow text-base font-semibold mb-1">Password</label>
+                        <input type="password" id="password" name="password" class="shadow-sm appearance-none border border-gray-400 rounded-lg w-full py-2 px-3 text-gray-900 leading-tight focus:outline-none focus:ring-1 focus:ring-blue-600" placeholder="Password">
+                        {% if form.password.errors %}
+                            <p class="text-red-700 text-sm italic mt-1">{{ form.password.errors[0] }}</p>
+                        {% endif %}
+                    </div>
+                
+                    <div class="w-1/2">
+                        <label for="password_confirmation" class="block text-left text-off-white custom-shadow text-base font-semibold mb-1">Confirm Password</label>
+                        <input type="password" id="password_confirmation" name="password_confirmation" class="shadow-sm appearance-none border border-gray-400 rounded-lg w-full py-2 px-3 text-gray-900 leading-tight focus:outline-none focus:ring-1 focus:ring-blue-600" placeholder="Confirm Password">
+                    </div>
                 </div>
-                <div class="mb-4">
-                    <label for="password_confirmation" class="block text-gray-700 text-sm font-bold mb-2">Confirm Password</label>
-                    <input type="password" id="password_confirmation" name="password_confirmation" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Confirm Password"  >
-                </div>
-
-                <!-- Show Password Checkbox -->
-                <div class="mb-4 flex items-center">
+                
+                <div class="mb-4 w-full flex items-center">
                     <input type="checkbox" id="togglePasswordCheckbox" class="mr-2" onchange="togglePasswordVisibility()">
-                    <label for="togglePasswordCheckbox" class="text-gray-700 text-sm">Show Password</label>
+                    <label for="togglePasswordCheckbox" class="text-off-white custom-shadow text-sm">Show Password</label>
                 </div>
 
-                <!--  Google reCAPTCHA  -->
                 {% if recaptcha_error %}
-                    <div class="mb-4 text-red-500 text-xs italic">{{ recaptcha_error }}</div>
+                    <p class="text-red-700 text-sm italic mt-2 text-center">{{ recaptcha_error }}</p>
                 {% endif %}
                 <div class="g-recaptcha" data-sitekey="6LcxWkIqAAAAAEycwl1Z3tWFBg3BeIFe4pQxhpoY"></div>
 
-                <!-- Register Button -->
-                <button type="submit" id="registerButton" class="w-full py-3 bg-gradient-to-r from-blue-500 to-green-500 text-white font-semibold rounded hover:from-blue-600 hover:to-green-600 focus:outline-none mt-10">Register</button>
+                <button type="submit" class="btn btn-admin font-semibold rounded-lg py-2 mt-6">
+                    <svg width="510px" height="60px" viewBox="0 0 300 100"></svg>
+                    <span>Register</span>
+                </button>
 
-                <!-- Login Link -->
                 <div class="text-center mt-4">
-                    <p class="mt-4 text-sm">Already have an account? <a href="{{ url_for('user_login.user_login') }}" class="text-blue-500 hover:text-blue-700">Login here</a></p>
+                    <p class="mt-2 text-base text-off-white custom-shadow">Already have an account? <a href="{{ url_for('user_login.user_login') }}" class="text-blue-600 hover:text-blue-800">Login here</a></p>
                 </div>
             </form>
-        </div>
-
-        <!-- Right Side: Image -->
-        <div class="hidden md:flex w-1/2 relative overflow-hidden rounded-r-3xl">
-            <img src="{{ url_for('static', filename='images/EmpFix.png') }}" alt="Right Side Image" class="object-cover w-full h-full">
         </div>
     </div>
 
@@ -156,11 +136,6 @@
         }
     </script>
 
-    <script src="{{ url_for('static', filename='js/library/iconify.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/library/sweetalert.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/sweetalertHandling.js') }}"></script>
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-    
 </body>
 </html>
