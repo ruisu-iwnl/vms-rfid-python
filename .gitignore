@@ -24,3 +24,5 @@ tests/
 setup_files/xampp-windows-x64-8.0.30-0-VS16-installer.exe
 
 .env
+
+.vscode/
