@@ -4,3 +4,28 @@
     overflow-y: auto;
 }
 
+    /* Modal overlay */
+    #vehicleModal {
+        transition: opacity 0.3s ease, transform 0.3s ease;
+        opacity: 0;
+        transform: scale(0.9);
+    }
+
+    /* When modal is visible */
+    #vehicleModal.show {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    /* Modal content */
+    #vehicleModal .modal-content {
+        transition: opacity 0.3s ease;
+        opacity: 0;
+        border: 2px solid black; /* Solid black border */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Enhanced shadow */
+    }
+
+    /* When modal content is visible */
+    #vehicleModal.show .modal-content {
+        opacity: 1;
+    }

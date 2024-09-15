@@ -1,0 +1,19 @@
+<div id="vehicleModal" class="fixed inset-0 flex items-center justify-center hidden z-50">
+    <div class="modal-content bg-white p-6 rounded-lg w-full max-w-md">
+        <h2 class="text-xl font-bold mb-4">Add New Vehicle</h2>
+        <form action="{{ url_for('vehicles.add_vehicle') }}" method="POST">
+            <div class="mb-4">
+                <label for="car_model" class="block text-sm font-medium text-gray-700">Car Model</label>
+                <input type="text" id="car_model" name="car_model" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" required>
+            </div>
+            <div class="mb-4">
+                <label for="plate_number" class="block text-sm font-medium text-gray-700">Plate Number</label>
+                <input type="text" id="plate_number" name="plate_number" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" required>
+            </div>
+            <div class="flex justify-end">
+                <button type="button" id="closeModalBtn" class="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-700 mr-2">Cancel</button>
+                <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700">Add Vehicle</button>
+            </div>
+        </form>
+    </div>
+</div>
