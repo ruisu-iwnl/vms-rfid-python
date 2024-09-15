@@ -14,6 +14,30 @@
 
     <div class="relative flex flex-col min-h-screen justify-center bg-opacity-30 backdrop-blur-md p-4">
 
+        <div id="flashMessages" class="fixed top-0 left-1/2 transform -translate-x-1/2 m-4 z-50 opacity-100 transition-opacity duration-300">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="space-y-4">
+                        {% for category, message in messages %}
+                            <div class="p-3 mb-4 rounded 
+                                {% if category == 'danger' %}
+                                    bg-red-500 bg-opacity-40 text-white
+                                {% elif category == 'success' %}
+                                    bg-green-500 bg-opacity-40 text-white
+                                {% elif category == 'info' %}
+                                    bg-blue-500 bg-opacity-40 text-white
+                                {% else %}
+                                    bg-gray-500 bg-opacity-40 text-white
+                                {% endif %}
+                                {{ 'hidden' if not messages else 'block' }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+        </div>
+
         <!-- Login Form Section -->
         <div class="w-full md:w-1/4 p-4 flex flex-col items-center bg-transparent rounded-lg mx-auto">
             <a href="{{ url_for('main.index') }}" class="absolute top-2 left-2 flex items-center justify-center w-6 h-6 rounded-full bg-transparent shadow-md hover:bg-gray-100 transition duration-300 ease-in-out">
