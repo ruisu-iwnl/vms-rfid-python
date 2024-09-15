@@ -4,9 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>{% block title %}User Dashboard{% endblock %}</title>
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
     <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/custom.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/auth-login-register.css') }}" rel="stylesheet">
 
     <style>
         @keyframes spin {
@@ -19,69 +21,84 @@
         }
     </style>
 </head>
-<body class="relative bg-cover bg-center min-h-screen flex flex-col" style="background-image: url('/static/images/bg.jpg');">
-    <header class="bg-blue-900 text-white p-5 flex justify-between items-center fixed top-0 left-0 w-full z-30 shadow-md bg-black/50 backdrop-blur-md">
-        <!-- Logo -->
-        <div class="flex items-center space-x-3">
-            <img src="{{ url_for('static', filename='Images/CelcorCircle.png') }}" alt="logo" class="h-10">
-            <span class="font-bold text-xl">{% block header_title %}Dashboard{% endblock %}</span>
-        </div>
-        <div class="sm:hidden">
-            <button id="menu-toggle" class="focus:outline-none">
-                <span class="iconify" data-icon="mdi:menu" data-inline="false" style="font-size: 2rem;"></span>
-            </button>
-        </div>
-    </header>
+<body class="relative bg-cover bg-center min-h-screen" style="background-image: url('/static/images/bg.jpg');">
 
-    <aside id="mobile-menu" class="bg-white text-gray-800 fixed inset-y-0 left-0 transform -translate-x-full transition-transform sm:hidden w-64 shadow-lg z-20 mt-16 backdrop-blur-md bg-white/30">
-        <nav class="p-6 space-y-6">
-            <a href="{{ url_for('admin_dashboard.admin_dashboard') }}" class="block py-2 px-4 rounded hover:bg-gray-100">Data Analytics</a>
-            <a href="{{ url_for('timeinout.timeinout') }}" class="block py-2 px-4 rounded hover:bg-gray-100">Time In / Time Out</a>
-            <a href="{{ url_for('userlist.userlist') }}" class="block py-2 px-4 rounded hover:bg-gray-100">Registered Users</a>
-            <a href="{{ url_for('activitylog.activitylog') }}" class="block py-2 px-4 rounded hover:bg-gray-100">Activity Logs</a>
-            <button id="logout-button" class="block py-2 px-4 rounded hover:bg-gray-100">Logout</button>
-        </nav>
-    </aside>
+    <!-- Background Overlay -->
+    <div class="absolute inset-0 bg-black opacity-65"></div>
 
-    <div class="flex flex-1 mt-20 bg-black/10 p-8 shadow-md backdrop-blur-md flex-grow">
-        <aside class="hidden sm:block w-64 bg-gray-800 bg-opacity-70 shadow-md p-6 z-20 fixed top-0 left-0 bottom-0 backdrop-blur-lg text-white">
-            <h2 class="text-lg font-bold mb-4">Vehicle Management System</h2>
-            <nav class="space-y-2">
-                <a href="{{ url_for('admin_dashboard.admin_dashboard') }}" class="block py-2 px-4 rounded hover:bg-gray-700">Data Analytics</a>
-                <a href="{{ url_for('timeinout.timeinout') }}" class="block py-2 px-4 rounded hover:bg-gray-700">Time In / Time Out</a>
-                <a href="{{ url_for('userlist.userlist') }}" class="block py-2 px-4 rounded hover:bg-gray-700">Registered Users</a>
-                <a href="{{ url_for('activitylog.activitylog') }}" class="block py-2 px-4 rounded hover:bg-gray-700">Activity Logs</a>
-                <button id="logout-button-desktop" class="block py-2 px-4 rounded hover:bg-gray-700">Logout</button>
+    <!-- Main Layout Structure -->
+    <div class="relative min-h-screen bg-opacity-30 backdrop-blur-md flex flex-col">
+        <!-- Header -->
+        <header class="bg-blue-900 bg-opacity-80 p-5 flex justify-between items-center fixed top-0 left-0 w-full z-30 shadow-md bg-black/50 backdrop-blur-md">
+            <!-- Logo -->
+            <div class="flex items-center space-x-3">
+                <img src="{{ url_for('static', filename='Images/CelcorCircle.png') }}" alt="logo" class="h-10">
+                <span class="font-bold text-xl soft-white custom-shadow">{% block header_title %}Dashboard{% endblock %}</span>
+            </div>
+            <!-- Hamburger Menu for Mobile -->
+            <div class="sm:hidden">
+                <button id="menu-toggle" class="focus:outline-none">
+                    <span class="iconify" data-icon="mdi:menu" data-inline="false" style="font-size: 2rem;"></span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Mobile Sidebar -->
+        <aside id="mobile-menu" class="bg-white text-gray-800 fixed inset-y-0 left-0 transform -translate-x-full transition-transform sm:hidden w-64 shadow-lg z-20 mt-16 backdrop-blur-md bg-white/30">
+            <nav class="p-6 space-y-6">
+                <a href="{{ url_for('admin_dashboard.admin_dashboard') }}" class="block py-2 px-4 rounded hover:bg-gray-100">Data Analytics</a>
+                <a href="{{ url_for('timeinout.timeinout') }}" class="block py-2 px-4 rounded hover:bg-gray-100">Time In / Time Out</a>
+                <a href="{{ url_for('userlist.userlist') }}" class="block py-2 px-4 rounded hover:bg-gray-100">Registered Users</a>
+                <a href="{{ url_for('activitylog.activitylog') }}" class="block py-2 px-4 rounded hover:bg-gray-100">Activity Logs</a>
+                <button id="logout-button" class="block py-2 px-4 rounded hover:bg-gray-100">Logout</button>
             </nav>
         </aside>
-    
-        <main class="flex-1 ml-0 sm:ml-64 flex flex-col">
-            <div class="flex-1 flex flex-col justify-between items-center m-4 sm:m-6 md:m-8 lg:m-10 xl:m-12">
-                {% block content %}{% endblock %}
-            </div>
-        </main>
-    </div>
-    
-    <div id="logout-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 z-40 hidden">
-        <div class="flex items-center justify-center min-h-screen">
-            <div class="bg-white p-6 rounded-lg shadow-lg w-96">
-                <h2 class="text-lg font-semibold mb-4">Confirm Logout</h2>
-                <p class="mb-4">Are you sure you want to logout?</p>
-                <div class="flex justify-end space-x-4">
-                    <form method="POST" action="{{ url_for('main.logout_view') }}">
-                        <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
-                        <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">Logout</button>
-                    </form>
-                    <button id="cancel-logout" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">Cancel</button>
+
+        <!-- Main Content Area -->
+        <div class="flex flex-1 mt-20 bg-black/10 p-8 shadow-md backdrop-blur-md flex-grow">
+            <!-- Desktop Sidebar -->
+            <aside class="hidden sm:block w-64 bg-gray-800 bg-opacity-70 shadow-md p-6 z-20 fixed top-0 left-0 bottom-0 backdrop-blur-lg text-white">
+                <h2 class="text-lg font-bold mb-4">Vehicle Management System</h2>
+                <nav class="space-y-2">
+                    <a href="{{ url_for('admin_dashboard.admin_dashboard') }}" class="block py-2 px-4 rounded hover:bg-gray-700">Data Analytics</a>
+                    <a href="{{ url_for('timeinout.timeinout') }}" class="block py-2 px-4 rounded hover:bg-gray-700">Time In / Time Out</a>
+                    <a href="{{ url_for('userlist.userlist') }}" class="block py-2 px-4 rounded hover:bg-gray-700">Registered Users</a>
+                    <a href="{{ url_for('activitylog.activitylog') }}" class="block py-2 px-4 rounded hover:bg-gray-700">Activity Logs</a>
+                    <button id="logout-button-desktop" class="block py-2 px-4 rounded hover:bg-gray-700">Logout</button>
+                </nav>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="flex-1 ml-0 sm:ml-64 flex flex-col">
+                <div class="flex-1 flex flex-col justify-between items-center m-4 sm:m-6 md:m-8 lg:m-10 xl:m-12">
+                    {% block content %}{% endblock %}
+                </div>
+            </main>
+        </div>
+
+        <!-- Logout Confirmation Modal -->
+        <div id="logout-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 z-40 hidden">
+            <div class="flex items-center justify-center min-h-screen">
+                <div class="bg-white p-6 rounded-lg shadow-lg w-96">
+                    <h2 class="text-lg font-semibold mb-4">Confirm Logout</h2>
+                    <p class="mb-4">Are you sure you want to logout?</p>
+                    <div class="flex justify-end space-x-4">
+                        <form method="POST" action="{{ url_for('main.logout_view') }}">
+                            <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">Logout</button>
+                        </form>
+                        <button id="cancel-logout" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">Cancel</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div id="loading-screen" class="fixed inset-0 bg-transparent flex items-center justify-center z-50 hidden">
-        <div class="flex items-center space-x-2">
-            <div class="w-12 h-12 border-t-4 border-black border-solid rounded-full animate-spin"></div>
-            <span class="text-black text-lg">Loading...</span>
+        <!-- Loading Screen -->
+        <div id="loading-screen" class="fixed inset-0 bg-transparent flex items-center justify-center z-50 hidden">
+            <div class="flex items-center space-x-2">
+                <div class="w-12 h-12 border-t-4 border-black border-solid rounded-full animate-spin"></div>
+                <span class="text-black text-lg">Loading...</span>
+            </div>
         </div>
     </div>
 
@@ -131,7 +148,7 @@
         });
     </script>
 
-    <!-- librariesss !-->
+    <!-- Libraries -->
     <script src="{{ url_for('static', filename='js/library/chart.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/library/heatmap.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/library/leaflet.js') }}"></script>
