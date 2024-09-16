@@ -4,10 +4,19 @@
         <form action="{{ url_for('user_vehicle.uservehicle') }}" method="POST">
             {{ vehicle_form.hidden_tag() }}
 
-            <!-- User ID Field -->
             <div class="mb-4">
                 <label for="user_id" class="block text-sm font-medium text-gray-300">User ID</label>
-                {{ vehicle_form.user_id(class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0", required=False) }}
+                <input 
+                    type="text" 
+                    id="user_id_search" 
+                    name="user_id" 
+                    class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0" 
+                    placeholder="Search user by ID or name" 
+                    autocomplete="off"
+                />
+                <ul id="user_id_suggestions" class="mt-2 border border-gray-300 bg-white rounded-md max-h-40 overflow-y-auto absolute z-10 hidden">
+                    <!-- Suggestions will be inserted here by JavaScript -->
+                </ul>
                 {% if vehicle_form.user_id.errors %}
                     <p class="text-red-700 text-sm italic mt-1">{{ vehicle_form.user_id.errors[0] }}</p>
                 {% endif %}
@@ -34,7 +43,11 @@
             <!-- RFID Number Field -->
             <div class="mb-4">
                 <label for="rfid_number" class="block text-sm font-medium text-gray-300">RFID Number</label>
-                {{ vehicle_form.rfid_number(class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0", required=False) }}
+                {{ vehicle_form.rfid_number(
+                    class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0", 
+                    required=False,
+                    onkeypress="return preventEnter(event)"
+                ) }}
                 {% if vehicle_form.rfid_number.errors %}
                     <p class="text-red-700 text-sm italic mt-1">{{ vehicle_form.rfid_number.errors[0] }}</p>
                 {% endif %}
@@ -59,3 +72,52 @@
         </form>
     </div>
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    const userIdInput = document.getElementById('user_id_search');
+    const suggestionsList = document.getElementById('user_id_suggestions');
+
+    userIdInput.addEventListener('input', function() {
+        const query = userIdInput.value;
+
+        if (query.length > 2) {
+            fetch(`/admin/addvehicle/search_users?query=${query}`)
+                .then(response => response.json())
+                .then(data => {
+                    suggestionsList.innerHTML = '';
+
+                    if (data.length > 0) {
+                        suggestionsList.classList.remove('hidden');
+                        data.forEach(user => {
+                            const listItem = document.createElement('li');
+                            listItem.textContent = `${user.user_id} - ${user.firstname}`;
+                            listItem.classList.add('p-2', 'cursor-pointer', 'hover:bg-gray-200');
+                            listItem.addEventListener('click', function() {
+                                userIdInput.value = user.user_id;
+                                suggestionsList.classList.add('hidden');
+                            });
+                            suggestionsList.appendChild(listItem);
+                        });
+                    } else {
+                        suggestionsList.classList.add('hidden');
+                    }
+                });
+        } else {
+            suggestionsList.classList.add('hidden');
+        }
+    });
+
+    document.addEventListener('click', function(event) {
+        if (!suggestionsList.contains(event.target) && event.target !== userIdInput) {
+            suggestionsList.classList.add('hidden');
+        }
+    });
+});
+
+function preventEnter(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            return false;
+        }
+    }
+</script>

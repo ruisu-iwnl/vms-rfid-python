@@ -1,9 +1,28 @@
-from flask import Blueprint, render_template, redirect, url_for, flash
+from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify
 from app.models.database import get_db_connection, close_db_connection
 from app.routes.utils.forms import Admin_AddUserVehicleForm
 import mysql.connector
 
 user_vehicle_bp = Blueprint('user_vehicle', __name__, url_prefix='/admin/addvehicle')
+
+@user_vehicle_bp.route('/search_users', methods=['GET'])
+def search_users():
+    query = request.args.get('query', '')
+    if not query:
+        return jsonify([])
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute('''
+        SELECT user_id, firstname 
+        FROM user 
+        WHERE firstname LIKE %s OR user_id LIKE %s
+    ''', (f'%{query}%', f'%{query}%'))
+
+    users = cursor.fetchall()
+    close_db_connection(conn)
+
+    return jsonify(users)
 
 def get_users():
     print("Fetching users from the database...")
@@ -19,6 +38,7 @@ def add_vehicle_to_db(user_id, model, license_plate, rfid_number):
     print(f"Adding vehicle to database: user_id={user_id}, model={model}, license_plate={license_plate}, rfid_number={rfid_number}")
     conn = get_db_connection()
     cursor = conn.cursor()
+    success = False
     
     try:
         cursor.execute('INSERT INTO vehicle (user_id, model, licenseplate) VALUES (%s, %s, %s)', 
@@ -29,6 +49,7 @@ def add_vehicle_to_db(user_id, model, license_plate, rfid_number):
                        (vehicle_id, rfid_number))
         conn.commit()
         print("Vehicle and RFID data successfully added.")
+        success = True
     except mysql.connector.IntegrityError as e:
         if e.errno == 1062:  
             flash("This license plate or RFID number is already registered.", "danger")
@@ -42,6 +63,8 @@ def add_vehicle_to_db(user_id, model, license_plate, rfid_number):
     finally:
         cursor.close()
         close_db_connection(conn)
+    
+    return success
 
 @user_vehicle_bp.route('/', methods=['GET', 'POST'])
 def uservehicle():
@@ -64,11 +87,15 @@ def uservehicle():
             flash("All fields are required.", "danger")
             return redirect(url_for('user_vehicle.uservehicle'))
 
-        add_vehicle_to_db(user_id, model, license_plate, rfid_number)
+        success = add_vehicle_to_db(user_id, model, license_plate, rfid_number)
 
-        flash('Vehicle added successfully!', 'success')
-        print("Redirecting to user list...")
-        return redirect(url_for('userlist.userlist'))
+        if success:
+            flash('Vehicle added successfully!', 'success')
+            print("Redirecting to user list...")
+            return redirect(url_for('userlist.userlist'))
+        else:
+            print("Add vehicle failed, staying on the same page.")
+            return redirect(url_for('user_vehicle.uservehicle'))
 
     print("Form did not validate")
     print(f"Form errors: {vehicle_form.errors}")
@@ -80,5 +107,4 @@ def uservehicle():
     for error in unique_errors:
         flash(error, 'danger')
 
-    
     return redirect(url_for('userlist.userlist', page=1, sort_by='emp_no', order='asc'))
