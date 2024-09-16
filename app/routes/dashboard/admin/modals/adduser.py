@@ -20,9 +20,6 @@ def add_user():
     form = AddUserForm()
     print("Form initialized")
     
-    print(f"Form data (GET): {request.args}")
-    print(f"Form data (POST): {request.form}")
-
     if form.validate_on_submit():
         print("Form validated successfully")
         
@@ -32,8 +29,6 @@ def add_user():
         email = form.email.data
         contactnumber = form.contactnumber.data
         password = form.password.data
-
-        print(f"Form data: emp_no={emp_no}, lastname={lastname}, firstname={firstname}, email={email}, contactnumber={contactnumber}, password={password}")
 
         hashed_password = generate_password_hash(password)
         print(f"Hashed password: {hashed_password}")
@@ -66,7 +61,7 @@ def add_user():
         except mysql.connector.IntegrityError as e:
             if e.args[0] == 1062:
                 duplicate_entry_error = "An employee with this number already exists. Please use a different number."
-                flash(duplicate_entry_error, 'error')
+                flash(duplicate_entry_error, 'danger')
                 print(f"IntegrityError: {duplicate_entry_error}")
             else:
                 flash(f"Database error: {e}", "danger")
@@ -83,8 +78,11 @@ def add_user():
     print("Form did not validate")
     print(f"Form errors: {form.errors}")
 
+    unique_errors = set()
     for errors in form.errors.values():
-        for error in errors:
-            flash(error, 'danger')
+        unique_errors.update(errors)
+
+    for error in unique_errors:
+        flash(error, 'danger')
     
     return redirect(url_for('userlist.userlist', page=1, sort_by='emp_no', order='asc'))

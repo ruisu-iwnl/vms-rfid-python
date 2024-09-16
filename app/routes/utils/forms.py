@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField
+from wtforms import StringField, PasswordField, SubmitField, SelectField
 from wtforms.validators import DataRequired, Email, Length, EqualTo,Regexp
 from wtforms import ValidationError
 import phonenumbers
@@ -15,7 +15,12 @@ from app.models.database import get_cursor
 #     email = StringField('Email', validators=[DataRequired(), Email()])
 #     password = PasswordField('Password', validators=[DataRequired()])
 #     submit = SubmitField('Login')
-
+class Admin_AddUserVehicleForm(FlaskForm):
+    user_id = SelectField('Select User', validators=[DataRequired()])
+    model = StringField('Vehicle Model', validators=[DataRequired()])
+    license_plate = StringField('License Plate', validators=[DataRequired()])
+    rfid_number = StringField('RFID Number', validators=[DataRequired()])
+    submit = SubmitField('Add Vehicle')
 
 class AddVehicleForm(FlaskForm):
     car_model = StringField('Car Model', validators=[DataRequired()])

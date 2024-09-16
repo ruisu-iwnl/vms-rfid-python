@@ -32,20 +32,6 @@ document.addEventListener('DOMContentLoaded', function() {
     setInterval(updateDateTime, 1000);
 });
 
-document.getElementById('openModalBtn').addEventListener('click', function() {
-    const modal = document.getElementById('vehicleModal');
-    modal.classList.remove('hidden');
-    // Trigger the transition
-    setTimeout(() => modal.classList.add('show'), 10);
-});
-
-document.getElementById('closeModalBtn').addEventListener('click', function() {
-    const modal = document.getElementById('vehicleModal');
-    modal.classList.remove('show');
-    setTimeout(() => modal.classList.add('hidden'), 300); 
-});
-
-
 document.addEventListener('DOMContentLoaded', function() {
     var flashMessages = document.getElementById('flashMessages');
     if (flashMessages) {

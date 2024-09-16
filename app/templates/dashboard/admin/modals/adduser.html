@@ -7,7 +7,7 @@
             <!-- Form Fields -->
             <div class="mb-4">
                 <label for="employeenumber" class="block text-sm font-medium text-gray-300">Employee Number</label>
-                {{ form.employeenumber(class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0") }}
+                {{ form.employeenumber(class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0", required=False) }}
                 {% if form.employeenumber.errors %}
                     <p class="text-red-700 text-sm italic mt-1">{{ form.employeenumber.errors[0] }}</p>
                 {% endif %}
@@ -15,7 +15,7 @@
 
             <div class="mb-4">
                 <label for="lastname" class="block text-sm font-medium text-gray-300">Last Name</label>
-                {{ form.lastname(class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0") }}
+                {{ form.lastname(class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0", required=False) }}
                 {% if form.lastname.errors %}
                     <p class="text-red-700 text-sm italic mt-1">{{ form.lastname.errors[0] }}</p>
                 {% endif %}
@@ -23,7 +23,7 @@
 
             <div class="mb-4">
                 <label for="firstname" class="block text-sm font-medium text-gray-300">First Name</label>
-                {{ form.firstname(class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0") }}
+                {{ form.firstname(class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0", required=False) }}
                 {% if form.firstname.errors %}
                     <p class="text-red-700 text-sm italic mt-1">{{ form.firstname.errors[0] }}</p>
                 {% endif %}
@@ -31,7 +31,7 @@
 
             <div class="mb-4">
                 <label for="email" class="block text-sm font-medium text-gray-300">Email</label>
-                {{ form.email(class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0") }}
+                {{ form.email(class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0", required=False) }}
                 {% if form.email.errors %}
                     <p class="text-red-700 text-sm italic mt-1">{{ form.email.errors[0] }}</p>
                 {% endif %}
@@ -39,7 +39,7 @@
 
             <div class="mb-4">
                 <label for="contactnumber" class="block text-sm font-medium text-gray-300">Contact Number</label>
-                {{ form.contactnumber(class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0") }}
+                {{ form.contactnumber(class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0", required=False) }}
                 {% if form.contactnumber.errors %}
                     <p class="text-red-700 text-sm italic mt-1">{{ form.contactnumber.errors[0] }}</p>
                 {% endif %}
@@ -47,7 +47,7 @@
 
             <div class="mb-4">
                 <label for="password" class="block text-sm font-medium text-gray-300">Password</label>
-                {{ form.password(class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0") }}
+                {{ form.password(class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0", required=False) }}
                 {% if form.password.errors %}
                     <p class="text-red-700 text-sm italic mt-1">{{ form.password.errors[0] }}</p>
                 {% endif %}
@@ -55,7 +55,7 @@
 
             <div class="mb-4">
                 <label for="password_confirmation" class="block text-sm font-medium text-gray-300">Confirm Password</label>
-                {{ form.password_confirmation(class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0") }}
+                {{ form.password_confirmation(class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0", required=False) }}
                 {% if form.password_confirmation.errors %}
                     <p class="text-red-700 text-sm italic mt-1">{{ form.password_confirmation.errors[0] }}</p>
                 {% endif %}
@@ -73,7 +73,7 @@
             {% endif %}
             
             <div class="flex justify-end">
-                <button type="button" id="closeModalBtn" class="bg-gray-600 text-white py-2 px-4 rounded hover:bg-gray-700 transition duration-200 ease-in-out">Cancel</button>
+                <button type="button" id="closeUserModalBtn" class="bg-gray-600 text-white py-2 px-4 rounded hover:bg-gray-700 transition duration-200 ease-in-out">Cancel</button>
                 <button type="submit" class="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition duration-200 ease-in-out ml-2">Add User</button>
             </div>
         </form>

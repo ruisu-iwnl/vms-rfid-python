@@ -25,6 +25,33 @@
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Enhanced shadow */
     }
 
+        /* Modal overlay */
+    #userModal {
+        opacity: 0;
+        transform: scale(0.9);
+        transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    /* When modal is visible */
+    #userModal.show {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    /* Modal content */
+    #userModal .modal-content {
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        border: 2px solid black; /* Solid black border */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Enhanced shadow */
+    }
+
+    /* When modal content is visible */
+    #userModal.show .modal-content {
+        opacity: 1;
+    }
+
+
     /* When modal content is visible */
     #vehicleModal.show .modal-content {
         opacity: 1;
