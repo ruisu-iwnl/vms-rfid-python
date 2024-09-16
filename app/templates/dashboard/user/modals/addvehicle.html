@@ -25,7 +25,7 @@
             <!-- RFID Number -->
             <div class="mb-4">
                 <label for="rfid_number" class="block text-sm font-medium text-gray-300">RFID Number</label>
-                {{ form.rfid_number(class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0", autocomplete="off") }}
+                {{ form.rfid_number(class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0", autocomplete="off", maxlength="10", pattern="[0-9]*") }}
                 {% if form.rfid_number.errors %}
                     <p class="text-red-700 text-sm italic mt-1">{{ form.rfid_number.errors[0] }}</p>
                 {% endif %}
@@ -63,5 +63,12 @@
                 event.preventDefault(); 
             }
         });
+    });
+
+    document.getElementById('rfid_number').addEventListener('input', function(event) {
+        this.value = this.value.replace(/[^0-9]/g, '');  
+        if (this.value.length > 10) {
+            this.value = this.value.slice(0, 10); 
+        }
     });
 </script>

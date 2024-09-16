@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
-from wtforms.validators import DataRequired, Email, Length, EqualTo
+from wtforms.validators import DataRequired, Email, Length, EqualTo,Regexp
 from wtforms import ValidationError
 import phonenumbers
 from phonenumbers.phonenumberutil import NumberParseException
@@ -16,10 +16,15 @@ from app.models.database import get_cursor
 #     password = PasswordField('Password', validators=[DataRequired()])
 #     submit = SubmitField('Login')
 
+
 class AddVehicleForm(FlaskForm):
     car_model = StringField('Car Model', validators=[DataRequired()])
     plate_number = StringField('Plate Number', validators=[DataRequired()])
-    rfid_number = PasswordField('RFID Number', validators=[DataRequired()])
+    rfid_number = PasswordField('RFID Number', validators=[
+        DataRequired(),
+        Length(min=10, max=10, message="RFID number must be exactly 10 digits."),
+        Regexp('^[0-9]*$', message="RFID number must contain only digits.")
+    ])
 
 class BaseLoginForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
