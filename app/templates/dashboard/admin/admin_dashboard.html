@@ -9,28 +9,56 @@
     <div class="">
         <!-- Statistics Section -->
         <div class="flex flex-wrap -mx-2 mb-8">
-            <div class="w-full md:w-1/4 px-2 mb-4 md:mb-0">
-                <div class="bg-green-500 p-6 rounded-lg shadow-md text-white">
+            <div class="w-full md:w-1/4 px-2 mb-4">
+                <div class="bg-teal-600 p-6 rounded-lg shadow-md text-white">
                     <h2 class="text-lg font-semibold mb-2">Total Users</h2>
-                    <p class="text-3xl font-bold">0</p>
+                    <p class="text-3xl font-bold">{{ total_users }}</p>
                 </div>
             </div>
-            <div class="w-full md:w-1/4 px-2">
-                <div class="bg-white p-6 rounded-lg shadow-md text-gray-700 border border-gray-200">
-                    <h2 class="text-lg font-semibold mb-2">?Total Visits</h2>
-                    <p class="text-3xl font-bold">0</p>
+            <div class="w-full md:w-1/4 px-2 mb-4">
+                <div class="bg-teal-600 p-6 rounded-lg shadow-md text-gray-800 border border-gray-300">
+                    <h2 class="text-lg font-semibold mb-2">Total Vehicles</h2>
+                    <p class="text-3xl font-bold">{{ total_vehicles }}</p>
                 </div>
             </div>
-            <div class="w-full md:w-1/4 px-2 mb-4 md:mb-0">
-                <div class="bg-cyan-500 p-6 rounded-lg shadow-md text-white">
-                    <h2 class="text-lg font-semibold mb-2">?Total New Users</h2>
-                    <p class="text-3xl font-bold">0</p>
+            <div class="w-full md:w-1/4 px-2 mb-4">
+                <div class="bg-blue-600 p-6 rounded-lg shadow-md text-white">
+                    <h2 class="text-lg font-semibold mb-2">Average Vehicles Per User</h2>
+                    <p class="text-3xl font-bold">{{ avg_vehicles_per_user }}</p>
                 </div>
             </div>
-            <div class="w-full md:w-1/4 px-2 mb-4 md:mb-0">
-                <div class="bg-blue-500 p-6 rounded-lg shadow-md text-white">
-                    <h2 class="text-lg font-semibold mb-2">?Active Users</h2>
-                    <p class="text-3xl font-bold">0</p>
+            <div class="w-full md:w-1/4 px-2 mb-4">
+                <div class="bg-purple-600 p-6 rounded-lg shadow-md text-white">
+                    <h2 class="text-lg font-semibold mb-2">Users with No Vehicles</h2>
+                    <p class="text-3xl font-bold">{{ users_with_no_vehicles }}</p>
+                </div>
+            </div>
+
+            <div class="w-full md:w-1/4 px-2 mb-4">
+                <div class="bg-teal-600 p-6 rounded-lg shadow-md text-white">
+                    <h2 class="text-lg font-semibold mb-2">Total Number of RFID Tags</h2>
+                    <p class="text-3xl font-bold">{{ total_rfid_tags }}</p>
+                </div>
+            </div>
+            
+            <div class="w-full md:w-1/4 px-2 mb-4">
+                <div class="bg-teal-700 p-6 rounded-lg shadow-md text-white">
+                    <h2 class="text-lg font-semibold mb-2">Active RFID Tags</h2>
+                    <p class="text-3xl font-bold">{{ active_rfid_count }}</p>
+                </div>
+            </div>
+
+            <div class="w-full md:w-1/4 px-2 mb-4">
+                <div class="bg-teal-700 p-6 rounded-lg shadow-md text-gray-800 border border-gray-300">
+                    <h2 class="text-lg font-semibold mb-2">Recent User Registrations</h2>
+                    <p class="text-3xl font-bold">{{ recent_user_registrations }}</p>
+                </div>
+            </div>
+
+            <div class="w-full md:w-1/4 px-2 mb-4">
+                <div class="bg-blue-600 p-6 rounded-lg shadow-md text-white">
+                    <h2 class="text-lg font-semibold mb-2">Most Common Vehicle Model</h2>
+                    <p class="text-3xl font-bold">{{ most_common_vehicle_model }}</p>
                 </div>
             </div>
         </div>
@@ -79,6 +107,7 @@
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 
