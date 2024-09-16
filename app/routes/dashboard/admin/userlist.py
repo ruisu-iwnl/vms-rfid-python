@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, session
 from app.routes.utils.session import check_access
+from app.routes.utils.forms import AddUserForm 
 from app.models.database import get_cursor, close_db_connection
 
 userlist_bp = Blueprint('userlist', __name__)
@@ -14,8 +15,9 @@ def userlist(page, sort_by='emp_no', order='asc'):
 
     valid_columns = {'emp_no': 'u.emp_no', 'full_name': 'full_name', 'contactnumber': 'u.contactnumber', 'vehicle_count': 'vehicle_count'}
     
-    # Validate the sort_by parameter
     sort_column = valid_columns.get(sort_by, 'u.emp_no')
+    
+    form = AddUserForm()
     
     try:
         cursor, connection = get_cursor()
@@ -48,4 +50,7 @@ def userlist(page, sort_by='emp_no', order='asc'):
         cursor.close()
         close_db_connection(connection)
 
-    return render_template('dashboard/admin/userlist.html', users=paginated_users, page=page, total_pages=total_pages, sort_by=sort_by, order=order)
+    print(f"Session active in admin_dashboard: {session}")
+
+    return render_template('dashboard/admin/userlist.html', users=paginated_users, page=page, total_pages=total_pages, sort_by=sort_by, order=order, form=form)
+

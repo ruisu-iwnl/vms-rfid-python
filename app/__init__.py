@@ -19,6 +19,7 @@ from .routes.dashboard.user.vehicles import vehicles_bp
 from .routes.error import error_bp
 
 from .routes.dashboard.user.modals.addvehicle import add_vehicle_bp
+from .routes.dashboard.admin.modals.adduser import adduser_bp
 
 def create_app():
     app = Flask(__name__)
@@ -44,6 +45,8 @@ def create_app():
     app.register_blueprint(add_vehicle_bp)
 
     app.register_blueprint(error_bp)
+
+    app.register_blueprint(adduser_bp)
 
 
     return app

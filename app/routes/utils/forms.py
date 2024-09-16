@@ -96,3 +96,6 @@ class UserRegisterForm(BaseRegisterForm):
 
 class AdminRegisterForm(BaseRegisterForm):
     table_name = 'admin'
+
+class AddUserForm(BaseRegisterForm):
+    table_name = 'user'
