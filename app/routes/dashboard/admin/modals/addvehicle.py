@@ -15,7 +15,7 @@ def search_users():
     cursor = conn.cursor(dictionary=True)
     cursor.execute('''
         SELECT user_id, firstname, lastname
-        FROM user
+        FROM user 
         WHERE firstname LIKE %s OR lastname LIKE %s OR user_id LIKE %s
     ''', (f'%{query}%', f'%{query}%', f'%{query}%'))
 
