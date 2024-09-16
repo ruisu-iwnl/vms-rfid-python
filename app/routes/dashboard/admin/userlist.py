@@ -4,25 +4,31 @@ from app.models.database import get_cursor, close_db_connection
 
 userlist_bp = Blueprint('userlist', __name__)
 
-@userlist_bp.route('/', defaults={'page': 1})
-@userlist_bp.route('/<int:page>')
-def userlist(page):
+@userlist_bp.route('/', defaults={'page': 1, 'sort_by': 'emp_no', 'order': 'asc'})
+@userlist_bp.route('/<int:page>/<string:sort_by>/<string:order>')
+def userlist(page, sort_by='emp_no', order='asc'):
     response = check_access('admin')
     
     if response:
         return response
 
+    valid_columns = {'emp_no': 'u.emp_no', 'full_name': 'full_name', 'contactnumber': 'u.contactnumber', 'vehicle_count': 'vehicle_count'}
+    
+    # Validate the sort_by parameter
+    sort_column = valid_columns.get(sort_by, 'u.emp_no')
+    
     try:
         cursor, connection = get_cursor()
         
-        # Fetch users and their associated vehicles
-        cursor.execute("""
+        # Adjust SQL query for sorting
+        cursor.execute(f"""
             SELECT u.emp_no, CONCAT(u.firstname, ' ', u.lastname) AS full_name, u.contactnumber, 
-                   GROUP_CONCAT(v.model SEPARATOR ', ') AS vehicles
+                   GROUP_CONCAT(v.model SEPARATOR ', ') AS vehicles,
+                   COUNT(v.vehicle_id) AS vehicle_count
             FROM user u
             LEFT JOIN vehicle v ON u.user_id = v.user_id
             GROUP BY u.user_id
-            ORDER BY u.emp_no
+            ORDER BY {sort_column} {order}, u.emp_no
         """)
         users = cursor.fetchall()
         
@@ -42,4 +48,4 @@ def userlist(page):
         cursor.close()
         close_db_connection(connection)
 
-    return render_template('dashboard/admin/userlist.html', users=paginated_users, page=page, total_pages=total_pages)
+    return render_template('dashboard/admin/userlist.html', users=paginated_users, page=page, total_pages=total_pages, sort_by=sort_by, order=order)

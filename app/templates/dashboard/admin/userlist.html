@@ -11,57 +11,142 @@
                     Add New User
                 </a>
             </div>
-            <!-- Table Container -->
-            <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-4xl mb-8">
-                <h2 class="text-xl font-bold mb-4">Registered Users</h2>
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Employee Number</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Full Name</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact Number</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vehicle/s</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        {% for user in users %}
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ user[0] }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ user[1] }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ user[2] }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ user[3] if user[3] else 'No Vehicle Registered' }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    <a href="#" class="bg-blue-500 text-white py-1 px-2 rounded hover:bg-blue-700">Edit</a>
-                                    <a href="#" class="bg-red-500 text-white py-1 px-2 rounded hover:bg-red-700">Delete</a>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+    <!-- Table Container -->
+    <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-4xl mb-8">
+        <h2 class="text-xl font-bold mb-4">Registered Users</h2>
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <a href="{{ url_for('userlist.userlist', page=page, sort_by='emp_no', order='asc' if sort_by != 'emp_no' or order == 'desc' else 'desc') }}">
+                            Employee Number
+                            {% if sort_by == 'emp_no' %}
+                                {% if order == 'asc' %}
+                                    ▲
+                                {% else %}
+                                    ▼
+                                {% endif %}
+                            {% endif %}
+                        </a>
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <a href="{{ url_for('userlist.userlist', page=page, sort_by='full_name', order='asc' if sort_by != 'full_name' or order == 'desc' else 'desc') }}">
+                            Full Name
+                            {% if sort_by == 'full_name' %}
+                                {% if order == 'asc' %}
+                                    ▲
+                                {% else %}
+                                    ▼
+                                {% endif %}
+                            {% endif %}
+                        </a>
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <a href="{{ url_for('userlist.userlist', page=page, sort_by='contactnumber', order='asc' if sort_by != 'contactnumber' or order == 'desc' else 'desc') }}">
+                            Contact Number
+                            {% if sort_by == 'contactnumber' %}
+                                {% if order == 'asc' %}
+                                    ▲
+                                {% else %}
+                                    ▼
+                                {% endif %}
+                            {% endif %}
+                        </a>
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <a href="{{ url_for('userlist.userlist', page=page, sort_by='vehicle_count', order='asc' if sort_by != 'vehicle_count' or order == 'desc' else 'desc') }}">
+                            Vehicle/s
+                            {% if sort_by == 'vehicle_count' %}
+                                {% if order == 'asc' %}
+                                    ▲
+                                {% else %}
+                                    ▼
+                                {% endif %}
+                            {% endif %}
+                        </a>
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+            </thead>
+            
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for user in users %}
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ user[0] }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ user[1] }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ user[2] }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {% if user[3] %}
+                                {% if ',' in user[3] %}
+                                    <!-- Dropdown for multiple vehicles -->
+                                    <div class="relative">
+                                        <button class="bg-gray-200 text-gray-700 py-1 px-2 rounded hover:bg-gray-300 focus:outline-none toggle-dropdown" data-dropdown-id="dropdown-{{ loop.index }}">
+                                            View Vehicles
+                                        </button>
+                                        <div id="dropdown-{{ loop.index }}" class="absolute mt-2 py-2 w-48 bg-white rounded-lg shadow-xl z-10 hidden">
+                                            {% for vehicle in user[3].split(', ') %}
+                                                <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">{{ vehicle }}</a>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    {{ user[3] }}
+                                {% endif %}
+                            {% else %}
+                                No Vehicle Registered
+                            {% endif %}
+                        </td>
+                        
+                        
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            <a href="#" class="bg-blue-500 text-white py-1 px-2 rounded hover:bg-blue-700">Edit</a>
+                            <a href="#" class="bg-red-500 text-white py-1 px-2 rounded hover:bg-red-700">Delete</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
 
-                <!-- Pagination -->
-                <div class="flex justify-center mt-4">
-                    <nav class="relative z-0 inline-flex shadow-sm -space-x-px" aria-label="Pagination">
-                        {% if page > 1 %}
-                            <a href="{{ url_for('userlist.userlist', page=page-1) }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
-                                Previous
-                            </a>
-                        {% endif %}
-                        {% for p in range(1, total_pages + 1) %}
-                            <a href="{{ url_for('userlist.userlist', page=p) }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium {{ 'bg-gray-100' if p == page else 'bg-white' }} hover:bg-gray-50">
-                                {{ p }}
-                            </a>
-                        {% endfor %}
-                        {% if page < total_pages %}
-                            <a href="{{ url_for('userlist.userlist', page=page+1) }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
-                                Next
-                            </a>
-                        {% endif %}
-                    </nav>
-                </div>
-            </div>
+        <!-- Pagination -->
+        <div class="flex justify-center mt-4">
+            <nav class="relative z-0 inline-flex shadow-sm -space-x-px" aria-label="Pagination">
+                {% if page > 1 %}
+                    <a href="{{ url_for('userlist.userlist', page=page-1) }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                        Previous
+                    </a>
+                {% endif %}
+                {% for p in range(1, total_pages + 1) %}
+                    <a href="{{ url_for('userlist.userlist', page=p) }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium {{ 'bg-gray-100' if p == page else 'bg-white' }} hover:bg-gray-50">
+                        {{ p }}
+                    </a>
+                {% endfor %}
+                {% if page < total_pages %}
+                    <a href="{{ url_for('userlist.userlist', page=page+1) }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                        Next
+                    </a>
+                {% endif %}
+            </nav>
+        </div>
+    </div>
+
 
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const dropdownToggles = document.querySelectorAll('.toggle-dropdown');
 
+        dropdownToggles.forEach(button => {
+            button.addEventListener('click', function () {
+                const dropdownId = this.getAttribute('data-dropdown-id');
+                const dropdownMenu = document.getElementById(dropdownId);
+
+                if (dropdownMenu.classList.contains('hidden')) {
+                    dropdownMenu.classList.remove('hidden');
+                } else {
+                    dropdownMenu.classList.add('hidden');
+                }
+            });
+        });
+    });
+</script>
 {% endblock %}
