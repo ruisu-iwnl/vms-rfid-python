@@ -4,79 +4,91 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Login</title>
-    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
     <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
-    <script src="{{ url_for('static', filename='js/library/iconify.min.js') }}"></script>
-
+    <link href="{{ url_for('static', filename='css/custom.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/auth-login-register.css') }}" rel="stylesheet">
 </head>
-<body class="relative flex items-center justify-center min-h-screen bg-cover bg-center" style="background-image: url('/static/images/bg.jpg');">
-    <!-- Subtle overlay for enhanced visibility -->
-    <div class="absolute inset-0 bg-black opacity-50"></div>
-    
-    <!-- Main Content Area -->
-    <div class="relative z-10 max-w-4xl p-8 md:p-12 bg-white/20 rounded-3xl shadow-2xl backdrop-blur-md flex flex-col md:flex-row">
-        
-        <!-- Left Side: Image with Gradient Overlay -->
-        <div class="hidden md:flex w-full md:w-1/2 relative overflow-hidden rounded-l-3xl">
-            <img src="{{ url_for('static', filename='images/EmpFix.png') }}" alt="Login Image" class="object-cover w-full h-full"/>
-            <div class="absolute inset-0 bg-gradient-to-r from-blue-600 to-green-600 opacity-70 flex flex-col justify-center items-center text-white p-8">
-                <!-- Top Section: Logo -->
-                <div class="absolute top-4 left-4">
-                    <img src="{{ url_for('static', filename='images/CelcorCircle.png') }}" alt="Logo" class="h-16 w-auto"/>
-                </div>
-                <!-- Center Section: Welcome Message -->
-                <div class="text-center">
-                    <h1 class="text-3xl font-bold mb-4">Welcome to</h1>
-                    <span class="text-2xl font-semibold">Celcor's Vehicle Management System</span>
-                    <p class="text-lg mt-4 max-w-xs">
-                        Cabanatuan Electric Corporation (CELCOR) is a 114-year-old company engaged in the generation, distribution, and transmission of electricity.
-                    </p>
-                </div>
-            </div>
+<body class="relative min-h-screen bg-cover bg-center" style="background-image: url('/static/images/bg.jpg');">
+
+    <div class="absolute inset-0 bg-black opacity-65"></div>
+
+    <div class="relative flex flex-col min-h-screen justify-center bg-opacity-30 backdrop-blur-md p-4">
+
+        <div id="flashMessages" class="fixed top-0 left-1/2 transform -translate-x-1/2 m-4 z-50 opacity-100 transition-opacity duration-300">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="space-y-4">
+                        {% for category, message in messages %}
+                            <div class="p-3 mb-4 rounded 
+                                {% if category == 'danger' %}
+                                    bg-red-500 bg-opacity-40 text-white
+                                {% elif category == 'success' %}
+                                    bg-green-500 bg-opacity-40 text-white
+                                {% elif category == 'info' %}
+                                    bg-blue-500 bg-opacity-40 text-white
+                                {% else %}
+                                    bg-gray-500 bg-opacity-40 text-white
+                                {% endif %}
+                                {{ 'hidden' if not messages else 'block' }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
         </div>
 
-        <!-- Right Side: Form -->
-        <div class="w-full md:w-1/2 p-8 relative">
-            <!-- Modern Icon Button in the Top Left Corner -->
-            <a href="{{ url_for('main.index') }}" class="absolute top-4 left-4 flex items-center justify-center w-10 h-10 rounded-full bg-white shadow-md hover:bg-gray-100 transition duration-300 ease-in-out">
-                <svg class="w-6 h-6 text-blue-500 hover:text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <!-- Login Form Section -->
+        <div class="w-full md:w-1/4 p-4 flex flex-col items-center bg-transparent rounded-lg mx-auto">
+            <a href="{{ url_for('main.index') }}" class="absolute top-2 left-2 flex items-center justify-center w-6 h-6 rounded-full bg-transparent shadow-md hover:bg-gray-100 transition duration-300 ease-in-out">
+                <svg class="w-4 h-4 text-blue-600 hover:text-blue-800" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l-7-7 7-7"></path>
                 </svg>
             </a>
 
-            <h2 class="text-2xl font-bold mb-6 text-gray-800 text-center">User Login</h2>
-            <form action="{{ url_for('user_login.user_login') }}" method="POST">
+            <h2 class="text-2xl font-bold mb-4 text-off-white custom-shadow text-center">User Login</h2>
+            <form action="{{ url_for('user_login.user_login') }}" method="POST" class="w-full flex flex-col">
                 {{ form.hidden_tag() }}
-                <!-- Email Field -->
-                <div class="mb-6">
-                    <label for="email" class="block text-left text-gray-600 text-sm font-semibold mb-2">Email Address</label>
-                    <input type="email" id="email" name="email" class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500" value="{{ form.email.data or '' }}" placeholder="Example: Juandelacruz@gmail.com" required>
+
+                {% if login_error %}
+                <p class="text-red-700 text-sm italic mt-2 text-center">{{ login_error }}</p>
+                {% endif %}
+                
+                <div class="mb-4 w-full">
+                    <label for="email" class="block text-left text-off-white custom-shadow text-base font-semibold mb-1">Email Address</label>
+                    <input type="email" id="email" name="email" class="shadow-sm appearance-none border border-gray-400 rounded-lg w-full py-2 px-3 text-gray-900 leading-tight focus:outline-none focus:ring-1 focus:ring-blue-600" value="{{ form.email.data or '' }}" placeholder="Email">
                     {% if form.email.errors %}
-                        <p class="text-red-500 text-xs italic mt-1">{{ form.email.errors[0] }}</p>
+                        <p class="text-red-700 text-sm italic mt-1">{{ form.email.errors[0] }}</p>
                     {% endif %}
                 </div>
 
-                <!-- Password Field -->
-                <div class="mb-6">
-                    <label for="password" class="block text-left text-gray-600 text-sm font-semibold mb-2">Password</label>
-                    <input type="password" id="password" name="password" class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter your password" required>
+                <div class="mb-4 w-full">
+                    <label for="password" class="block text-left text-off-white custom-shadow text-base font-semibold mb-1">Password</label>
+                    <input type="password" id="password" name="password" class="shadow-sm appearance-none border border-gray-400 rounded-lg w-full py-2 px-3 text-gray-900 leading-tight focus:outline-none focus:ring-1 focus:ring-blue-600" placeholder="Password">
                     {% if form.password.errors %}
-                        <p class="text-red-500 text-xs italic mt-1">{{ form.password.errors[0] }}</p>
+                        <p class="text-red-700 text-sm italic mt-1">{{ form.password.errors[0] }}</p>
                     {% endif %}
-<!--                     
-                    NOT YET
--->
-                    <!-- <a href="#" class="text-blue-500 hover:text-blue-700 text-sm block mt-2">Forgot Password?</a> -->
                 </div>
 
-                <!-- Submit Button -->
-                <button type="submit" class="w-full py-3 bg-gradient-to-r from-blue-500 to-green-500 text-white font-semibold rounded hover:from-blue-600 hover:to-green-600 transition duration-300 ease-in-out focus:outline-none">Login</button>
+                {% if recaptcha_error %}
+                    <div class="mb-4 text-red-700 text-sm italic text-center">{{ recaptcha_error }}</div>
+                {% endif %}
+                <div class="recaptcha-container">
+                    <div class="g-recaptcha" data-sitekey="6LcxWkIqAAAAAEycwl1Z3tWFBg3BeIFe4pQxhpoY"></div>
+                </div>
 
+                <button type="submit" class="btn btn-admin font-semibold rounded-lg py-2 mt-6">
+                    <svg width="510px" height="60px" viewBox="0 0 300 100">
+                    </svg>
+                    <span>Login</span>
+                </button>
+                
                 <div class="text-center mt-4">
-                    <p class="mt-4 text-sm">Don't have an account? <a href="{{ url_for('user_register.user_register') }}" class="text-blue-500 hover:text-blue-700">Create one</a></p>
+                    <p class="mt-2 text-base text-off-white custom-shadow">Don't have an account? <a href="{{ url_for('user_register.user_register') }}" class="text-blue-600 hover:text-blue-800">Create one</a></p>
                 </div>
             </form>
         </div>
     </div>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </body>
 </html>

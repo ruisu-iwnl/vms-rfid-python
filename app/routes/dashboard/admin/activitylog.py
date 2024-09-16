@@ -1,10 +1,17 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template,session
+from app.routes.utils.session import check_access
 
 activitylog_bp = Blueprint('activitylog', __name__)
 
 @activitylog_bp.route('/', defaults={'page': 1})
 @activitylog_bp.route('/<int:page>')
 def activitylog(page):
+
+    response = check_access('admin')
+    
+    if response:
+        return response
+
     records = [
         {'activity_id': 1, 'user_id': 101, 'activity_type': 'Login', 'timestamp': '2024-09-01 08:00:00'},
         {'activity_id': 2, 'user_id': 102, 'activity_type': 'Logout', 'timestamp': '2024-09-01 09:00:00'},
@@ -36,4 +43,6 @@ def activitylog(page):
     end = start + per_page
     paginated_records = records[start:end]
 
+
+    print(f"Session active in activitylogs: {session}")
     return render_template('dashboard/admin/activitylog.html', records=paginated_records, page=page, total_pages=total_pages)

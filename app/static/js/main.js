@@ -31,3 +31,15 @@ document.addEventListener('DOMContentLoaded', function() {
     updateDateTime();
     setInterval(updateDateTime, 1000);
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+    var flashMessages = document.getElementById('flashMessages');
+    if (flashMessages) {
+        setTimeout(function() {
+            flashMessages.style.opacity = 0; 
+            setTimeout(function() {
+                flashMessages.style.display = 'none'; 
+            }, 300);
+        }, 3000); 
+    }
+});

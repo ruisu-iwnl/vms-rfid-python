@@ -1,17 +1,37 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField
-from wtforms.validators import DataRequired, Email, Length, EqualTo
+from wtforms import StringField, PasswordField, SubmitField, SelectField
+from wtforms.validators import DataRequired, Email, Length, EqualTo,Regexp
 from wtforms import ValidationError
 import phonenumbers
 from phonenumbers.phonenumberutil import NumberParseException
 from app.models.database import get_cursor
 
-class AdminLoginForm(FlaskForm):
-    email = StringField('Email', validators=[DataRequired(), Email()])
-    password = PasswordField('Password', validators=[DataRequired()])
-    submit = SubmitField('Login')
+# class AdminLoginForm(FlaskForm):
+#     email = StringField('Email', validators=[DataRequired(), Email()])
+#     password = PasswordField('Password', validators=[DataRequired()])
+#     submit = SubmitField('Login')
 
-class UserLoginForm(FlaskForm):
+# class UserLoginForm(FlaskForm):
+#     email = StringField('Email', validators=[DataRequired(), Email()])
+#     password = PasswordField('Password', validators=[DataRequired()])
+#     submit = SubmitField('Login')
+class Admin_AddUserVehicleForm(FlaskForm):
+    user_id = SelectField('Select User', validators=[DataRequired()])
+    model = StringField('Vehicle Model', validators=[DataRequired()])
+    license_plate = StringField('License Plate', validators=[DataRequired()])
+    rfid_number = StringField('RFID Number', validators=[DataRequired()])
+    submit = SubmitField('Add Vehicle')
+
+class AddVehicleForm(FlaskForm):
+    car_model = StringField('Car Model', validators=[DataRequired()])
+    plate_number = StringField('Plate Number', validators=[DataRequired()])
+    rfid_number = PasswordField('RFID Number', validators=[
+        DataRequired(),
+        Length(min=10, max=10, message="RFID number must be exactly 10 digits."),
+        Regexp('^[0-9]*$', message="RFID number must contain only digits.")
+    ])
+
+class BaseLoginForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired()])
     submit = SubmitField('Login')
@@ -81,3 +101,6 @@ class UserRegisterForm(BaseRegisterForm):
 
 class AdminRegisterForm(BaseRegisterForm):
     table_name = 'admin'
+
+class AddUserForm(BaseRegisterForm):
+    table_name = 'user'

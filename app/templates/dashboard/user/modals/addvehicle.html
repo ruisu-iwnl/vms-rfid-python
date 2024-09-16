@@ -1,0 +1,75 @@
+<div id="vehicleModal" class="fixed inset-0 flex items-center justify-center hidden z-50 transition-all duration-500 ease-in-out">
+    <div class="bg-gray-800 bg-opacity-80 backdrop-blur-md p-6 rounded-lg shadow-lg w-full max-w-md transition-all duration-500 ease-in-out">
+        <h2 class="text-2xl font-semibold mb-4 text-white">Add New Vehicle</h2>
+        <form action="{{ url_for('add_vehicle.add_vehicle') }}" method="POST">
+            {{ form.hidden_tag() }}
+        
+            <!-- Car Model -->
+            <div class="mb-4">
+                <label for="car_model" class="block text-sm font-medium text-gray-300">Car Model</label>
+                {{ form.car_model(class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0", autocomplete="off", placeholder="Enter car model") }}
+                {% if form.car_model.errors %}
+                    <p class="text-red-700 text-sm italic mt-1">{{ form.car_model.errors[0] }}</p>
+                {% endif %}
+            </div>
+        
+            <!-- Plate Number -->
+            <div class="mb-4">
+                <label for="plate_number" class="block text-sm font-medium text-gray-300">Plate Number</label>
+                {{ form.plate_number(class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0", autocomplete="off", placeholder="Enter plate number") }}
+                {% if form.plate_number.errors %}
+                    <p class="text-red-700 text-sm italic mt-1">{{ form.plate_number.errors[0] }}</p>
+                {% endif %}
+            </div>
+        
+            <!-- RFID Number -->
+            <div class="mb-4">
+                <label for="rfid_number" class="block text-sm font-medium text-gray-300">RFID Number</label>
+                {{ form.rfid_number(class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0", autocomplete="off", maxlength="10", pattern="[0-9]*", placeholder="Scan RFID number") }}
+                {% if form.rfid_number.errors %}
+                    <p class="text-red-700 text-sm italic mt-1">{{ form.rfid_number.errors[0] }}</p>
+                {% endif %}
+            </div>
+        
+            <!-- Note to User -->
+            <p class="text-gray-300 text-sm italic mt-4 mb-4">Please ensure all inputs are correct before submitting.</p>
+        
+            <!-- Error Messages -->
+            {% if form.errors %}
+                <div class="mb-4 text-red-700 text-sm italic">
+                    {% for field, errors in form.errors.items() %}
+                        {% for error in errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+        
+            <div class="flex justify-end">
+                <button type="button" id="closeModalBtn" class="bg-gray-600 text-white py-2 px-4 rounded hover:bg-gray-700 transition duration-200 ease-in-out">Cancel</button>
+                <button type="submit" class="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition duration-200 ease-in-out ml-2">Add Vehicle</button>
+            </div>
+        </form>
+        
+        
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const rfidInput = document.getElementById('rfid_number');
+
+        rfidInput.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault(); 
+            }
+        });
+    });
+
+    document.getElementById('rfid_number').addEventListener('input', function(event) {
+        this.value = this.value.replace(/[^0-9]/g, '');  
+        if (this.value.length > 10) {
+            this.value = this.value.slice(0, 10); 
+        }
+    });
+</script>

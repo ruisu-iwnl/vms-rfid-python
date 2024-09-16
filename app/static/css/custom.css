@@ -1,0 +1,78 @@
+/* this is for my error html */
+.scrollable-container {
+    max-height: 400px; 
+    overflow-y: auto;
+}
+
+    /* Modal overlay */
+    #vehicleModal {
+        transition: opacity 0.3s ease, transform 0.3s ease;
+        opacity: 0;
+        transform: scale(0.9);
+    }
+
+    /* When modal is visible */
+    #vehicleModal.show {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    /* Modal content */
+    #vehicleModal .modal-content {
+        transition: opacity 0.3s ease;
+        opacity: 0;
+        border: 2px solid black; /* Solid black border */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Enhanced shadow */
+    }
+
+        /* Modal overlay */
+    #userModal {
+        opacity: 0;
+        transform: scale(0.9);
+        transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    /* When modal is visible */
+    #userModal.show {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    /* Modal content */
+    #userModal .modal-content {
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        border: 2px solid black; /* Solid black border */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Enhanced shadow */
+    }
+
+    /* When modal content is visible */
+    #userModal.show .modal-content {
+        opacity: 1;
+    }
+
+
+    /* When modal content is visible */
+    #vehicleModal.show .modal-content {
+        opacity: 1;
+    }
+
+    .text-off-white {
+        color: #dbdee4; /* Off white color */
+    }
+
+    #flashMessages {
+        transition: opacity 0.3s ease-in-out;
+    }
+    
+
+        /* Flash message styling and animation */
+    .flash-message {
+        opacity: 1;
+        transition: opacity 0.3s ease-out;
+    }
+
+    .flash-message.hidden {
+        opacity: 0;
+        display: none;
+    }
