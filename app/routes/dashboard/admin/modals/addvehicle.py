@@ -14,10 +14,10 @@ def search_users():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
     cursor.execute('''
-        SELECT user_id, firstname 
-        FROM user 
-        WHERE firstname LIKE %s OR user_id LIKE %s
-    ''', (f'%{query}%', f'%{query}%'))
+        SELECT user_id, firstname, lastname
+        FROM user
+        WHERE firstname LIKE %s OR lastname LIKE %s OR user_id LIKE %s
+    ''', (f'%{query}%', f'%{query}%', f'%{query}%'))
 
     users = cursor.fetchall()
     close_db_connection(conn)
