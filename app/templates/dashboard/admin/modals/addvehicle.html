@@ -3,7 +3,7 @@
         <h2 class="text-2xl font-semibold mb-4 text-white">Add New Vehicle</h2>
         <form action="{{ url_for('user_vehicle.uservehicle') }}" method="POST">
             {{ vehicle_form.hidden_tag() }}
-
+        
             <div class="mb-4">
                 <label for="user_id" class="block text-sm font-medium text-gray-300">User ID</label>
                 <input 
@@ -21,30 +21,39 @@
                     <p class="text-red-700 text-sm italic mt-1">{{ vehicle_form.user_id.errors[0] }}</p>
                 {% endif %}
             </div>
-
+        
             <!-- Model Field -->
             <div class="mb-4">
                 <label for="model" class="block text-sm font-medium text-gray-300">Model</label>
-                {{ vehicle_form.model(class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0", required=False) }}
+                {{ vehicle_form.model(
+                    class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0", 
+                    placeholder="Enter vehicle model", 
+                    required=False
+                ) }}
                 {% if vehicle_form.model.errors %}
                     <p class="text-red-700 text-sm italic mt-1">{{ vehicle_form.model.errors[0] }}</p>
                 {% endif %}
             </div>
-
+        
             <!-- License Plate Field -->
             <div class="mb-4">
                 <label for="license_plate" class="block text-sm font-medium text-gray-300">License Plate</label>
-                {{ vehicle_form.license_plate(class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0", required=False) }}
+                {{ vehicle_form.license_plate(
+                    class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0", 
+                    placeholder="Enter license plate number", 
+                    required=False
+                ) }}
                 {% if vehicle_form.license_plate.errors %}
                     <p class="text-red-700 text-sm italic mt-1">{{ vehicle_form.license_plate.errors[0] }}</p>
                 {% endif %}
             </div>
-
+        
             <!-- RFID Number Field -->
             <div class="mb-4">
                 <label for="rfid_number" class="block text-sm font-medium text-gray-300">RFID Number</label>
                 {{ vehicle_form.rfid_number(
                     class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0", 
+                    placeholder="Scan RFID number", 
                     required=False,
                     onkeypress="return preventEnter(event)"
                 ) }}
@@ -52,7 +61,7 @@
                     <p class="text-red-700 text-sm italic mt-1">{{ vehicle_form.rfid_number.errors[0] }}</p>
                 {% endif %}
             </div>
-
+        
             <!-- Error Messages -->
             {% if vehicle_form.errors %}
                 <div class="mb-4 text-red-700 text-sm italic">
@@ -63,13 +72,14 @@
                     {% endfor %}
                 </div>
             {% endif %}
-
+        
             <!-- Buttons -->
             <div class="flex justify-end">
                 <button type="button" id="closeModalBtn" class="bg-gray-600 text-white py-2 px-4 rounded hover:bg-gray-700 transition duration-200 ease-in-out">Cancel</button>
                 <button type="submit" class="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition duration-200 ease-in-out ml-2">Add Vehicle</button>
             </div>
         </form>
+        
     </div>
 </div>
 <script>
