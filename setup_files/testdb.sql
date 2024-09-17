@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 17, 2024 at 09:49 AM
+-- Generation Time: Sep 17, 2024 at 05:31 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -32,7 +32,8 @@ CREATE TABLE `activity_log` (
   `admin_id` int(11) NOT NULL,
   `activity_type` varchar(255) NOT NULL,
   `activity_timestamp` datetime NOT NULL,
-  `details` text DEFAULT NULL
+  `details` text DEFAULT NULL,
+  `created_at` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -69,17 +70,20 @@ INSERT INTO `admin` (`admin_id`, `employee_id`, `lastname`, `firstname`, `contac
 CREATE TABLE `rfid` (
   `rfid_id` int(11) NOT NULL,
   `rfid_no` varchar(255) NOT NULL,
-  `vehicle_id` int(11) NOT NULL
+  `vehicle_id` int(11) NOT NULL,
+  `created_at` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `rfid`
 --
 
-INSERT INTO `rfid` (`rfid_id`, `rfid_no`, `vehicle_id`) VALUES
-(24, '0004261965', 24),
-(25, '0010571220', 25),
-(28, '0010559824', 29);
+INSERT INTO `rfid` (`rfid_id`, `rfid_no`, `vehicle_id`, `created_at`) VALUES
+(24, '0004261965', 24, '2024-09-17 20:30:25'),
+(25, '0010571220', 25, '2024-09-17 20:30:25'),
+(28, '0010559824', 29, '2024-09-17 20:30:25'),
+(29, '0011238051', 30, '2024-09-17 20:30:25'),
+(30, '0010605475', 31, '2024-09-17 20:30:25');
 
 -- --------------------------------------------------------
 
@@ -92,7 +96,8 @@ CREATE TABLE `time_logs` (
   `vehicle_id` int(11) NOT NULL,
   `rfid_id` int(11) NOT NULL,
   `time_in` datetime NOT NULL,
-  `time_out` datetime DEFAULT NULL
+  `time_out` datetime DEFAULT NULL,
+  `created_at` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -140,17 +145,20 @@ CREATE TABLE `vehicle` (
   `vehicle_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `licenseplate` varchar(255) NOT NULL,
-  `model` varchar(255) NOT NULL
+  `model` varchar(255) NOT NULL,
+  `created_at` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `vehicle`
 --
 
-INSERT INTO `vehicle` (`vehicle_id`, `user_id`, `licenseplate`, `model`) VALUES
-(24, 28, 'CCA 0529', 'Honda Civic'),
-(25, 28, 'LUI 2702', 'Toyota Corolla'),
-(29, 29, 'CCA 0304', 'Jimmy');
+INSERT INTO `vehicle` (`vehicle_id`, `user_id`, `licenseplate`, `model`, `created_at`) VALUES
+(24, 28, 'CCA 0529', 'Honda Civic', '2024-09-17 20:30:25'),
+(25, 28, 'LUI 2702', 'Toyota Corolla', '2024-09-17 20:30:25'),
+(29, 29, 'CCA 0304', 'Jimmy', '2024-09-17 20:30:25'),
+(30, 29, 'CCA 0403', 'Jeepney', '2024-09-17 20:30:25'),
+(31, 37, 'RYZ 9238', 'Honda Motorcycle', '2024-09-17 20:30:25');
 
 --
 -- Indexes for dumped tables
@@ -223,7 +231,7 @@ ALTER TABLE `admin`
 -- AUTO_INCREMENT for table `rfid`
 --
 ALTER TABLE `rfid`
-  MODIFY `rfid_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
+  MODIFY `rfid_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
 
 --
 -- AUTO_INCREMENT for table `time_logs`
@@ -241,7 +249,7 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT for table `vehicle`
 --
 ALTER TABLE `vehicle`
-  MODIFY `vehicle_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
+  MODIFY `vehicle_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
 
 --
 -- Constraints for dumped tables
