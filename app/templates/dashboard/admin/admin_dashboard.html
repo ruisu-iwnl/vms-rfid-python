@@ -73,15 +73,13 @@
                     </div>
                 </div>
 
-                <div class="w-full md:w-1/2 px-2">
+                <div class="w-full md:w-1/2 px-2 mb-4 md:mb-0">
                     <div class="bg-white p-6 rounded-lg shadow shadow-gray-500 h-full">
-                        <h3 class="text-xl font-semibold mb-2">Peak Usage Times</h3>
-                        <p class="text-gray-700">Heatmap showing time in/out patterns throughout the day.</p>
-                        <div id="heatmapPlaceholder" class="bg-gray-200 h-64 flex items-center justify-center rounded-lg shadow">
-                            <span class="text-gray-500">Heatmap Placeholder</span>
-                        </div>
+                        <h3 class="text-xl font-semibold mb-2">Vehicle Distribution per User</h3>
+                        <canvas id="vehicleChart"></canvas>
                     </div>
                 </div>
+                
             </div>
 
             <!-- Second Line: Duration of Stay, Frequent Visitors, and Daily/Weekly Trends -->
@@ -218,4 +216,9 @@
 
         //heatmapppp
     </script>
+
+
+<script src="{{ url_for('static', filename='js/vehicleChart.js') }}"></script>
+<script src="{{ url_for('static', filename='js/library/chart.min.js') }}"></script>
+
 {% endblock %}
