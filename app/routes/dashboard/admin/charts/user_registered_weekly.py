@@ -1,12 +1,12 @@
 from app.models.database import get_cursor, close_db_connection
 
-def get_daily_vehicle_distribution():
+def get_daily_user_registration():
     cursor, connection = get_cursor()
 
-    # Get daily vehicle distribution for the last 7 days based on vehicle creation dates
+    # Get daily user registration data for the last 7 days based on user creation dates
     cursor.execute('''
-        SELECT DATE(created_at) AS date, COUNT(vehicle_id) AS vehicle_count
-        FROM vehicle
+        SELECT DATE(created_at) AS date, COUNT(user_id) AS user_count
+        FROM user
         WHERE created_at >= CURDATE() - INTERVAL 7 DAY
         GROUP BY DATE(created_at)
         ORDER BY DATE(created_at);

@@ -7,7 +7,7 @@ def get_time_in_time_out_comparison():
     cursor.execute('''
         SELECT DATE(time_in) AS date, COUNT(*) AS time_in_count
         FROM time_logs
-        WHERE time_in >= CURDATE() - INTERVAL 6 DAY
+        WHERE time_in >= CURDATE() - INTERVAL 7 DAY
         GROUP BY DATE(time_in)
         ORDER BY DATE(time_in);
     ''')
@@ -16,7 +16,7 @@ def get_time_in_time_out_comparison():
     cursor.execute('''
         SELECT DATE(time_out) AS date, COUNT(*) AS time_out_count
         FROM time_logs
-        WHERE time_out >= CURDATE() - INTERVAL 6 DAY
+        WHERE time_out >= CURDATE() - INTERVAL 7 DAY
         GROUP BY DATE(time_out)
         ORDER BY DATE(time_out);
     ''')
