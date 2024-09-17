@@ -7,6 +7,7 @@ from app.routes.dashboard.admin.charts.basic_dashboarddata import get_dashboard_
 from app.routes.dashboard.admin.charts.durationofstay import get_vehicle_stay_durations
 from app.routes.dashboard.admin.charts.user_registered_weekly import get_daily_user_registration
 from app.routes.dashboard.admin.charts.dailyvehicleentry import get_daily_vehicle_entries
+from app.routes.dashboard.admin.charts.peakhours import get_peak_hours_of_vehicle_entries
 
 admin_dashboard_bp = Blueprint('admin_dashboard', __name__)
 
@@ -22,7 +23,8 @@ def admin_dashboard():
     time_in_time_out_data = get_time_in_time_out_comparison()
     vehicle_stay_durations_data = get_vehicle_stay_durations()
     user_registration_data = get_daily_user_registration()
-    daily_vehicle_entries_data = get_daily_vehicle_entries
+    daily_vehicle_entries_data = get_daily_vehicle_entries()
+    peak_hours_data = get_peak_hours_of_vehicle_entries()
     
     print(f"Session active in admin_dashboard: {session}")
     print("Daily Data:", daily_data)
@@ -30,6 +32,8 @@ def admin_dashboard():
     print("Time-In/Time-Out Data:", time_in_time_out_data)
     print("user register data: ", user_registration_data)
     print("daily vehicle entry: ",daily_vehicle_entries_data)
+    print("peak hours: ", peak_hours_data)
+
     
     return render_template(
         'dashboard/admin/admin_dashboard.html',
@@ -38,5 +42,6 @@ def admin_dashboard():
         time_in_time_out_data=time_in_time_out_data,
         vehicle_stay_durations_data=vehicle_stay_durations_data,
         user_registration_data=user_registration_data,
-        daily_vehicle_entries_data=daily_vehicle_entries_data
+        daily_vehicle_entries_data=daily_vehicle_entries_data,
+        peak_hours_data=peak_hours_data
     )

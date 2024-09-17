@@ -65,8 +65,8 @@
 
         <div class="mt-8">
             <div class="flex flex-wrap -mx-2 mb-8">
-
-                <div class="w-full md:w-1/2 px-2 mb-4 md:mb-0">
+        
+                <div class="w-full md:w-1/3 px-2 mb-4 md:mb-0">
                     <div class="bg-white p-6 rounded-lg shadow shadow-gray-500 h-full">
                         <h3 class="text-xl font-semibold mb-2">Time-In and Time-Out Comparison</h3>
                         <p class="mb-4 text-gray-800 opacity-40">This chart compares the number of time-ins and time-outs recorded each day over the past week. It helps visualize trends and patterns in vehicle check-ins and check-outs.</p>
@@ -79,7 +79,7 @@
                     </div>
                 </div>
                 
-                <div class="w-full md:w-1/2 px-2 mb-4 md:mb-0">
+                <div class="w-full md:w-1/3 px-2 mb-4 md:mb-0">
                     <div class="bg-white p-6 rounded-lg shadow shadow-gray-500 h-full">
                         <h3 class="text-xl font-semibold mb-2">Weekly Vehicle Distribution</h3>
                         <p class="mb-4 text-gray-800 opacity-40">This chart displays the number of vehicles registered each day within the last 7 days. It helps track daily registration trends and identify patterns over the past week.</p>
@@ -90,11 +90,23 @@
                         </div>
                     </div>
                 </div>
+        
+                <div class="w-full md:w-1/3 px-2 mb-4 md:mb-0">
+                    <div class="bg-white p-6 rounded-lg shadow shadow-gray-500 h-full">
+                        <h3 class="text-xl font-semibold mb-2">Peak Hours of Vehicle Entries</h3>
+                        <p class="mb-4 text-gray-800 opacity-40">This chart displays the number of vehicle entries for each hour of the day. It helps identify peak hours when the highest number of vehicles enter the area.</p>
+                        <canvas id="peakHoursChart"></canvas>
+                        <div id="peakHoursData"
+                             data-labels="{{ peak_hours_data['labels']|join(', ') }}"
+                             data-data="{{ peak_hours_data['data']|join(', ') }}">
+                        </div>
+                    </div>
+                </div>
                 
             </div>
-
+        
             <div class="flex flex-wrap -mx-2 mb-8">
-
+        
                 <div class="w-full md:w-1/3 px-2 mb-4 md:mb-0">
                     <div class="bg-white p-6 rounded-lg shadow shadow-gray-500">
                         <h3 class="text-xl font-semibold mb-2">Duration of Stay</h3>
@@ -118,7 +130,7 @@
                         </div>
                     </div>
                 </div>
-
+        
                 <div class="w-full md:w-1/3 px-2">
                     <div class="bg-white p-6 rounded-lg shadow shadow-gray-500">
                         <h3 class="text-xl font-semibold mb-2">Daily Vehicle Entries</h3>
@@ -130,10 +142,11 @@
                         </div>
                     </div>
                 </div>
-
+        
             </div>
-
+        
         </div>
+        
     </div>
 
 <script src="{{ url_for('static', filename='js/timeinout-comparison.js') }}"></script>
@@ -141,6 +154,7 @@
 <script src="{{ url_for('static', filename='js/durationofstay.js') }}"></script>
 <script src="{{ url_for('static', filename='js/user_registered_weekly.js') }}"></script>
 <script src="{{ url_for('static', filename='js/dailyvehicleentry.js') }}"></script>
+<script src="{{ url_for('static', filename='js/peakhours.js') }}"></script>
 
 <script src="{{ url_for('static', filename='js/library/chart.min.js') }}"></script>
 
