@@ -47,7 +47,7 @@
             </a>
 
             <h2 class="text-2xl font-bold mb-4 text-off-white custom-shadow text-center">User Registration</h2>
-            <form action="{{ url_for('user_register.user_register') }}" method="POST" class="w-full flex flex-col">
+            <form action="{{ url_for('user_register.user_register') }}" method="POST" class="w-full flex flex-col" autocomplete="off">
                 {{ form.hidden_tag() }}
 
                 {% if is_registered_as_user %}
