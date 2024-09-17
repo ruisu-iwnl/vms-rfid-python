@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     var ctx = document.getElementById('peakHoursChart').getContext('2d');
     var peakHoursChart = new Chart(ctx, {
-        type: 'bar',
+        type: 'line',
         data: {
             labels: peakHoursLabels,
             datasets: [{
@@ -37,7 +37,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 data: peakHoursData,
                 backgroundColor: 'rgba(75, 192, 192, 0.2)',
                 borderColor: 'rgba(75, 192, 192, 1)',
-                borderWidth: 1
+                borderWidth: 2,
+                fill: true // Fill the area under the line
             }]
         },
         options: {

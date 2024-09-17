@@ -67,9 +67,9 @@
             <div class="flex flex-wrap -mx-2 mb-8">
         
                 <div class="w-full md:w-1/3 px-2 mb-4 md:mb-0">
-                    <div class="bg-white p-6 rounded-lg shadow shadow-gray-500 h-full">
+                    <div class="bg-white p-6 rounded-lg shadow-lg h-full">
                         <h3 class="text-xl font-semibold mb-2">Time-In and Time-Out Comparison</h3>
-                        <p class="mb-4 text-gray-800 opacity-40">This chart compares the number of time-ins and time-outs recorded each day over the past week. It helps visualize trends and patterns in vehicle check-ins and check-outs.</p>
+                        <p class="mb-4 text-gray-800 opacity-70">This chart compares the number of time-ins and time-outs recorded each day over the past week. It helps visualize trends and patterns in vehicle check-ins and check-outs.</p>
                         <canvas id="timeInOutChart"></canvas>
                         <div id="timeInOutData"
                              data-labels="{{ time_in_time_out_data['labels']|join(', ') }}"
@@ -80,9 +80,9 @@
                 </div>
                 
                 <div class="w-full md:w-1/3 px-2 mb-4 md:mb-0">
-                    <div class="bg-white p-6 rounded-lg shadow shadow-gray-500 h-full">
+                    <div class="bg-white p-6 rounded-lg shadow-lg h-full">
                         <h3 class="text-xl font-semibold mb-2">Weekly Vehicle Distribution</h3>
-                        <p class="mb-4 text-gray-800 opacity-40">This chart displays the number of vehicles registered each day within the last 7 days. It helps track daily registration trends and identify patterns over the past week.</p>
+                        <p class="mb-4 text-gray-800 opacity-70">This chart displays the number of vehicles registered each day within the last 7 days. It helps track daily registration trends and identify patterns over the past week.</p>
                         <canvas id="vehicleChart"></canvas>
                         <div id="vehicleData"
                              data-labels="{{ daily_data['labels']|join(', ') }}"
@@ -92,25 +92,25 @@
                 </div>
         
                 <div class="w-full md:w-1/3 px-2 mb-4 md:mb-0">
-                    <div class="bg-white p-6 rounded-lg shadow shadow-gray-500 h-full">
+                    <div class="bg-white p-6 rounded-lg shadow-lg h-full">
                         <h3 class="text-xl font-semibold mb-2">Peak Hours of Vehicle Entries</h3>
-                        <p class="mb-4 text-gray-800 opacity-40">This chart displays the number of vehicle entries for each hour of the day. It helps identify peak hours when the highest number of vehicles enter the area.</p>
+                        <p class="mb-4 text-gray-800 opacity-70">This chart displays the number of vehicle entries for each hour of the day. It helps identify peak hours when the highest number of vehicles enter the area.</p>
                         <canvas id="peakHoursChart"></canvas>
                         <div id="peakHoursData"
                              data-labels="{{ peak_hours_data['labels']|join(', ') }}"
                              data-data="{{ peak_hours_data['data']|join(', ') }}">
                         </div>
                     </div>
-                </div>
+                </div>                
                 
             </div>
         
             <div class="flex flex-wrap -mx-2 mb-8">
         
                 <div class="w-full md:w-1/3 px-2 mb-4 md:mb-0">
-                    <div class="bg-white p-6 rounded-lg shadow shadow-gray-500">
+                    <div class="bg-white p-6 rounded-lg shadow-lg h-full">
                         <h3 class="text-xl font-semibold mb-2">Duration of Stay</h3>
-                        <p class="mb-4 text-gray-800 opacity-40">This chart illustrates the duration of vehicle stays over the past week, helping to analyze the average time vehicles remain parked.</p>
+                        <p class="mb-4 text-gray-800 opacity-70">This chart illustrates the duration of vehicle stays over the past week, helping to analyze the average time vehicles remain parked.</p>
                         <canvas id="durationHistogram"></canvas>
                         <div id="stayDurationData"
                              data-labels="{{ vehicle_stay_durations_data['labels']|join(', ') }}"
@@ -120,9 +120,9 @@
                 </div>
                 
                 <div class="w-full md:w-1/3 px-2 mb-4 md:mb-0">
-                    <div class="bg-white p-6 rounded-lg shadow shadow-gray-500">
+                    <div class="bg-white p-6 rounded-lg shadow-lg h-full">
                         <h3 class="text-xl font-semibold mb-2">User Registration by Week</h3>
-                        <p class="mb-4 text-gray-800 opacity-40">This chart shows the number of new users registered each week, helping to understand the growth or decline in user sign-ups over time.</p>
+                        <p class="mb-4 text-gray-800 opacity-70">This chart shows the number of new users registered each week, helping to understand the growth or decline in user sign-ups over time.</p>
                         <canvas id="userregistration"></canvas>
                         <div id="userRegistrationData"
                              data-labels="{{ user_registration_data['labels']|join(', ') }}"
@@ -131,21 +131,22 @@
                     </div>
                 </div>
         
-                <div class="w-full md:w-1/3 px-2">
-                    <div class="bg-white p-6 rounded-lg shadow shadow-gray-500">
-                        <h3 class="text-xl font-semibold mb-2">Daily Vehicle Entries</h3>
-                        <p class="mb-4 text-gray-800 opacity-40">This chart shows the number of vehicles that entered the area each hour, helping to identify peak entry hours throughout the day.</p>
-                        <canvas id="dailyVehicleEntriesChart"></canvas>
-                        <div id="dailyVehicleEntriesData"
-                             data-labels="{{ daily_vehicle_entries_data['labels']|join(', ') }}"
-                             data-data="{{ daily_vehicle_entries_data['data']|join(', ') }}">
+                <div class="w-full md:w-1/3 px-2 mb-4 md:mb-0">
+                    <div class="bg-white p-6 rounded-lg shadow-lg h-full">
+                        <h3 class="text-xl font-semibold mb-2">Most Active Days of the Week</h3>
+                        <p class="mb-4 text-gray-800 opacity-70">This chart shows the number of vehicles that entered the area each day of the week, helping to identify the most active days.</p>
+                        <canvas id="mostActiveDaysChart"></canvas>
+                        <div id="mostActiveDaysData"
+                             data-labels="{{ most_active_days_data['labels']|join(', ') }}"
+                             data-data="{{ most_active_days_data['data']|join(', ') }}">
                         </div>
                     </div>
-                </div>
+                </div>                                                        
         
             </div>
         
         </div>
+        
         
     </div>
 
@@ -153,7 +154,7 @@
 <script src="{{ url_for('static', filename='js/vehicleChart.js') }}"></script>
 <script src="{{ url_for('static', filename='js/durationofstay.js') }}"></script>
 <script src="{{ url_for('static', filename='js/user_registered_weekly.js') }}"></script>
-<script src="{{ url_for('static', filename='js/dailyvehicleentry.js') }}"></script>
+<script src="{{ url_for('static', filename='js/mostactivedays.js') }}"></script>
 <script src="{{ url_for('static', filename='js/peakhours.js') }}"></script>
 
 <script src="{{ url_for('static', filename='js/library/chart.min.js') }}"></script>
