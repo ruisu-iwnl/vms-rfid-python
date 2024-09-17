@@ -95,10 +95,15 @@
 
             <!-- Second Line: Duration of Stay, Frequent Visitors, and Daily/Weekly Trends -->
             <div class="flex flex-wrap -mx-2 mb-8">
+
                 <div class="w-full md:w-1/3 px-2 mb-4 md:mb-0">
                     <div class="bg-white p-6 rounded-lg shadow shadow-gray-500">
                         <h3 class="text-xl font-semibold mb-2">Duration of Stay</h3>
                         <canvas id="durationHistogram"></canvas>
+                        <div id="stayDurationData"
+                             data-labels="{{ vehicle_stay_durations_data['labels']|join(', ') }}"
+                             data-duration="{{ vehicle_stay_durations_data['duration']|join(', ') }}">
+                        </div>
                     </div>
                 </div>
 
@@ -199,6 +204,7 @@
 
 <script src="{{ url_for('static', filename='js/timeinout-comparison.js') }}"></script>
 <script src="{{ url_for('static', filename='js/vehicleChart.js') }}"></script>
+<script src="{{ url_for('static', filename='js/durationofstay.js') }}"></script>
 <script src="{{ url_for('static', filename='js/library/chart.min.js') }}"></script>
 
 

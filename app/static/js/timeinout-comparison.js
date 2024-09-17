@@ -19,9 +19,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Default to sample data if no data is provided
     if (labels.length === 0) {
-        labels = Array.from({ length: 7 }, (_, i) => `Day ${i + 1}`); // Default daily labels
+        labels = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
         timeInCounts = Array.from({ length: 7 }, () => Math.floor(Math.random() * 20) + 1); // Random time-ins
         timeOutCounts = Array.from({ length: 7 }, () => Math.floor(Math.random() * 20) + 1); // Random time-outs
+    } else {
+        // Append day of the week to each label
+        labels = labels.map(label => {
+            const date = new Date(label);
+            const dayName = date.toLocaleDateString('en-US', { weekday: 'long' });
+            return `${dayName} ${label}`;
+        });
     }
 
     var ctx = document.getElementById('timeInOutChart').getContext('2d');

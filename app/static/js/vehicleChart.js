@@ -13,10 +13,17 @@ document.addEventListener('DOMContentLoaded', function () {
     console.log('Parsed Labels:', dailyLabels);
     console.log('Parsed Data:', dailyData);
 
-    // Default to daily data if no data is provided
+    // Default to days of the week if no data is provided
     if (dailyLabels.length === 0) {
-        dailyLabels = Array.from({ length: 7 }, (_, i) => `Day ${i + 1}`); // Default daily labels
+        dailyLabels = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
         dailyData = Array.from({ length: 7 }, () => Math.floor(Math.random() * 20) + 1); // Random vehicle counts
+    } else {
+        // Append day of the week to each label
+        dailyLabels = dailyLabels.map(label => {
+            const date = new Date(label);
+            const dayName = date.toLocaleDateString('en-US', { weekday: 'long' });
+            return `${dayName} ${label}`;
+        });
     }
 
     var ctx = document.getElementById('vehicleChart').getContext('2d');
