@@ -1,7 +1,7 @@
 from flask import session, redirect, url_for, flash, request
 
 # To make debugging easier
-DEBUG_MODE = False
+DEBUG_MODE = True
 
 def check_session(role='admin'):
     if DEBUG_MODE:
