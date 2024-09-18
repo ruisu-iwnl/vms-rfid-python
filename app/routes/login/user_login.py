@@ -4,6 +4,7 @@ from app.models.database import get_cursor, close_db_connection
 from ..utils.utils import verify_password, verify_recaptcha
 from ..utils.session import check_logged_in_redirect
 from ..utils.cache import disable_caching, redirect_to
+from ..utils.activity_log import log_login_activity 
 
 user_login_bp = Blueprint('user_login', __name__)
 
@@ -54,13 +55,16 @@ def user_login():
                         print(f"Session after login: {session}")
                         flash('Login successful!', 'success')
                         
+                        log_login_activity(user_id, 'User', 'Login Successful')  
                         return redirect_to('user_dashboard.user_dashboard')
                     else:
                         login_error = 'Invalid email or password.'
                         print("Invalid password.")
+                        log_login_activity(None, 'User', 'Login Failed') 
                 else:
                     login_error = 'User not found.'
                     print("User not found.")
+                    log_login_activity(None, 'User', 'Login Failed')  
 
                 cursor.close()
                 close_db_connection(connection)

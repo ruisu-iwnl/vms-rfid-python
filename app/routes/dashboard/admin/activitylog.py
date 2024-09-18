@@ -20,12 +20,12 @@ def activitylog(page, sort_by='activity_id', order='asc'):
 
     # Query to get admin and user activity logs with sorting
     query = f"""
-        SELECT activity_id, account_type, activity_type, activity_timestamp
+        SELECT activity_id, account_type, account_id, activity_type, activity_timestamp
         FROM (
-            SELECT activity_id, 'Admin' AS account_type, activity_type, activity_timestamp
+            SELECT activity_id, 'Admin' AS account_type, admin_id AS account_id, activity_type, activity_timestamp
             FROM admin_activity_log
             UNION ALL
-            SELECT activity_id, 'User' AS account_type, activity_type, activity_timestamp
+            SELECT activity_id, 'User' AS account_type, user_id AS account_id, activity_type, activity_timestamp
             FROM user_activity_log
         ) AS combined_activity
         ORDER BY {sort_column} {sort_order}

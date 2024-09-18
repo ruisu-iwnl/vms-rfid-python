@@ -4,6 +4,7 @@ from app.models.database import get_cursor, close_db_connection
 from ..utils.utils import verify_password, verify_recaptcha
 from ..utils.session import check_logged_in_redirect
 from ..utils.cache import disable_caching, redirect_to
+from ..utils.activity_log import log_login_activity 
 
 admin_login_bp = Blueprint('admin_login', __name__)
 
@@ -11,7 +12,6 @@ admin_login_bp = Blueprint('admin_login', __name__)
 def admin_login():
     print(f"Session before login attempt: {session}")
 
-    # Check if admin is already logged in and redirect if necessary
     response = check_logged_in_redirect()
     if response:
         return response
@@ -54,16 +54,22 @@ def admin_login():
                         session['email'] = email
                         print(f"Session after login: {session}")
                         flash('Login successful!', 'success')
-                        
+
+                        log_login_activity(admin_id, 'Admin', 'Login successful')
+
                         return redirect_to('admin_dashboard.admin_dashboard')
                     else:
                         login_error = 'Invalid email or password.'
                         print("Invalid email or password.")
                         flash('Invalid email or password.', 'danger')
+                        
+                        log_login_activity(None, 'Admin', 'Login failed: Invalid password')
                 else:
                     login_error = 'Admin not found.'
                     print("Admin not found.")
                     flash('Invalid email or password.', 'danger')
+
+                    log_login_activity(None, 'Admin', 'Login failed: Admin not found')
 
                 cursor.close()
                 close_db_connection(connection)
