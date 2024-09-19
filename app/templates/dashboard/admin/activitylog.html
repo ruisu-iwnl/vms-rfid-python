@@ -5,52 +5,135 @@
 {% block header_title %}Activity Logs{% endblock %}
 
 {% block content %}
-        <!-- Main Content -->
-        <div class="">
-            <!-- Table Container -->
-            <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-4xl mb-8 relative">
-                <h2 class="text-xl font-bold mb-4">Activity Logs Table</h2>
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Activity ID</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User ID</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Activity Type</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Timestamp</th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        {% for record in records %}
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ record.id }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ record.user_id }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ record.activity_type }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ record.timestamp }}</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-
-                <!-- Pagination -->
-                <div class="flex justify-center mt-4">
-                    <nav class="relative z-0 inline-flex shadow-sm -space-x-px" aria-label="Pagination">
-                        {% if page > 1 %}
-                            <a href="{{ url_for('activitylog.activitylog', page=page-1) }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
-                                Previous
-                            </a>
-                        {% endif %}
-                        {% for p in range(1, total_pages + 1) %}
-                            <a href="{{ url_for('activitylog.activitylog', page=p) }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium {{ 'bg-gray-100' if p == page else 'bg-white' }} hover:bg-gray-50">
-                                {{ p }}
-                            </a>
-                        {% endfor %}
-                        {% if page < total_pages %}
-                            <a href="{{ url_for('activitylog.activitylog', page=page+1) }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
-                                Next
-                            </a>
-                        {% endif %}
-                    </nav>
-                </div>
-            </div>
+    <!-- Main Content -->
+    <div class="flex flex-col p-6 w-full h-full">
+        <!-- Search Bar -->
+        <div class="relative mb-4">
+            <input type="text" id="search-bar" placeholder="Search activities..." class="block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
         </div>
+        <!-- Table Container -->
+        <div class="bg-white p-6 rounded-lg shadow-md w-full overflow-x-auto">
+            <h2 class="text-xl font-bold mb-4">Activity Logs Table</h2>
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/5">
+                            <a href="{{ url_for('activitylog.activitylog', page=page, sort_by='activity_id', order='asc' if sort_by != 'activity_id' or order == 'desc' else 'desc') }}">
+                                Activity ID
+                                {% if sort_by == 'activity_id' %}
+                                    {% if order == 'asc' %}
+                                        ▲
+                                    {% else %}
+                                        ▼
+                                    {% endif %}
+                                {% endif %}
+                            </a>
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/5">
+                            <a href="{{ url_for('activitylog.activitylog', page=page, sort_by='account_type', order='asc' if sort_by != 'account_type' or order == 'desc' else 'desc') }}">
+                                Account Type
+                                {% if sort_by == 'account_type' %}
+                                    {% if order == 'asc' %}
+                                        ▲
+                                    {% else %}
+                                        ▼
+                                    {% endif %}
+                                {% endif %}
+                            </a>
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/5">
+                            <a href="{{ url_for('activitylog.activitylog', page=page, sort_by='account_id', order='asc' if sort_by != 'account_id' or order == 'desc' else 'desc') }}">
+                                Account ID
+                                {% if sort_by == 'account_id' %}
+                                    {% if order == 'asc' %}
+                                        ▲
+                                    {% else %}
+                                        ▼
+                                    {% endif %}
+                                {% endif %}
+                            </a>
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/5">
+                            <a href="{{ url_for('activitylog.activitylog', page=page, sort_by='activity_type', order='asc' if sort_by != 'activity_type' or order == 'desc' else 'desc') }}">
+                                Activity Type
+                                {% if sort_by == 'activity_type' %}
+                                    {% if order == 'asc' %}
+                                        ▲
+                                    {% else %}
+                                        ▼
+                                    {% endif %}
+                                {% endif %}
+                            </a>
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/5">
+                            <a href="{{ url_for('activitylog.activitylog', page=page, sort_by='activity_timestamp', order='asc' if sort_by != 'activity_timestamp' or order == 'desc' else 'desc') }}">
+                                Timestamp
+                                {% if sort_by == 'activity_timestamp' %}
+                                    {% if order == 'asc' %}
+                                        ▲
+                                    {% else %}
+                                        ▼
+                                    {% endif %}
+                                {% endif %}
+                            </a>
+                        </th>
+                    </tr>
+                </thead>
+                
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for record in records %}
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 truncate">{{ record[0] }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 truncate">{{ record[1] }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 truncate">{{ record[2] }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 truncate">{{ record[3] }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 truncate">{{ record[4] }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>                    
+            </table>
+
+            <!-- Pagination -->
+            <div class="flex justify-center mt-4">
+                <nav class="relative z-0 inline-flex shadow-sm -space-x-px" aria-label="Pagination">
+                    {% if page > 1 %}
+                        <a href="{{ url_for('activitylog.activitylog', page=page-1, sort_by=sort_by, order=order) }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                            Previous
+                        </a>
+                    {% endif %}
+                    {% for p in range(1, total_pages + 1) %}
+                        <a href="{{ url_for('activitylog.activitylog', page=p, sort_by=sort_by, order=order) }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium {{ 'bg-gray-100' if p == page else 'bg-white' }} hover:bg-gray-50">
+                            {{ p }}
+                        </a>
+                    {% endfor %}
+                    {% if page < total_pages %}
+                        <a href="{{ url_for('activitylog.activitylog', page=page+1, sort_by=sort_by, order=order) }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                            Next
+                        </a>
+                    {% endif %}
+                </nav>
+            </div>            
+        </div>
+    </div>
+
+    <script>
+    document.getElementById('search-bar').addEventListener('input', function() {
+        const query = this.value.toLowerCase();
+        const rows = document.querySelectorAll('tbody tr');
+
+        rows.forEach(row => {
+            const cells = row.querySelectorAll('td');
+            let match = false;
+
+            cells.forEach(cell => {
+                if (cell.textContent.toLowerCase().includes(query)) {
+                    match = true;
+                }
+            });
+
+            row.style.display = match ? '' : 'none';
+        });
+    });
+    </script>
+    
 {% endblock %}

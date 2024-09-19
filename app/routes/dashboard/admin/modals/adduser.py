@@ -3,6 +3,7 @@ from werkzeug.security import generate_password_hash
 from app.models.database import get_cursor, close_db_connection
 from app.routes.utils.forms import AddUserForm
 from app.routes.utils.utils import check_existing_registration
+from app.routes.utils.activity_log import log_login_activity  
 import mysql.connector
 
 adduser_bp = Blueprint('adduser', __name__)
@@ -56,6 +57,7 @@ def add_user():
             connection.commit()
             print("User added successfully")
             flash('User added successfully.', 'success')
+            log_login_activity(admin_id, 'Admin', 'Added new user')
             return redirect(url_for('userlist.userlist', page=1, sort_by='emp_no', order='asc'))
 
         except mysql.connector.IntegrityError as e:

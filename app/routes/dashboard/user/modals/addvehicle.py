@@ -1,8 +1,9 @@
-from flask import Blueprint, render_template, redirect, flash, request, url_for, session
+from flask import Blueprint, redirect, flash, request, url_for, session
 from app.routes.utils.forms import AddVehicleForm
 import mysql.connector
 from app.models.database import get_cursor, close_db_connection
 from app.routes.utils.session import check_access
+from app.routes.utils.activity_log import log_login_activity
 
 add_vehicle_bp = Blueprint('add_vehicle', __name__, url_prefix='/add_vehicle')
 
@@ -66,6 +67,10 @@ def add_vehicle():
             connection.commit()
             flash("Vehicle added successfully", "success")
             print("Vehicle added successfully, redirecting...")
+
+            # Log successful vehicle addition with details
+            details = f"Added vehicle with Model: {car_model} \n RFID Number: {rfid_number}"
+            log_login_activity(user_id, 'User', details)
 
             return redirect(url_for('vehicles.vehicles'))
 

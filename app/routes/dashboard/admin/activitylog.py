@@ -1,48 +1,55 @@
-from flask import Blueprint, render_template,session
+from flask import Blueprint, render_template, request
 from app.routes.utils.session import check_access
+from app.routes.models.database import get_cursor, close_db_connection
 
 activitylog_bp = Blueprint('activitylog', __name__)
 
-@activitylog_bp.route('/', defaults={'page': 1})
-@activitylog_bp.route('/<int:page>')
-def activitylog(page):
-
+@activitylog_bp.route('/', defaults={'page': 1, 'sort_by': 'activity_id', 'order': 'asc'})
+@activitylog_bp.route('/<int:page>/<string:sort_by>/<string:order>')
+def activitylog(page, sort_by='activity_id', order='asc'):
     response = check_access('admin')
-    
     if response:
         return response
 
-    records = [
-        {'activity_id': 1, 'user_id': 101, 'activity_type': 'Login', 'timestamp': '2024-09-01 08:00:00'},
-        {'activity_id': 2, 'user_id': 102, 'activity_type': 'Logout', 'timestamp': '2024-09-01 09:00:00'},
-        {'activity_id': 3, 'user_id': 103, 'activity_type': 'Login', 'timestamp': '2024-09-02 10:00:00'},
-        {'activity_id': 4, 'user_id': 104, 'activity_type': 'Upload', 'timestamp': '2024-09-02 11:00:00'},
-        {'activity_id': 5, 'user_id': 105, 'activity_type': 'Download', 'timestamp': '2024-09-03 12:00:00'},
-        {'activity_id': 6, 'user_id': 106, 'activity_type': 'Login', 'timestamp': '2024-09-03 13:00:00'},
-        {'activity_id': 7, 'user_id': 107, 'activity_type': 'Logout', 'timestamp': '2024-09-04 14:00:00'},
-        {'activity_id': 8, 'user_id': 108, 'activity_type': 'Login', 'timestamp': '2024-09-04 15:00:00'},
-        {'activity_id': 9, 'user_id': 109, 'activity_type': 'Upload', 'timestamp': '2024-09-05 16:00:00'},
-        {'activity_id': 10, 'user_id': 110, 'activity_type': 'Download', 'timestamp': '2024-09-05 17:00:00'},
-        {'activity_id': 11, 'user_id': 111, 'activity_type': 'Login', 'timestamp': '2024-09-06 18:00:00'},
-        {'activity_id': 12, 'user_id': 112, 'activity_type': 'Logout', 'timestamp': '2024-09-06 19:00:00'},
-        {'activity_id': 13, 'user_id': 113, 'activity_type': 'Upload', 'timestamp': '2024-09-07 20:00:00'},
-        {'activity_id': 14, 'user_id': 114, 'activity_type': 'Download', 'timestamp': '2024-09-07 21:00:00'},
-        {'activity_id': 15, 'user_id': 115, 'activity_type': 'Login', 'timestamp': '2024-09-08 22:00:00'},
-        {'activity_id': 16, 'user_id': 116, 'activity_type': 'Logout', 'timestamp': '2024-09-09 23:00:00'},
-        {'activity_id': 17, 'user_id': 117, 'activity_type': 'Upload', 'timestamp': '2024-09-10 00:00:00'},
-        {'activity_id': 18, 'user_id': 118, 'activity_type': 'Download', 'timestamp': '2024-09-10 01:00:00'},
-        {'activity_id': 19, 'user_id': 119, 'activity_type': 'Login', 'timestamp': '2024-09-11 02:00:00'},
-        {'activity_id': 20, 'user_id': 120, 'activity_type': 'Logout', 'timestamp': '2024-09-11 03:00:00'},
-        {'activity_id': 21, 'user_id': 121, 'activity_type': 'Upload', 'timestamp': '2024-09-12 04:00:00'}
-    ]
+    valid_columns = {'activity_id': 'activity_id', 'activity_type': 'activity_type', 'activity_timestamp': 'activity_timestamp'}
+    
+    sort_column = valid_columns.get(sort_by, 'activity_id')
+    sort_order = 'ASC' if order == 'asc' else 'DESC'
+    
+    cursor, connection = get_cursor()
 
+    # Query to get admin and user activity logs with sorting
+    query = f"""
+        SELECT activity_id, account_type, account_id, activity_type, activity_timestamp
+        FROM (
+            SELECT activity_id, 'Admin' AS account_type, admin_id AS account_id, activity_type, activity_timestamp
+            FROM admin_activity_log
+            UNION ALL
+            SELECT activity_id, 'User' AS account_type, user_id AS account_id, activity_type, activity_timestamp
+            FROM user_activity_log
+        ) AS combined_activity
+        ORDER BY {sort_column} {sort_order}
+        LIMIT %s OFFSET %s;
+    """
+    
     per_page = 5
-    total_records = len(records)
+    offset = (page - 1) * per_page
+
+    cursor.execute(query, (per_page, offset))
+    records = cursor.fetchall()
+
+    # Count total records for pagination
+    count_query = """
+        SELECT COUNT(*) FROM (
+            SELECT activity_id FROM admin_activity_log
+            UNION ALL
+            SELECT activity_id FROM user_activity_log
+        ) AS total_activity;
+    """
+    cursor.execute(count_query)
+    total_records = cursor.fetchone()[0]
     total_pages = (total_records + per_page - 1) // per_page
-    start = (page - 1) * per_page
-    end = start + per_page
-    paginated_records = records[start:end]
 
+    close_db_connection(connection)
 
-    print(f"Session active in activitylogs: {session}")
-    return render_template('dashboard/admin/activitylog.html', records=paginated_records, page=page, total_pages=total_pages)
+    return render_template('dashboard/admin/activitylog.html', records=records, page=page, total_pages=total_pages, sort_by=sort_by, order=order)

@@ -1,6 +1,7 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify
+from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify, session
 from app.models.database import get_db_connection, close_db_connection
 from app.routes.utils.forms import Admin_AddUserVehicleForm
+from app.routes.utils.activity_log import log_login_activity  
 import mysql.connector
 
 user_vehicle_bp = Blueprint('user_vehicle', __name__, url_prefix='/admin/addvehicle')
@@ -74,6 +75,8 @@ def uservehicle():
     vehicle_form.user_id.choices = [(user[0], user[1]) for user in get_users()]
     print(f"Form user_id choices set: {vehicle_form.user_id.choices}")
 
+    admin_id = session.get('admin_id')
+
     if vehicle_form.validate_on_submit():
         print("Form validated and submitted.")
         user_id = vehicle_form.user_id.data
@@ -90,6 +93,7 @@ def uservehicle():
         success = add_vehicle_to_db(user_id, model, license_plate, rfid_number)
 
         if success:
+            log_login_activity(admin_id, 'Admin', f'Added vehicle and RFID to User ID {user_id}')
             flash('Vehicle added successfully!', 'success')
             print("Redirecting to user list...")
             return redirect(url_for('userlist.userlist'))
