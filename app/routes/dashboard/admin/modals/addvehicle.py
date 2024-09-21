@@ -35,19 +35,41 @@ def get_users():
     print(f"Users fetched: {users}")
     return users
 
+def is_rfid_valid(rfid_number):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute('SELECT COUNT(*) FROM rfid WHERE rfid_no = %s', (rfid_number,))
+    count = cursor.fetchone()[0]
+    close_db_connection(conn)
+    return count > 0
+
 def add_vehicle_to_db(user_id, model, license_plate, rfid_number):
     print(f"Adding vehicle to database: user_id={user_id}, model={model}, license_plate={license_plate}, rfid_number={rfid_number}")
     conn = get_db_connection()
     cursor = conn.cursor()
     success = False
-    
+
     try:
+        if rfid_number:
+            cursor.execute('SELECT vehicle_id FROM rfid WHERE rfid_no = %s', (rfid_number,))
+            existing_rfid = cursor.fetchone()
+
+            if existing_rfid is None:
+                flash("The provided RFID number is not registered.", "danger")
+                return False
+            
+            if existing_rfid[0] is not None:
+                flash("This RFID number is already registered to a vehicle.", "danger")
+                return False
+        
         cursor.execute('INSERT INTO vehicle (user_id, model, licenseplate) VALUES (%s, %s, %s)', 
                        (user_id, model, license_plate))
         vehicle_id = cursor.lastrowid
-        
-        cursor.execute('INSERT INTO rfid (vehicle_id, rfid_no) VALUES (%s, %s)', 
-                       (vehicle_id, rfid_number))
+
+        if rfid_number:
+            cursor.execute('UPDATE rfid SET vehicle_id = %s WHERE rfid_no = %s', 
+                           (vehicle_id, rfid_number))
+
         conn.commit()
         print("Vehicle and RFID data successfully added.")
         success = True
@@ -64,7 +86,7 @@ def add_vehicle_to_db(user_id, model, license_plate, rfid_number):
     finally:
         cursor.close()
         close_db_connection(conn)
-    
+
     return success
 
 @user_vehicle_bp.route('/', methods=['GET', 'POST'])
@@ -86,8 +108,8 @@ def uservehicle():
 
         print(f"Form data: user_id={user_id}, model={model}, license_plate={license_plate}, rfid_number={rfid_number}")
 
-        if not user_id or not model or not license_plate or not rfid_number:
-            flash("All fields are required.", "danger")
+        if not user_id or not model or not license_plate:
+            flash("All fields except RFID are required.", "danger")
             return redirect(url_for('user_vehicle.uservehicle'))
 
         success = add_vehicle_to_db(user_id, model, license_plate, rfid_number)
