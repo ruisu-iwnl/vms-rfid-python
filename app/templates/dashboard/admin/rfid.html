@@ -1,0 +1,126 @@
+{% extends 'dashboard/admin/layout.html' %}
+
+{% block title %}Manage RFID{% endblock %}
+
+{% block header_title %}Manage RFID{% endblock %}
+
+{% block content %}
+
+<div class="bg-[#eeeee4] p-6 rounded-lg shadow-md w-full max-w-full relative">
+    <form action="{{ url_for('rfid.add_rfid') }}" method="POST" class="flex flex-col items-start space-y-4 mb-4" autocomplete="off" onsubmit="return handleSubmit(event);">
+        {{ form.csrf_token }}
+
+        <label for="rfid_no" class="text-lg font-bold">RFID Scanner:</label>
+        {{ form.rfid_no(class="border border-gray-300 rounded-lg p-4 text-lg w-full", placeholder="RFID Number", id="rfid-input", style="opacity: 0; position: absolute; left: -9999px;") }}
+
+        <button 
+            type="button" 
+            id="scan_button"
+            class="bg-green-500 text-white font-semibold py-4 px-8 rounded-lg text-lg hover:bg-green-600"
+            onclick="toggleScanning()"
+        >
+            Start Scanning
+        </button>
+
+        <p id="scanned_display" class="mt-2 text-lg font-semibold"><span id="rfid_number"></span></p> 
+    </form>
+
+    <!-- Table Container -->
+    <div class="mt-4">
+        <table class="min-w-full divide-y divide-gray-300">
+            <thead class="bg-[#eeeee4]">
+                <tr>
+                    <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">
+                        <a href="{{ url_for('rfid.list_rfid', page=page, sort_by='rfid_id', order='asc' if sort_by != 'rfid_id' or order == 'desc' else 'desc') }}">
+                            RFID ID
+                            {% if sort_by == 'rfid_id' %}
+                                {% if order == 'asc' %}
+                                    ▲
+                                {% else %}
+                                    ▼
+                                {% endif %}
+                            {% endif %}
+                        </a>
+                    </th>
+                    <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">
+                        <a href="{{ url_for('rfid.list_rfid', page=page, sort_by='rfid_no', order='asc' if sort_by != 'rfid_no' or order == 'desc' else 'desc') }}">
+                            RFID Number
+                            {% if sort_by == 'rfid_no' %}
+                                {% if order == 'asc' %}
+                                    ▲
+                                {% else %}
+                                    ▼
+                                {% endif %}
+                            {% endif %}
+                        </a>
+                    </th>
+                    <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">
+                        <a href="{{ url_for('rfid.list_rfid', page=page, sort_by='vehicle_id', order='asc' if sort_by != 'vehicle_id' or order == 'desc' else 'desc') }}">
+                            Vehicle ID
+                            {% if sort_by == 'vehicle_id' %}
+                                {% if order == 'asc' %}
+                                    ▲
+                                {% else %}
+                                    ▼
+                                {% endif %}
+                            {% endif %}
+                        </a>
+                    </th>
+                    <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">
+                        <a href="{{ url_for('rfid.list_rfid', page=page, sort_by='created_at', order='asc' if sort_by != 'created_at' or order == 'desc' else 'desc') }}">
+                            Created At
+                            {% if sort_by == 'created_at' %}
+                                {% if order == 'asc' %}
+                                    ▲
+                                {% else %}
+                                    ▼
+                                {% endif %}
+                            {% endif %}
+                        </a>
+                    </th>
+                </tr>
+            </thead>
+
+            <tbody class="bg-[#eeeee4] divide-y divide-gray-300">
+                {% for record in records %}
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-lg font-medium text-black">{{ record[0] }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ record[1] }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ record[2] }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ record[3] }}</td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="4" class="px-6 py-4 text-lg text-center text-black">No RFID records found.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Pagination -->
+        <div class="flex justify-center mt-4">
+            <nav class="relative z-0 inline-flex shadow-sm -space-x-px" aria-label="Pagination">
+                {% if page > 1 %}
+                    <a href="{{ url_for('rfid.list_rfid', page=page-1, sort_by=sort_by, order=order) }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-lg font-medium text-black bg-white hover:bg-gray-50">
+                        Previous
+                    </a>
+                {% endif %}
+                {% for p in range(1, total_pages + 1) %}
+                    <a href="{{ url_for('rfid.list_rfid', page=p, sort_by=sort_by, order=order) }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-lg font-medium {{ 'bg-gray-200' if p == page else 'bg-white' }} hover:bg-gray-50">
+                        {{ p }}
+                    </a>
+                {% endfor %}
+                {% if page < total_pages %}
+                    <a href="{{ url_for('rfid.list_rfid', page=page+1, sort_by=sort_by, order=order) }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-lg font-medium text-black bg-white hover:bg-gray-50">
+                        Next
+                    </a>
+                {% endif %}
+            </nav>
+        </div>
+    </div>
+</div>
+
+
+<script src="{{ url_for('static', filename='js/rfid-prod.js') }}"></script>
+
+{% endblock %}

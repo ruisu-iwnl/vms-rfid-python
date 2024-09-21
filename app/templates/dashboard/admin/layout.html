@@ -58,6 +58,7 @@
             <a href="{{ url_for('timeinout.timeinout') }}" class="block py-3 rounded hover:bg-gray-100">Time In / Time Out</a>
             <a href="{{ url_for('userlist.userlist') }}" class="block py-3 rounded hover:bg-gray-100">Registered Users</a>
             <a href="{{ url_for('activitylog.activitylog') }}" class="block py-3 rounded hover:bg-gray-100">Activity Logs</a>
+            <a href="{{ url_for('rfid.add_rfid') }}" class="block py-3 rounded hover:bg-gray-100">RFID</a>
             <button id="logout-button" class="block py-3 rounded hover:bg-gray-100">Logout</button>
         </nav>
     </aside>
@@ -82,6 +83,9 @@
                 <a href="{{ url_for('activitylog.activitylog') }}" class="block py-4 px-5 rounded hover:bg-gray-300">
                     <img src="{{ url_for('static', filename='images/icons/activitylogs.svg') }}" alt="Activity Logs" class="inline h-8 w-8 mr-2">Activity Log
                 </a>
+                <a href="{{ url_for('rfid.add_rfid') }}" class="block py-4 px-5 rounded hover:bg-gray-300">
+                    <img src="{{ url_for('static', filename='images/icons/rfid.svg') }}" alt="RFID" class="inline h-8 w-8 mr-2">RFID
+                </a>
                 <button id="logout-button-desktop" class="block py-4 px-5 rounded hover:bg-gray-300 mt-6">
                     <img src="{{ url_for('static', filename='images/icons/logout.svg') }}" alt="Logout" class="inline h-8 w-8 mr-2">Logout
                 </button>
@@ -98,13 +102,13 @@
                         {% for category, message in messages %}
                             <div class="p-3 mb-4 rounded 
                                 {% if category == 'danger' %}
-                                    bg-red-500 bg-opacity-40 text-white
+                                    bg-red-500 bg-opacity-80 text-white
                                 {% elif category == 'success' %}
-                                    bg-green-500 bg-opacity-40 text-white
+                                    bg-green-500 bg-opacity-80 text-white
                                 {% elif category == 'info' %}
-                                    bg-blue-500 bg-opacity-40 text-white
+                                    bg-blue-500 bg-opacity-80 text-white
                                 {% else %}
-                                    bg-gray-500 bg-opacity-40 text-white
+                                    bg-gray-500 bg-opacity-80 text-white
                                 {% endif %}
                                 {{ 'hidden' if not messages else 'block' }}">
                                 {{ message }}
@@ -163,10 +167,6 @@
         }
     });
 </script>
-
-
-
-
 
     <script>
         const menuToggle = document.getElementById('menu-toggle');
