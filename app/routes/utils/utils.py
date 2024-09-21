@@ -7,6 +7,19 @@ from app.models.database import get_cursor, close_db_connection
 
 load_dotenv()
 
+def get_name(user_id):
+    cursor, connection = get_cursor()
+    try:
+        query = "SELECT firstname FROM user WHERE user_id = %s"
+        cursor.execute(query, (user_id,))
+        result = cursor.fetchone()
+        if result:
+            return result[0]
+        return None
+    finally:
+        cursor.close()
+        close_db_connection(connection)
+
 def logout():
     """
     Logs out the current user by clearing the session.

@@ -4,25 +4,54 @@
 
 {% block content %}
 
-    <!-- Container to hold both sections -->
+<h1 class="text-2xl font-bold mb-4">Hello, {{ user_name }}!</h1>
+<p class="mb-2">Track your vehicle's entries and exits.</p>
 
-        <!-- Combined Sections -->
-        <div class="flex flex-col items-center justify-center space-y-4">
-            <!-- Left Section: Logo & Title -->
-            <div class="flex flex-col items-center justify-center p-2 md:p-4">
-                <!-- Logo -->
-                <img src="/static/images/CELCOR.png" alt="CELCOR Logo" class="w-28 h-28 object-contain mx-auto mb-4 opacity-80"/>
-
-                <!-- Title with custom shadow -->
-                <h1 class="text-6xl md:text-6xl font-extrabold leading-tight mb-1 text-center" style="color: #dbdee4;text-shadow: 2px 4px 6px rgba(0, 0, 0, 0.5);">
-                    Vehicle Management System
-                </h1>
-                <p class="text-base md:text-lg soft-white text-center drop-shadow-md" style="color: #dbdee4;text-shadow: 2px 4px 6px rgba(0, 0, 0, 0.5);">
-                    Effortlessly manage and track all your vehicle data in one place with our intuitive platform.
-                </p>
-            </div>
-            </div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <!-- Time-In and Time-Out Comparison -->
+    <div class="bg-gray-100 text-base p-4 rounded-lg shadow-lg h-full border border-black" style="background-color: #eeeee4; color: black;">
+        <h3 class="text-lg font-semibold mb-3">Time-In and Time-Out Comparison</h3>
+        <canvas id="timeInOutChart" class="w-full h-48"></canvas>
+        <div id="timeInOutData"
+            data-labels="{{ time_in_time_out_data['labels']|join(', ') }}"
+            data-timein="{{ time_in_time_out_data['timein']|join(', ') }}"
+            data-timeout="{{ time_in_time_out_data['timeout']|join(', ') }}">
         </div>
+    </div>
 
+    <!-- Peak Hours of Vehicle Entries -->
+    <div class="bg-gray-100 text-base p-4 rounded-lg shadow-lg h-full border border-black" style="background-color: #eeeee4; color: black;">
+        <h3 class="text-lg font-semibold mb-3">Peak Hours of Vehicle Entries</h3>
+        <canvas id="peakHoursChart" class="w-full h-48"></canvas>
+        <div id="peakHoursData"
+            data-labels="{{ peak_hours_data['labels']|join(', ') }}"
+            data-data="{{ peak_hours_data['data']|join(', ') }}">
+        </div>
+    </div>
 
+    <!-- Duration of Stay -->
+    <div class="bg-gray-100 text-base p-4 rounded-lg shadow-lg h-full border border-black" style="background-color: #eeeee4; color: black;">
+        <h3 class="text-lg font-semibold mb-3">Duration of Stay</h3>
+        <canvas id="durationHistogram" class="w-full h-48"></canvas>
+        <div id="stayDurationData"
+            data-labels="{{ vehicle_stay_durations_data['labels']|join(', ') }}"
+            data-duration="{{ vehicle_stay_durations_data['duration']|join(', ') }}">
+        </div>
+    </div>
+
+    <!-- Most Active Days of the Week -->
+    <div class="bg-gray-100 text-base p-4 rounded-lg shadow-lg h-full border border-black" style="background-color: #eeeee4; color: black;">
+        <h3 class="text-lg font-semibold mb-3">Most Active Days of the Week</h3>
+        <canvas id="mostActiveDaysChart" class="w-full h-48"></canvas>
+        <div id="mostActiveDaysData"
+            data-labels="{{ most_active_days_data['labels']|join(', ') }}"
+            data-data="{{ most_active_days_data['data'] }}">
+        </div>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/timeinout-comparison.js') }}"></script>
+<script src="{{ url_for('static', filename='js/peakhours.js') }}"></script>
+<script src="{{ url_for('static', filename='js/durationofstay.js') }}"></script>
+<script src="{{ url_for('static', filename='js/mostactivedays.js') }}"></script>
 {% endblock %}
