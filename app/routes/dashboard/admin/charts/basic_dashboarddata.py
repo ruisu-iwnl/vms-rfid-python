@@ -36,14 +36,14 @@ def get_dashboard_data():
     cursor.execute('SELECT COUNT(*) FROM rfid')
     total_rfid_tags = cursor.fetchone()[0]
 
-    # Get active RFID tags count (assuming active means not null in time_logs)
+    # Get total RFID tags registered to a vehicle
     cursor.execute('''
-        SELECT COUNT(DISTINCT r.rfid_id)
-        FROM rfid r
-        LEFT JOIN time_logs t ON r.rfid_id = t.rfid_id
-        WHERE t.time_out IS NULL
+        SELECT COUNT(*)
+        FROM rfid
+        WHERE vehicle_id IS NOT NULL
     ''')
-    active_rfid_count = cursor.fetchone()[0]
+    registered_rfid_count = cursor.fetchone()[0]
+
 
     # Get recent user registrations (last 30 days)
     cursor.execute('''
@@ -72,7 +72,7 @@ def get_dashboard_data():
         'avg_vehicles_per_user': avg_vehicles_per_user,
         'users_with_no_vehicles': users_with_no_vehicles,
         'total_rfid_tags': total_rfid_tags,
-        'active_rfid_count': active_rfid_count,
+        'registered_rfid_count': registered_rfid_count,
         'recent_user_registrations': recent_user_registrations,
         'most_common_vehicle_model': most_common_vehicle_model
     }
