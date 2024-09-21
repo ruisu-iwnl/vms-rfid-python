@@ -7,6 +7,7 @@
     <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/custom.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/auth-login-register.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/fonts.css') }}" rel="stylesheet">
 </head>
 <body class="relative min-h-screen bg-cover bg-center" style="background-image: url('/static/images/bg.jpg');">
 
@@ -78,10 +79,11 @@
                 </div>
 
                 <button type="submit" class="btn btn-admin font-semibold rounded-lg py-2 mt-6">
-                    <svg width="510px" height="60px" viewBox="0 0 300 100">
-                    </svg>
-                    <span>Login</span>
+                    <!-- User Icon -->
+                    <img src="{{ url_for('static', filename='images/icons/user-icon.svg') }}" alt="User Icon" style="width: 20px; margin-right: 8px;">
+                    <span style="font-size: 1.5em;">Login</span>
                 </button>
+                
                 
                 <div class="text-center mt-4">
                     <p class="mt-2 text-base text-off-white custom-shadow">Don't have an account? <a href="{{ url_for('user_register.user_register') }}" class="text-blue-600 hover:text-blue-800">Create one</a></p>

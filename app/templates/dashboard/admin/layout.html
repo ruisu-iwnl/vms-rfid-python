@@ -21,7 +21,7 @@
         }
     </style>
 </head>
-<body class="relative bg-cover bg-center min-h-screen" style="background-image: url('/static/images/bg.jpg');">
+<body class="relative bg-cover bg-center min-h-screen" style="background-color: #eeeee4; color: black;">
 
     <!-- Background Overlay -->
     <div class="absolute inset-0 bg-black opacity-65"></div>
@@ -44,8 +44,8 @@
         </header>
 
         <!-- Mobile Sidebar -->
-        <aside id="mobile-menu" class="bg-white text-gray-800 fixed inset-y-0 left-0 transform -translate-x-full transition-transform sm:hidden w-64 shadow-lg z-20 mt-16 backdrop-blur-md bg-white/30">
-            <nav class="p-6 space-y-6 text-off-white">
+        <aside id="mobile-menu" class="bg-white text-gray-800 fixed inset-y-0 left-0 transform -translate-x-full transition-transform sm:hidden w-64 shadow-lg z-20 mt-16 backdrop-blur-md bg-white/30" style="background-color: #eeeee4; color: black;">
+            <nav class="p-6 space-y-6">
                 <a href="{{ url_for('admin_dashboard.admin_dashboard') }}" class="block py-2 px-4 rounded hover:bg-gray-100">Data Analytics</a>
                 <a href="{{ url_for('timeinout.timeinout') }}" class="block py-2 px-4 rounded hover:bg-gray-100">Time In / Time Out</a>
                 <a href="{{ url_for('userlist.userlist') }}" class="block py-2 px-4 rounded hover:bg-gray-100">Registered Users</a>
@@ -55,17 +55,30 @@
         </aside>
 
         <!-- Main Content Area -->
-        <div class="flex flex-1 mt-20 bg-black/10 p-8 shadow-md backdrop-blur-md flex-grow">
+        <div class="flex flex-1 mt-20 bg-black/10 p-8 shadow-md backdrop-blur-md flex-grow" style="background-color: #eeeee4; color: black;">
             <!-- Desktop Sidebar -->
-            <aside class="hidden sm:block w-64 bg-gray-800 bg-opacity-70 shadow-md p-6 z-20 fixed top-0 left-0 bottom-0 backdrop-blur-lg text-white">
-                <h2 class="text-lg font-bold mb-4">Vehicle Management System</h2>
-                <nav class="space-y-2">
-                    <a href="{{ url_for('admin_dashboard.admin_dashboard') }}" class="block py-2 px-4 rounded hover:bg-gray-700">Data Analytics</a>
-                    <a href="{{ url_for('timeinout.timeinout') }}" class="block py-2 px-4 rounded hover:bg-gray-700">Time In / Time Out</a>
-                    <a href="{{ url_for('userlist.userlist') }}" class="block py-2 px-4 rounded hover:bg-gray-700">Registered Users</a>
-                    <a href="{{ url_for('activitylog.activitylog') }}" class="block py-2 px-4 rounded hover:bg-gray-700">Activity Logs</a>
-                    <button id="logout-button-desktop" class="block py-2 px-4 rounded hover:bg-gray-700">Logout</button>
+            <aside class="hidden sm:block w-64 bg-gray-800 bg-opacity-70 shadow-md p-6 z-20 fixed top-0 left-0 bottom-0 backdrop-blur-lg" style="background-color: #eeeee4; color: black;">
+                <h2 class="text-lg font-bold mb-4"></h2>
+                <nav class="space-y-4 flex flex-col justify-between" style="color:black; font-size: 1.25rem; height: 100%;">
+                    <div class="space-y-4">
+                        <a href="{{ url_for('admin_dashboard.admin_dashboard') }}" class="block py-3 px-5 rounded hover:bg-gray-300">
+                            <img src="{{ url_for('static', filename='images/icons/analytics.svg') }}" alt="Data Analytics" class="inline h-8 w-8 mr-2">Data Analytics
+                        </a>
+                        <a href="{{ url_for('timeinout.timeinout') }}" class="block py-3 px-5 rounded hover:bg-gray-300">
+                            <img src="{{ url_for('static', filename='images/icons/timeinout.svg') }}" alt="Time In / Out" class="inline h-8 w-8 mr-2">Time Log
+                        </a>
+                        <a href="{{ url_for('userlist.userlist') }}" class="block py-3 px-5 rounded hover:bg-gray-300">
+                            <img src="{{ url_for('static', filename='images/icons/users.svg') }}" alt="Registered Users" class="inline h-8 w-8 mr-2"> Users
+                        </a>
+                        <a href="{{ url_for('activitylog.activitylog') }}" class="block py-3 px-5 rounded hover:bg-gray-300">
+                            <img src="{{ url_for('static', filename='images/icons/activitylogs.svg') }}" alt="Activity Logs" class="inline h-8 w-8 mr-2">Activity Log
+                        </a>
+                    </div>
+                    <button id="logout-button-desktop" class="block py-3 px-5 rounded hover:bg-gray-300 mt-6">
+                        <img src="{{ url_for('static', filename='images/icons/logout.svg') }}" alt="Logout" class="inline h-8 w-8 mr-2">Logout
+                    </button>
                 </nav>
+                
             </aside>
 
             <!-- Main Content -->

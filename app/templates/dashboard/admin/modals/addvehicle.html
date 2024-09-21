@@ -1,16 +1,17 @@
 <div id="vehicleModal" class="fixed inset-0 flex items-center justify-center hidden z-50 transition-all duration-500 ease-in-out">
-    <div class="bg-gray-800 bg-opacity-80 backdrop-blur-md p-6 rounded-lg shadow-lg w-full max-w-md transition-all duration-500 ease-in-out">
-        <h2 class="text-2xl font-semibold mb-4 text-white">Add New Vehicle</h2>
+    <div class="bg-[#eeeee4] p-8 rounded-lg shadow-lg w-full max-w-lg border-2 border-black transition-all duration-500 ease-in-out">
+        <h2 class="text-3xl font-semibold mb-6 text-black">Add New Vehicle</h2>
         <form action="{{ url_for('user_vehicle.uservehicle') }}" method="POST" autocomplete="off">
             {{ vehicle_form.hidden_tag() }}
-        
-            <div class="mb-4">
-                <label for="user_id" class="block text-sm font-medium text-gray-300">User ID</label>
+
+            <!-- User ID Field -->
+            <div class="mb-6">
+                <label for="user_id" class="block text-lg font-medium text-black">User ID</label>
                 <input 
                     type="text" 
                     id="user_id_search" 
                     name="user_id" 
-                    class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0" 
+                    class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0 py-3 px-4" 
                     placeholder="Search user by ID or name" 
                     autocomplete="off"
                 />
@@ -21,38 +22,38 @@
                     <p class="text-red-700 text-sm italic mt-1">{{ vehicle_form.user_id.errors[0] }}</p>
                 {% endif %}
             </div>
-        
-            <!-- Model Field -->
-            <div class="mb-4">
-                <label for="model" class="block text-sm font-medium text-gray-300">Model</label>
-                {{ vehicle_form.model(
-                    class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0", 
-                    placeholder="Enter vehicle model", 
-                    required=False
-                ) }}
-                {% if vehicle_form.model.errors %}
-                    <p class="text-red-700 text-sm italic mt-1">{{ vehicle_form.model.errors[0] }}</p>
-                {% endif %}
+
+            <!-- Model and License Plate Fields -->
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <div>
+                    <label for="model" class="block text-lg font-medium text-black">Model</label>
+                    {{ vehicle_form.model(
+                        class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0 py-3 px-4", 
+                        placeholder="Enter vehicle model", 
+                        required=False
+                    ) }}
+                    {% if vehicle_form.model.errors %}
+                        <p class="text-red-700 text-sm italic mt-1">{{ vehicle_form.model.errors[0] }}</p>
+                    {% endif %}
+                </div>
+                <div>
+                    <label for="license_plate" class="block text-lg font-medium text-black">License Plate</label>
+                    {{ vehicle_form.license_plate(
+                        class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0 py-3 px-4", 
+                        placeholder="Enter license plate number", 
+                        required=False
+                    ) }}
+                    {% if vehicle_form.license_plate.errors %}
+                        <p class="text-red-700 text-sm italic mt-1">{{ vehicle_form.license_plate.errors[0] }}</p>
+                    {% endif %}
+                </div>
             </div>
-        
-            <!-- License Plate Field -->
-            <div class="mb-4">
-                <label for="license_plate" class="block text-sm font-medium text-gray-300">License Plate</label>
-                {{ vehicle_form.license_plate(
-                    class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0", 
-                    placeholder="Enter license plate number", 
-                    required=False
-                ) }}
-                {% if vehicle_form.license_plate.errors %}
-                    <p class="text-red-700 text-sm italic mt-1">{{ vehicle_form.license_plate.errors[0] }}</p>
-                {% endif %}
-            </div>
-        
+
             <!-- RFID Number Field -->
-            <div class="mb-4">
-                <label for="rfid_number" class="block text-sm font-medium text-gray-300">RFID Number</label>
+            <div class="mb-6">
+                <label for="rfid_number" class="block text-lg font-medium text-black">RFID Number</label>
                 {{ vehicle_form.rfid_number(
-                    class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0", 
+                    class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0 py-3 px-4", 
                     placeholder="Scan RFID number", 
                     required=False,
                     onkeypress="return preventEnter(event)"
@@ -64,7 +65,7 @@
         
             <!-- Error Messages -->
             {% if vehicle_form.errors %}
-                <div class="mb-4 text-red-700 text-sm italic">
+                <div class="mb-6 text-red-700 text-sm italic">
                     {% for field, errors in vehicle_form.errors.items() %}
                         {% for error in errors %}
                             <p>{{ error }}</p>
@@ -75,13 +76,15 @@
         
             <!-- Buttons -->
             <div class="flex justify-end">
-                <button type="button" id="closeModalBtn" class="bg-gray-600 text-white py-2 px-4 rounded hover:bg-gray-700 transition duration-200 ease-in-out">Cancel</button>
-                <button type="submit" class="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition duration-200 ease-in-out ml-2">Add Vehicle</button>
+                <button type="button" id="closeModalBtn" class="bg-gray-600 text-white py-3 px-6 rounded hover:bg-gray-700 transition duration-200 ease-in-out">Cancel</button>
+                <button type="submit" class="bg-blue-600 text-white py-3 px-6 rounded hover:bg-blue-700 transition duration-200 ease-in-out ml-2">Add Vehicle</button>
             </div>
         </form>
-        
     </div>
 </div>
+
+
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const userIdInput = document.getElementById('user_id_search');

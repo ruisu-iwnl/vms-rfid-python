@@ -1,69 +1,75 @@
 <div id="userModal" class="fixed inset-0 flex items-center justify-center hidden z-50 transition-all duration-500 ease-in-out">
-    <div class="bg-gray-800 bg-opacity-80 backdrop-blur-md p-6 rounded-lg shadow-lg w-full max-w-md transition-all duration-500 ease-in-out">
-        <h2 class="text-2xl font-semibold mb-4 text-white">Add New User</h2>
+    <div class="bg-[#eeeee4] p-8 rounded-lg shadow-lg w-full max-w-lg border-2 border-black transition-all duration-500 ease-in-out">
+        <h2 class="text-3xl font-semibold mb-6 text-black">Add New User</h2>
         <form action="{{ url_for('adduser.add_user') }}" method="POST" autocomplete="off">
             {{ form.hidden_tag() }}
             
-            <!-- Form Fields -->
-            <div class="mb-4">
-                <label for="employeenumber" class="block text-sm font-medium text-gray-300">Employee Number</label>
-                {{ form.employeenumber(class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0", placeholder="Enter employee number", required=False) }}
+            <!-- Employee Number -->
+            <div class="mb-6">
+                <label for="employeenumber" class="block text-lg font-medium text-black">Employee Number</label>
+                {{ form.employeenumber(class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0 py-3 px-4", placeholder="Enter employee number", required=False) }}
                 {% if form.employeenumber.errors %}
                     <p class="text-red-700 text-sm italic mt-1">{{ form.employeenumber.errors[0] }}</p>
                 {% endif %}
             </div>
-        
-            <div class="mb-4">
-                <label for="lastname" class="block text-sm font-medium text-gray-300">Last Name</label>
-                {{ form.lastname(class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0", placeholder="Enter last name", required=False) }}
-                {% if form.lastname.errors %}
-                    <p class="text-red-700 text-sm italic mt-1">{{ form.lastname.errors[0] }}</p>
-                {% endif %}
+
+            <!-- Name Fields -->
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <div>
+                    <label for="lastname" class="block text-lg font-medium text-black">Last Name</label>
+                    {{ form.lastname(class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0 py-3 px-4", placeholder="Enter last name", required=False) }}
+                    {% if form.lastname.errors %}
+                        <p class="text-red-700 text-sm italic mt-1">{{ form.lastname.errors[0] }}</p>
+                    {% endif %}
+                </div>
+                <div>
+                    <label for="firstname" class="block text-lg font-medium text-black">First Name</label>
+                    {{ form.firstname(class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0 py-3 px-4", placeholder="Enter first name", required=False) }}
+                    {% if form.firstname.errors %}
+                        <p class="text-red-700 text-sm italic mt-1">{{ form.firstname.errors[0] }}</p>
+                    {% endif %}
+                </div>
             </div>
-        
-            <div class="mb-4">
-                <label for="firstname" class="block text-sm font-medium text-gray-300">First Name</label>
-                {{ form.firstname(class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0", placeholder="Enter first name", required=False) }}
-                {% if form.firstname.errors %}
-                    <p class="text-red-700 text-sm italic mt-1">{{ form.firstname.errors[0] }}</p>
-                {% endif %}
-            </div>
-        
-            <div class="mb-4">
-                <label for="email" class="block text-sm font-medium text-gray-300">Email</label>
-                {{ form.email(class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0", placeholder="Enter email address", required=False) }}
+
+            <!-- Email -->
+            <div class="mb-6">
+                <label for="email" class="block text-lg font-medium text-black">Email</label>
+                {{ form.email(class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0 py-3 px-4", placeholder="Enter email address", required=False) }}
                 {% if form.email.errors %}
                     <p class="text-red-700 text-sm italic mt-1">{{ form.email.errors[0] }}</p>
                 {% endif %}
             </div>
-        
-            <div class="mb-4">
-                <label for="contactnumber" class="block text-sm font-medium text-gray-300">Contact Number</label>
-                {{ form.contactnumber(class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0", placeholder="Enter contact number", required=False) }}
+
+            <!-- Contact Number -->
+            <div class="mb-6">
+                <label for="contactnumber" class="block text-lg font-medium text-black">Contact Number</label>
+                {{ form.contactnumber(class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0 py-3 px-4", placeholder="Enter contact number", required=False) }}
                 {% if form.contactnumber.errors %}
                     <p class="text-red-700 text-sm italic mt-1">{{ form.contactnumber.errors[0] }}</p>
                 {% endif %}
             </div>
-        
-            <div class="mb-4">
-                <label for="password" class="block text-sm font-medium text-gray-300">Password</label>
-                {{ form.password(class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0", placeholder="Enter password", required=False) }}
-                {% if form.password.errors %}
-                    <p class="text-red-700 text-sm italic mt-1">{{ form.password.errors[0] }}</p>
-                {% endif %}
+
+            <!-- Password Fields -->
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <div>
+                    <label for="password" class="block text-lg font-medium text-black">Password</label>
+                    {{ form.password(class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0 py-3 px-4", placeholder="Enter password", required=False) }}
+                    {% if form.password.errors %}
+                        <p class="text-red-700 text-sm italic mt-1">{{ form.password.errors[0] }}</p>
+                    {% endif %}
+                </div>
+                <div>
+                    <label for="password_confirmation" class="block text-lg font-medium text-black">Confirm Password</label>
+                    {{ form.password_confirmation(class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0 py-3 px-4", placeholder="Confirm password", required=False) }}
+                    {% if form.password_confirmation.errors %}
+                        <p class="text-red-700 text-sm italic mt-1">{{ form.password_confirmation.errors[0] }}</p>
+                    {% endif %}
+                </div>
             </div>
-        
-            <div class="mb-4">
-                <label for="password_confirmation" class="block text-sm font-medium text-gray-300">Confirm Password</label>
-                {{ form.password_confirmation(class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0", placeholder="Confirm password", required=False) }}
-                {% if form.password_confirmation.errors %}
-                    <p class="text-red-700 text-sm italic mt-1">{{ form.password_confirmation.errors[0] }}</p>
-                {% endif %}
-            </div>
-        
+
             <!-- Error Messages -->
             {% if form.errors %}
-                <div class="mb-4 text-red-700 text-sm italic">
+                <div class="mb-6 text-red-700 text-sm italic">
                     {% for field, errors in form.errors.items() %}
                         {% for error in errors %}
                             <p>{{ error }}</p>
@@ -73,10 +79,9 @@
             {% endif %}
             
             <div class="flex justify-end">
-                <button type="button" id="closeUserModalBtn" class="bg-gray-600 text-white py-2 px-4 rounded hover:bg-gray-700 transition duration-200 ease-in-out">Cancel</button>
-                <button type="submit" class="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition duration-200 ease-in-out ml-2">Add User</button>
+                <button type="button" id="closeUserModalBtn" class="bg-gray-600 text-white py-3 px-6 rounded hover:bg-gray-700 transition duration-200 ease-in-out">Cancel</button>
+                <button type="submit" class="bg-blue-600 text-white py-3 px-6 rounded hover:bg-blue-700 transition duration-200 ease-in-out ml-2">Add User</button>
             </div>
         </form>
-        
     </div>
 </div>
