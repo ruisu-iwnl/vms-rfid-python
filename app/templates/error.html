@@ -17,45 +17,47 @@
         }
     </style>
 </head>
-<body class="relative bg-gradient-to-br from-teal-400 via-blue-300 to-sky-200 min-h-screen flex items-center justify-center text-gray-900">
+<body class="relative min-h-screen flex items-center justify-center" style="background-color: #eeeee4; color: black;">
 
-    <div class="absolute inset-0 bg-black opacity-60 backdrop-blur-md"></div>
+    <div class="absolute inset-0 bg-black backdrop-blur-md" style="background-color: #eeeee4; color: black;"></div>
 
-    <div class="relative z-10 flex flex-col items-center justify-center text-center p-12 max-w-4xl mx-auto space-y-12">
+    <div class="relative z-10 flex flex-col items-center justify-center text-center p-12 max-w-4xl mx-auto space-y-12" style="background-color: #eeeee4; color: black;">
         <img src="{{ url_for('static', filename='images/error.gif') }}" alt="Error" class="w-26 h-26">
 
-        <h1 class="text-9xl font-extrabold mb-6 text-gradient bg-clip-text bg-gradient-to-r from-teal-500 to-cyan-500" style="text-shadow: 4px 4px 12px rgba(0, 0, 0, 0.30); font-size: 200px;">{{ error_code }}</h1>
-        <h3 class="text-3xl mb-8 text-gray-100">{{ error_message }}</h3>
-        <h2 class="text-2xl font-semibold mb-6 text-gray-200">Oops! Something Went Wrong...</h2>
+        <h1 class="text-9xl font-extrabold mb-6 text-gradient bg-clip-text bg-gradient-to-r from-teal-500 to-cyan-500" style="text-shadow: 4px 4px 12px rgba(0, 0, 0, 0.30); font-size: 200px;" style="background-color: #eeeee4; color: black;">{{ error_code }}</h1>
+        <h3 class="text-3xl mb-8 text-gray-100" style="background-color: #eeeee4; color: black;">{{ error_message }}</h3>
+        <h2 class="text-2xl font-semibold mb-6 text-gray-200" style="background-color: #eeeee4; color: black;" >Oops! Something Went Wrong...</h2>
         
-        <p class="text-xl mb-10 px-4 md:px-0">
+        <p class="text-xl mb-10 px-4 md:px-0" style="background-color: #eeeee4; color: black;">
             {% if error_code == 404 %}
                 The page you are looking for does not exist. Please check the URL or return to the homepage.
             {% elif error_code == 500 %}
                 A server error occurred. We are working on it. Please try again later.
             {% elif error_code == 499 %}
                 {{ message }} <br>
-                <button onclick="window.location.reload();" class="text-lg font-semibold bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white py-2 px-6 rounded-lg shadow-md transition duration-300">Reload</button>
+                <button onclick="window.location.reload();" class="text-lg font-semibold bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-black py-2 px-6 rounded-lg shadow-md transition duration-300">Reload</button>
             {% else %}
                 An unexpected error occurred. Our team has been notified and will resolve the issue as soon as possible.
             {% endif %}
         </p>
 
         {% if traceback %}
-        <div class="bg-gray-800 bg-opacity-40 p-8 rounded-lg shadow-lg max-w-3xl overflow-y-auto max-h-80">
+        <div class="bg-gray-800 bg-opacity-40 p-8 rounded-lg shadow-lg max-w-3xl overflow-y-auto max-h-80" style="background-color: #eeeee4; color: black;">
             {% if error_type %}
-            <h3 class="text-3xl mb-8 text-gray-100">{{ error_type }}</h3>
+            <h3 class="text-3xl mb-8 text-gray-100" style="background-color: #eeeee4; color: black;">{{ error_type }}</h3>
             {% endif %}
-            <pre class="whitespace-pre-wrap text-gray-100">{{ traceback }}</pre>
+            <pre class="blackspace-pre-wrap text-gray-100" style="background-color: #eeeee4; color: black;">{{ traceback }}</pre>
         </div>
         {% endif %}
 
-        <div class="mt-10 space-y-4">
-            <a href="{{ url_for('main.index') }}" class="text-lg font-semibold bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white py-2 px-6 rounded-lg shadow-md transition duration-300">Return to Home</a>
-            <p class="text-base mt-2 text-gray-100">
-                For further assistance, please <a href="mailto:e.luis.pelaez@gmail.com" class="text-teal-300 hover:text-teal-200">contact support</a>.
+        <div class="mt-10 space-y-4" style="background-color: #eeeee4; color: black;">
+            <a href="{{ url_for('main.index') }}" class="text-lg font-semibold bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-black py-2 px-6 rounded-lg shadow-md transition duration-300">Return to Home</a>
+            <p class="text-base mt-2 text-gray-100" style="background-color: #eeeee4; color: black;">
+                For further assistance, please <a href="mailto:e.luis.pelaez@gmail.com" class="text-blue-300 hover:text-black-200">contact support</a>.
             </p>
         </div>
     </div>
 </body>
+
+
 </html>
