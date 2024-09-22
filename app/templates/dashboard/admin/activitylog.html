@@ -16,22 +16,10 @@
     
         <!-- Table Container -->
         <div class="bg-[#eeeee4] p-6 rounded-lg shadow-md w-full max-w-full mb-8 relative">
-            <!-- <h2 class="text-xl font-bold mb-4">Activity Logs Table</h2> -->
-            <table class="min-w-full div ide-y divide-gray-300">
+            <!-- Activity Logs Table -->
+            <table class="min-w-full divide-y divide-gray-300">
                 <thead class="bg-[#eeeee4]">
                     <tr>
-                        <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">
-                            <a href="{{ url_for('activitylog.activitylog', page=page, sort_by='activity_id', order='asc' if sort_by != 'activity_id' or order == 'desc' else 'desc') }}">
-                                Activity ID
-                                {% if sort_by == 'activity_id' %}
-                                    {% if order == 'asc' %}
-                                        ▲
-                                    {% else %}
-                                        ▼
-                                    {% endif %}
-                                {% endif %}
-                            </a>
-                        </th>
                         <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">
                             <a href="{{ url_for('activitylog.activitylog', page=page, sort_by='account_type', order='asc' if sort_by != 'account_type' or order == 'desc' else 'desc') }}">
                                 Account Type
@@ -79,21 +67,21 @@
                                     {% endif %}
                                 {% endif %}
                             </a>
-                        </th>
+                        </th>                        
                     </tr>
                 </thead>
     
                 <tbody class="bg-[#eeeee4] divide-y divide-gray-300">
                     {% for record in records %}
                         <tr>
-                            <td class="px-6 py-4 whitespace-nowrap text-lg font-medium text-black">{{ record[0] }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ record[1] }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ record[2] }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ record[3] }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ record[4] }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ record[0] }}</td> <!-- Account Type -->
+                            <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ record[1] }}</td> <!-- Account ID -->
+                            <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ record[2] }}</td> <!-- Activity Type -->
+                            <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ record[3] }}</td> <!-- Timestamp -->
                         </tr>
                     {% endfor %}
                 </tbody>
+                
             </table>
     
             <!-- Pagination -->
@@ -118,7 +106,7 @@
             </div>
         </div>
     </div>
-    
+
     <script>
     document.getElementById('search-bar').addEventListener('input', function() {
         const query = this.value.toLowerCase();
