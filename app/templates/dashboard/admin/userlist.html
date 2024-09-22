@@ -59,11 +59,21 @@
                         </a>
                     </th>
                     <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">
-                        Contact Number
+                        <a href="{{ url_for('userlist.userlist', page=page, sort_by='contactnumber', order='asc' if sort_by != 'contactnumber' or order == 'desc' else 'desc') }}">
+                            Contact Number
+                            {% if sort_by == 'contactnumber' %}
+                                {% if order == 'asc' %}▲{% else %}▼{% endif %}
+                            {% endif %}
+                        </a>
                     </th>
                     <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">
-                        Vehicle/s
-                    </th>
+                        <a href="{{ url_for('userlist.userlist', page=page, sort_by='vehicle_count', order='asc' if sort_by != 'vehicle_count' or order == 'desc' else 'desc') }}">
+                            Vehicle/s
+                            {% if sort_by == 'vehicle_count' %}
+                                {% if order == 'asc' %}▲{% else %}▼{% endif %}
+                            {% endif %}
+                        </a>
+                    </th>                    
                     <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">Actions</th>
                 </tr>
             </thead>
