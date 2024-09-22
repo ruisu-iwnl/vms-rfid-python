@@ -7,6 +7,15 @@ from app.routes.utils.activity_log import log_login_activity
 
 add_vehicle_bp = Blueprint('add_vehicle', __name__, url_prefix='/add_vehicle')
 
+def is_rfid_valid(rfid_number):
+    """Check if the RFID number exists in the system."""
+    cursor, connection = get_cursor()
+    cursor.execute('SELECT COUNT(*) FROM rfid WHERE rfid_no = %s', (rfid_number,))
+    count = cursor.fetchone()[0]
+    cursor.close()
+    close_db_connection(connection)
+    return count > 0
+
 @add_vehicle_bp.route('/add', methods=['GET', 'POST'])
 def add_vehicle():
     print("Entering add_vehicle route")
@@ -36,33 +45,41 @@ def add_vehicle():
 
         print(f"Form data - Car Model: {car_model}, Plate Number: {plate_number}, RFID Number: {rfid_number}")
 
-        duplicate_entry_error = None
-        database_error = None
-
         try:
             cursor, connection = get_cursor()
             print("Database connection established")
 
+            # Check if the RFID number is registered
+            if rfid_number and not is_rfid_valid(rfid_number):
+                flash("The provided RFID number is not registered.", "danger")
+                return redirect(url_for('vehicles.vehicles'))
+
+            # Check for duplicate license plate
             cursor.execute("SELECT vehicle_id FROM vehicle WHERE licenseplate = %s", (plate_number,))
             existing_vehicle = cursor.fetchone()
             print(f"Existing vehicle check result: {existing_vehicle}")
 
             if existing_vehicle:
-                duplicate_entry_error = "This license plate is already registered."
-                print(duplicate_entry_error)
-                flash(duplicate_entry_error, "danger")
+                flash("This license plate is already registered.", "danger")
                 return redirect(url_for('vehicles.vehicles'))
 
-            query = """
-                INSERT INTO vehicle (user_id, licenseplate, model)
-                VALUES (%s, %s, %s)
-            """
-            cursor.execute(query, (user_id, plate_number, car_model))
+            # Add vehicle to the database
+            cursor.execute("INSERT INTO vehicle (user_id, licenseplate, model) VALUES (%s, %s, %s)",
+                           (user_id, plate_number, car_model))
             vehicle_id = cursor.lastrowid
             print(f"Inserted vehicle ID: {vehicle_id}")
 
-            cursor.execute("INSERT INTO rfid (rfid_no, vehicle_id) VALUES (%s, %s)", (rfid_number, vehicle_id))
-            print(f"Inserted RFID number: {rfid_number}")
+            # Associate RFID with the vehicle
+            if rfid_number:
+                cursor.execute('SELECT vehicle_id FROM rfid WHERE rfid_no = %s', (rfid_number,))
+                existing_rfid = cursor.fetchone()
+
+                if existing_rfid and existing_rfid[0] is not None:
+                    flash("This RFID number is already registered to a vehicle.", "danger")
+                    return redirect(url_for('vehicles.vehicles'))
+
+                cursor.execute("UPDATE rfid SET vehicle_id = %s WHERE rfid_no = %s", (vehicle_id, rfid_number))
+                print(f"Updated RFID: {rfid_number}")
 
             connection.commit()
             flash("Vehicle added successfully", "success")
@@ -76,12 +93,10 @@ def add_vehicle():
 
         except mysql.connector.IntegrityError as e:
             print(f"Database integrity error: {e}")
-            if e.args[0] == 1062:
-                duplicate_entry_error = "An RFID number is already associated with another vehicle. Please use a different RFID number."
-                flash(duplicate_entry_error, "danger")
+            if e.errno == 1062:
+                flash("An RFID number or license plate is already registered.", "danger")
             else:
-                database_error = f"Database error: {e}"
-                flash(database_error, "danger")
+                flash(f"Database error: {e}", "danger")
             return redirect(url_for('vehicles.vehicles'))
 
         except Exception as e:

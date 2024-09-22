@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<!-- saved from url=(0032)http://127.0.0.1:5000/login/user -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta http-equiv="origin-trial" content="A/kargTFyk8MR5ueravczef/wIlTkbVk1qXQesp39nV+xNECPdLBVeYffxrM8TmZT6RArWGQVCJ0LRivD7glcAUAAACQeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZS5jb206NDQzIiwiZmVhdHVyZSI6IkRpc2FibGVUaGlyZFBhcnR5U3RvcmFnZVBhcnRpdGlvbmluZzIiLCJleHBpcnkiOjE3NDIzNDIzOTksImlzU3ViZG9tYWluIjp0cnVlLCJpc1RoaXJkUGFydHkiOnRydWV9">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Login</title>
+    <link href="./User Login_files/styles.css" rel="stylesheet">
+    <link href="./User Login_files/custom.css" rel="stylesheet">
+    <link href="./User Login_files/auth-login-register.css" rel="stylesheet">
+    <link href="./User Login_files/fonts.css" rel="stylesheet">
+</head>
+<body class="relative min-h-screen bg-cover bg-center" style="background-image: url(&#39;/static/images/bg.jpg&#39;);">
+
+    <div class="absolute inset-0 bg-black opacity-65"></div>
+
+    <div class="relative flex flex-col min-h-screen justify-center bg-opacity-30 backdrop-blur-md p-4">
+
+        <div id="flashMessages" class="fixed top-0 left-1/2 transform -translate-x-1/2 m-4 z-50 opacity-100 transition-opacity duration-300">
+            
+                
+            
+        </div>
+
+        <!-- Login Form Section -->
+        <div class="w-full md:w-1/4 p-4 flex flex-col items-center bg-transparent rounded-lg mx-auto">
+            <a href="http://127.0.0.1:5000/" class="absolute top-2 left-2 flex items-center justify-center w-6 h-6 rounded-full bg-transparent shadow-md hover:bg-gray-100 transition duration-300 ease-in-out">
+                <svg class="w-4 h-4 text-blue-600 hover:text-blue-800" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l-7-7 7-7"></path>
+                </svg>
+            </a>
+
+            <h2 class="text-2xl font-bold mb-4 text-off-white custom-shadow text-center">User Login</h2>
+            <form action="http://127.0.0.1:5000/login/user" method="POST" class="w-full flex flex-col" autocomplete="off">
+                <input id="csrf_token" name="csrf_token" type="hidden" value="ImNkNDM4MzVlMTk2OWI5M2M4ZGUwNzFiNzJjMDk5NDYxMzM1ZmIxY2Qi.Zu_paw.mJS0943FwKgGuXCAfoVpqSKywjk">
+
+                
+                
+                <div class="mb-4 w-full">
+                    <label for="email" class="block text-left text-off-white custom-shadow text-base font-semibold mb-1">Email Address</label>
+                    <input type="email" id="email" name="email" class="shadow-sm appearance-none border border-gray-400 rounded-lg w-full py-2 px-3 text-gray-900 leading-tight focus:outline-none focus:ring-1 focus:ring-blue-600" value="" placeholder="Email">
+                    
+                </div>
+
+                <div class="mb-4 w-full">
+                    <label for="password" class="block text-left text-off-white custom-shadow text-base font-semibold mb-1">Password</label>
+                    <input type="password" id="password" name="password" class="shadow-sm appearance-none border border-gray-400 rounded-lg w-full py-2 px-3 text-gray-900 leading-tight focus:outline-none focus:ring-1 focus:ring-blue-600" placeholder="Password">
+                    
+                </div>
+
+                
+                <div class="recaptcha-container">
+                    <div class="g-recaptcha" data-sitekey="6LcxWkIqAAAAAEycwl1Z3tWFBg3BeIFe4pQxhpoY"><div style="width: 304px; height: 78px;"><div><iframe title="reCAPTCHA" width="304" height="78" role="presentation" name="a-jjdwq5434qx4" frameborder="0" scrolling="no" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-top-navigation allow-modals allow-popups-to-escape-sandbox allow-storage-access-by-user-activation" src="./User Login_files/anchor.html"></iframe></div><textarea id="g-recaptcha-response" name="g-recaptcha-response" class="g-recaptcha-response" style="width: 250px; height: 40px; border: 1px solid rgb(193, 193, 193); margin: 10px 25px; padding: 0px; resize: none; display: none;"></textarea></div><iframe style="display: none;" src="./User Login_files/saved_resource(1).html"></iframe></div>
+                </div>
+
+                <button type="submit" class="btn btn-admin font-semibold rounded-lg py-2 mt-6">
+                    <!-- User Icon -->
+                    <img src="./User Login_files/user-icon.svg" alt="User Icon" style="width: 20px; margin-right: 8px;">
+                    <span style="font-size: 1.5em;">Login</span>
+                </button>
+                
+                
+                <div class="text-center mt-4">
+                    <p class="mt-2 text-base text-off-white custom-shadow">Don't have an account? <a href="http://127.0.0.1:5000/register/user" class="text-blue-600 hover:text-blue-800">Create one</a></p>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script type="text/javascript" async="" charset="utf-8" src="./User Login_files/recaptcha__en.js.download" crossorigin="anonymous" integrity="sha384-zYfvuq6xV6aLevocYkVfLId59jcIkDZniQX2TsTt9LIa0Tf1ORHFh4oKI1naLgGF"></script><script src="./User Login_files/api.js.download" async="" defer=""></script>
+
+<div style="background-color: rgb(255, 255, 255); border: 1px solid rgb(204, 204, 204); box-shadow: rgba(0, 0, 0, 0.2) 2px 2px 3px; position: absolute; transition: visibility linear 0.3s, opacity 0.3s linear; opacity: 0; visibility: hidden; z-index: 2000000000; left: 0px; top: -10000px;"><div style="width: 100%; height: 100%; position: fixed; top: 0px; left: 0px; z-index: 2000000000; background-color: rgb(255, 255, 255); opacity: 0.05;"></div><div class="g-recaptcha-bubble-arrow" style="border: 11px solid transparent; width: 0px; height: 0px; position: absolute; pointer-events: none; margin-top: -11px; z-index: 2000000000;"></div><div class="g-recaptcha-bubble-arrow" style="border: 10px solid transparent; width: 0px; height: 0px; position: absolute; pointer-events: none; margin-top: -10px; z-index: 2000000000;"></div><div style="z-index: 2000000000; position: relative; width: 0px; height: 0px;"><iframe title="recaptcha challenge expires in two minutes" name="c-jjdwq5434qx4" frameborder="0" scrolling="no" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-top-navigation allow-modals allow-popups-to-escape-sandbox allow-storage-access-by-user-activation" src="./User Login_files/bframe.html" style="width: 0px; height: 0px;"></iframe></div></div></body></html>
