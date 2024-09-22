@@ -26,7 +26,7 @@ CREATE TABLE `vehicle` (
   `licenseplate` VARCHAR(255) UNIQUE NOT NULL,
   `model` VARCHAR(255) NOT NULL,
   `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (`user_id`) REFERENCES `user`(`user_id`) ON DELETE SET NULL
+  FOREIGN KEY (`user_id`) REFERENCES `user`(`user_id`) ON DELETE CASCADE
 );
 
 CREATE TABLE `rfid` (
@@ -44,8 +44,8 @@ CREATE TABLE `time_logs` (
   `time_in` DATETIME NOT NULL,
   `time_out` DATETIME DEFAULT NULL,
   `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (`vehicle_id`) REFERENCES `vehicle`(`vehicle_id`) ON DELETE SET NULL,
-  FOREIGN KEY (`rfid_id`) REFERENCES `rfid`(`rfid_id`) ON DELETE SET NULL
+  FOREIGN KEY (`vehicle_id`) REFERENCES `vehicle`(`vehicle_id`) ON DELETE CASCADE,
+  FOREIGN KEY (`rfid_id`) REFERENCES `rfid`(`rfid_id`) ON DELETE CASCADE
 );
 
 CREATE TABLE `admin_activity_log` (
@@ -55,7 +55,7 @@ CREATE TABLE `admin_activity_log` (
   `activity_timestamp` DATETIME NOT NULL,
   `details` TEXT,
   `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (`admin_id`) REFERENCES `admin`(`admin_id`) ON DELETE SET NULL
+  FOREIGN KEY (`admin_id`) REFERENCES `admin`(`admin_id`) ON DELETE CASCADE
 );
 
 CREATE TABLE `user_activity_log` (
@@ -65,5 +65,5 @@ CREATE TABLE `user_activity_log` (
   `activity_timestamp` DATETIME NOT NULL,
   `details` TEXT,
   `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (`user_id`) REFERENCES `user`(`user_id`) ON DELETE SET NULL
+  FOREIGN KEY (`user_id`) REFERENCES `user`(`user_id`) ON DELETE CASCADE
 );
