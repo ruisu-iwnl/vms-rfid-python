@@ -4,6 +4,8 @@ from app.models.database import get_cursor, close_db_connection
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
 from flask_wtf import FlaskForm
+from datetime import datetime
+from app.routes.utils.activity_log import log_login_activity
 
 class RFIDForm(FlaskForm):
     rfid_no = StringField('RFID Scanner', validators=[DataRequired()])
@@ -60,14 +62,130 @@ def timeinout(page):
         cursor.close()
         close_db_connection(connection)
 
-
 @timeinout_bp.route('/time_logs/rfid', methods=['POST'])
 def handle_rfid():
     form = RFIDForm()
-    if form.validate_on_submit(): 
+    if form.validate_on_submit():
         rfid_no = form.rfid_no.data
+        print(f"RFID scanned: {rfid_no}")  
+        
         if rfid_no:
-            flash(f'Successfully scanned RFID: {rfid_no}', 'success')
+            cursor, connection = get_cursor()
+            try:
+                cursor.execute("""
+                    SELECT COUNT(*) FROM rfid WHERE rfid_no = %s
+                """, (rfid_no,))
+                exists = cursor.fetchone()[0] > 0
+
+                if not exists:
+                    flash('RFID is not registered.', 'error')
+                    return redirect(url_for('timeinout.timeinout'))
+
+                user_status = check_user_time_status(rfid_no)
+                print(f"User status for RFID {rfid_no}: {user_status}")  
+                
+                if user_status == "No Time Logs":
+                    log_time(rfid_no, 'in')  # Proceed to clock in
+                    flash(f'Successfully scanned RFID: {rfid_no}. User has clocked in.', 'success')
+                elif user_status == "Time In":
+                    log_time(rfid_no, 'out')  # Proceed to clock out
+                    flash(f'Successfully scanned RFID: {rfid_no}. User has clocked out.', 'success')
+                elif user_status == "Already Clocked Out":
+                    log_time(rfid_no, 'in')  # Allow clocking in even if previously clocked out
+                    flash(f'Successfully scanned RFID: {rfid_no}. User has clocked in.', 'success')
+                    
+            except Exception as e:
+                print(f"An error occurred: {e}")
+                flash('An error occurred while checking the RFID.', 'error')
+            finally:
+                cursor.close()
+                close_db_connection(connection)
         else:
             flash('No RFID number scanned', 'error')
+    else:
+        print("Form validation failed.")  
     return redirect(url_for('timeinout.timeinout'))
+
+def check_user_time_status(rfid_no):
+    cursor, connection = get_cursor()
+    try:
+        cursor.execute("""
+            SELECT tl.time_in, tl.time_out
+            FROM time_logs tl
+            JOIN rfid r ON tl.rfid_id = r.rfid_id
+            WHERE r.rfid_no = %s
+            ORDER BY tl.created_at DESC
+            LIMIT 1
+        """, (rfid_no,))
+        
+        result = cursor.fetchone()
+        print(f"Database query result for RFID {rfid_no}: {result}")  
+        
+        if result is None:
+            return "No Time Logs" 
+        
+        time_in, time_out = result
+        if time_in and not time_out:
+            return "Time In"
+        elif time_out:
+            return "Already Clocked Out"  
+        else:
+            return "Time In"  
+    except Exception as e:
+        print(f"An error occurred in check_user_time_status: {e}")
+        return None
+    finally:
+        cursor.close()
+        close_db_connection(connection)
+
+def log_time(rfid_no, action):
+    print(f"Logging time for RFID {rfid_no} with action: {action}")  
+    cursor, connection = get_cursor()
+    try:
+        cursor.execute("""
+            SELECT vehicle_id FROM rfid WHERE rfid_no = %s
+        """, (rfid_no,))
+        vehicle_id = cursor.fetchone()
+        print(f"Vehicle ID for RFID {rfid_no}: {vehicle_id}")  
+        
+        if not vehicle_id:
+            flash(f'RFID {rfid_no} is not associated with any vehicle.', 'error')
+            return 
+        
+        vehicle_id = vehicle_id[0]
+        now = datetime.now()
+        print(f"Current time: {now}")  
+
+        cursor.execute("""
+            SELECT user_id FROM vehicle WHERE vehicle_id = %s
+        """, (vehicle_id,))
+        user_id_result = cursor.fetchone()
+        user_id = user_id_result[0] if user_id_result else None
+        
+        if action == 'in':
+            cursor.execute("""
+                INSERT INTO time_logs (vehicle_id, rfid_id, time_in)
+                VALUES (%s, (SELECT rfid_id FROM rfid WHERE rfid_no = %s), %s)
+            """, (vehicle_id, rfid_no, now))
+            print(f"Time in logged for vehicle ID {vehicle_id}.") 
+            
+            log_login_activity(user_id, 'User', 'Clocked In')
+            
+        elif action == 'out':
+            cursor.execute("""
+                UPDATE time_logs
+                SET time_out = %s
+                WHERE vehicle_id = %s AND time_out IS NULL
+                ORDER BY created_at DESC
+                LIMIT 1
+            """, (now, vehicle_id))
+            print(f"Time out logged for vehicle ID {vehicle_id}.") 
+
+            log_login_activity(user_id, 'User', 'Clocked Out')
+
+        connection.commit()
+    except Exception as e:
+        print(f"An error occurred while logging time: {e}")
+    finally:
+        cursor.close()
+        close_db_connection(connection)
