@@ -38,17 +38,18 @@ def uservehicle():
     if vehicle_form.validate_on_submit():
         print("Form validated and submitted.")
         user_id = vehicle_form.user_id.data
+        make = vehicle_form.make.data
         model = vehicle_form.model.data
         license_plate = vehicle_form.license_plate.data
         rfid_number = vehicle_form.rfid_number.data
 
-        print(f"Form data: user_id={user_id}, model={model}, license_plate={license_plate}, rfid_number={rfid_number}")
+        print(f"Form data: user_id={user_id}, make={make}, model={model}, license_plate={license_plate}, rfid_number={rfid_number}")
 
-        if not user_id or not model or not license_plate:
+        if not user_id or not make or not model or not license_plate:
             flash("All fields except RFID are required.", "danger")
             return redirect(url_for('user_vehicle.uservehicle'))
 
-        success = add_vehicle_to_db(user_id, model, license_plate, rfid_number)
+        success = add_vehicle_to_db(user_id, make, model, license_plate, rfid_number)
 
         if success:
             log_login_activity(admin_id, 'Admin', f'Added vehicle and RFID to User ID {user_id}')
@@ -66,7 +67,7 @@ def uservehicle():
     for errors in vehicle_form.errors.values():
         unique_errors.update(errors)
 
-    for error in unique_errors:
-        flash(error, 'danger')
+    for errors in unique_errors:
+        flash
 
     return redirect(url_for('userlist.userlist', page=1, sort_by='emp_no', order='asc'))

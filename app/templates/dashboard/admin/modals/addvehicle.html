@@ -23,30 +23,43 @@
                 {% endif %}
             </div>
 
-            <!-- Model and License Plate Fields -->
+            <!-- Make and Model Fields -->
             <div class="grid grid-cols-2 gap-4 mb-6">
+                <div>
+                    <label for="make" class="block text-lg font-medium text-black">Make</label>
+                    {{ vehicle_form.make(
+                        class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0 py-3 px-4", 
+                        placeholder="Enter vehicle make", 
+                        required=True  
+                    ) }}
+                    {% if vehicle_form.make.errors %}
+                        <p class="text-red-700 text-sm italic mt-1">{{ vehicle_form.make.errors[0] }}</p>
+                    {% endif %}
+                </div>
                 <div>
                     <label for="model" class="block text-lg font-medium text-black">Model</label>
                     {{ vehicle_form.model(
                         class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0 py-3 px-4", 
                         placeholder="Enter vehicle model", 
-                        required=False
+                        required=True  
                     ) }}
                     {% if vehicle_form.model.errors %}
                         <p class="text-red-700 text-sm italic mt-1">{{ vehicle_form.model.errors[0] }}</p>
                     {% endif %}
                 </div>
-                <div>
-                    <label for="license_plate" class="block text-lg font-medium text-black">License Plate</label>
-                    {{ vehicle_form.license_plate(
-                        class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0 py-3 px-4", 
-                        placeholder="Enter license plate number", 
-                        required=False
-                    ) }}
-                    {% if vehicle_form.license_plate.errors %}
-                        <p class="text-red-700 text-sm italic mt-1">{{ vehicle_form.license_plate.errors[0] }}</p>
-                    {% endif %}
-                </div>
+            </div>
+
+            <!-- License Plate Field -->
+            <div class="mb-6">
+                <label for="license_plate" class="block text-lg font-medium text-black">License Plate</label>
+                {{ vehicle_form.license_plate(
+                    class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0 py-3 px-4", 
+                    placeholder="Enter license plate number", 
+                    required=True  
+                ) }}
+                {% if vehicle_form.license_plate.errors %}
+                    <p class="text-red-700 text-sm italic mt-1">{{ vehicle_form.license_plate.errors[0] }}</p>
+                {% endif %}
             </div>
 
             <!-- RFID Number Field -->
@@ -126,6 +139,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
 function preventEnter(event) {
         if (event.key === 'Enter') {
             event.preventDefault();

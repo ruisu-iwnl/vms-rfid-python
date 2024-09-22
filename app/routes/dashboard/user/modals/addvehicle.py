@@ -39,11 +39,12 @@ def add_vehicle():
 
     if form.validate_on_submit():
         print("Form validated successfully")
+        car_make = form.car_make.data  
         car_model = form.car_model.data
         plate_number = form.plate_number.data
         rfid_number = form.rfid_number.data
 
-        print(f"Form data - Car Model: {car_model}, Plate Number: {plate_number}, RFID Number: {rfid_number}")
+        print(f"Form data - Car Make: {car_make}, Car Model: {car_model}, Plate Number: {plate_number}, RFID Number: {rfid_number}")
 
         try:
             cursor, connection = get_cursor()
@@ -64,8 +65,8 @@ def add_vehicle():
                 return redirect(url_for('vehicles.vehicles'))
 
             # Add vehicle to the database
-            cursor.execute("INSERT INTO vehicle (user_id, licenseplate, model) VALUES (%s, %s, %s)",
-                           (user_id, plate_number, car_model))
+            cursor.execute("INSERT INTO vehicle (user_id, licenseplate, make, model) VALUES (%s, %s, %s, %s)",
+                           (user_id, plate_number, car_make, car_model))
             vehicle_id = cursor.lastrowid
             print(f"Inserted vehicle ID: {vehicle_id}")
 
@@ -86,7 +87,7 @@ def add_vehicle():
             print("Vehicle added successfully, redirecting...")
 
             # Log successful vehicle addition with details
-            details = f"Added vehicle with Model: {car_model} \n RFID Number: {rfid_number}"
+            details = f"Added vehicle with Make: {car_make}, Model: {car_model}, RFID Number: {rfid_number}"
             log_login_activity(user_id, 'User', details)
 
             return redirect(url_for('vehicles.vehicles'))

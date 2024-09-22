@@ -17,12 +17,14 @@ from app.models.database import get_cursor
 #     submit = SubmitField('Login')
 class Admin_AddUserVehicleForm(FlaskForm):
     user_id = SelectField('Select User', validators=[DataRequired()])
+    make = StringField('Vehicle Make', validators=[DataRequired()]) 
     model = StringField('Vehicle Model', validators=[DataRequired()])
     license_plate = StringField('License Plate', validators=[DataRequired()])
     rfid_number = StringField('RFID Number', validators=[DataRequired()])
     submit = SubmitField('Add Vehicle')
 
 class AddVehicleForm(FlaskForm):
+    car_make = StringField('Car Make', validators=[DataRequired()])
     car_model = StringField('Car Model', validators=[DataRequired()])
     plate_number = StringField('Plate Number', validators=[DataRequired()])
     rfid_number = PasswordField('RFID Number', validators=[
@@ -30,6 +32,7 @@ class AddVehicleForm(FlaskForm):
         Length(min=10, max=10, message="RFID number must be exactly 10 digits."),
         Regexp('^[0-9]*$', message="RFID number must contain only digits.")
     ])
+
 
 class BaseLoginForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])

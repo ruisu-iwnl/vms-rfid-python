@@ -2,8 +2,8 @@ import mysql.connector
 from app.models.database import get_db_connection, close_db_connection
 from flask import render_template, jsonify,flash,request
 
-def add_vehicle_to_db(user_id, model, license_plate, rfid_number):
-    print(f"Adding vehicle to database: user_id={user_id}, model={model}, license_plate={license_plate}, rfid_number={rfid_number}")
+def add_vehicle_to_db(user_id, make, model, license_plate, rfid_number):
+    print(f"Adding vehicle to database: user_id={user_id}, make={make}, model={model}, license_plate={license_plate}, rfid_number={rfid_number}")
     conn = get_db_connection()
     cursor = conn.cursor()
     success = False
@@ -21,8 +21,8 @@ def add_vehicle_to_db(user_id, model, license_plate, rfid_number):
                 flash("This RFID number is already registered to a vehicle.", "danger")
                 return False
         
-        cursor.execute('INSERT INTO vehicle (user_id, model, licenseplate) VALUES (%s, %s, %s)', 
-                       (user_id, model, license_plate))
+        cursor.execute('INSERT INTO vehicle (user_id, make, model, licenseplate) VALUES (%s, %s, %s, %s)', 
+                       (user_id, make, model, license_plate))
         vehicle_id = cursor.lastrowid
 
         if rfid_number:

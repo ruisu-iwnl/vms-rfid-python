@@ -4,6 +4,15 @@
         <form action="{{ url_for('add_vehicle.add_vehicle') }}" method="POST">
             {{ form.hidden_tag() }}
         
+            <!-- Car Make -->
+            <div class="mb-6">
+                <label for="car_make" class="block text-lg font-medium text-black">Car Make</label>
+                {{ form.car_make(class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0 py-3 px-4", autocomplete="off", placeholder="Enter car make") }}
+                {% if form.car_make.errors %}
+                    <p class="text-red-700 text-sm italic mt-1">{{ form.car_make.errors[0] }}</p>
+                {% endif %}
+            </div>
+
             <!-- Car Model -->
             <div class="mb-6">
                 <label for="car_model" class="block text-lg font-medium text-black">Car Model</label>
