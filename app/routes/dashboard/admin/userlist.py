@@ -13,7 +13,7 @@ def userlist(page, sort_by='emp_no', order='asc'):
     if response:
         return response
 
-    valid_columns = {'emp_no': 'u.emp_no', 'full_name': 'full_name', 'contactnumber': 'u.contactnumber', 'vehicle_count': 'vehicle_count'}
+    valid_columns = {'emp_no': 'u.emp_no', 'full_name': 'full_name', 'contactnumber': 'u.contactnumber', 'vehicle_count': 'vehicle_count', 'created_at': 'u.created_at'}
     
     sort_column = valid_columns.get(sort_by, 'u.emp_no')
     
@@ -23,11 +23,10 @@ def userlist(page, sort_by='emp_no', order='asc'):
     try:
         cursor, connection = get_cursor()
         
-        # Adjust SQL query for sorting
         cursor.execute(f"""
             SELECT u.emp_no, CONCAT(u.firstname, ' ', u.lastname) AS full_name, u.contactnumber, 
                    GROUP_CONCAT(v.model SEPARATOR ', ') AS vehicles,
-                   COUNT(v.vehicle_id) AS vehicle_count
+                   COUNT(v.vehicle_id) AS vehicle_count, u.created_at
             FROM user u
             LEFT JOIN vehicle v ON u.user_id = v.user_id
             GROUP BY u.user_id
@@ -35,7 +34,6 @@ def userlist(page, sort_by='emp_no', order='asc'):
         """)
         users = cursor.fetchall()
         
-        # Pagination logic
         per_page = 5
         total_users = len(users)
         total_pages = (total_users + per_page - 1) // per_page
@@ -50,8 +48,6 @@ def userlist(page, sort_by='emp_no', order='asc'):
     finally:
         cursor.close()
         close_db_connection(connection)
-
-    print(f"Session active in user_list: {session}")
 
     return render_template('dashboard/admin/userlist.html', 
                            users=paginated_users, 

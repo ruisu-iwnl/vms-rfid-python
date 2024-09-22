@@ -38,11 +38,7 @@
                         <a href="{{ url_for('userlist.userlist', page=page, sort_by='emp_no', order='asc' if sort_by != 'emp_no' or order == 'desc' else 'desc') }}">
                             Employee Number
                             {% if sort_by == 'emp_no' %}
-                                {% if order == 'asc' %}
-                                    ▲
-                                {% else %}
-                                    ▼
-                                {% endif %}
+                                {% if order == 'asc' %}▲{% else %}▼{% endif %}
                             {% endif %}
                         </a>
                     </th>
@@ -50,48 +46,36 @@
                         <a href="{{ url_for('userlist.userlist', page=page, sort_by='full_name', order='asc' if sort_by != 'full_name' or order == 'desc' else 'desc') }}">
                             Full Name
                             {% if sort_by == 'full_name' %}
-                                {% if order == 'asc' %}
-                                    ▲
-                                {% else %}
-                                    ▼
-                                {% endif %}
+                                {% if order == 'asc' %}▲{% else %}▼{% endif %}
                             {% endif %}
                         </a>
                     </th>
                     <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">
-                        <a href="{{ url_for('userlist.userlist', page=page, sort_by='contactnumber', order='asc' if sort_by != 'contactnumber' or order == 'desc' else 'desc') }}">
-                            Contact Number
-                            {% if sort_by == 'contactnumber' %}
-                                {% if order == 'asc' %}
-                                    ▲
-                                {% else %}
-                                    ▼
-                                {% endif %}
+                        <a href="{{ url_for('userlist.userlist', page=page, sort_by='created_at', order='asc' if sort_by != 'created_at' or order == 'desc' else 'desc') }}">
+                            Created At
+                            {% if sort_by == 'created_at' %}
+                                {% if order == 'asc' %}▲{% else %}▼{% endif %}
                             {% endif %}
                         </a>
                     </th>
                     <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">
-                        <a href="{{ url_for('userlist.userlist', page=page, sort_by='vehicle_count', order='asc' if sort_by != 'vehicle_count' or order == 'desc' else 'desc') }}">
-                            Vehicle/s
-                            {% if sort_by == 'vehicle_count' %}
-                                {% if order == 'asc' %}
-                                    ▲
-                                {% else %}
-                                    ▼
-                                {% endif %}
-                            {% endif %}
-                        </a>
+                        Contact Number
+                    </th>
+                    <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">
+                        Vehicle/s
                     </th>
                     <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">Actions</th>
                 </tr>
             </thead>
             
+            
             <tbody class="bg-[#eeeee4] divide-y divide-gray-300" id="user-table-body">
                 {% for user in users %}
                     <tr>
-                        <td class="px-6 py-4 whitespace-nowrap text-lg font-medium text-black">{{ user[0] }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ user[1] }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ user[2] }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-lg font-medium text-black">{{ user[0] }}</td> <!-- emp_no -->
+                        <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ user[1] }}</td> <!-- full_name -->
+                        <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ user[5] }}</td> <!-- created_at -->
+                        <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ user[2] }}</td> <!-- contactnumber -->
                         <td class="px-6 py-4 whitespace-nowrap text-lg text-black">
                             {% if user[3] %}
                                 {% if ',' in user[3] %}
@@ -113,12 +97,13 @@
                             {% endif %}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-lg text-black">
-                            <!-- <a href="#" class="bg-blue-500 text-white py-1 px-2 rounded hover:bg-blue-700">Edit</a>
-                            <a href="#" class="bg-red-500 text-white py-1 px-2 rounded hover:bg-red-700">Delete</a> -->
+                            <!-- Actions (Edit/Delete) can go here -->
                         </td>
                     </tr>
                 {% endfor %}
             </tbody>
+            
+            
         </table>
         <!-- Pagination -->
         <div class="flex justify-center mt-4">
