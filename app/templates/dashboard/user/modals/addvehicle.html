@@ -1,36 +1,37 @@
 <div id="vehicleModal" class="fixed inset-0 flex items-center justify-center hidden z-50 transition-all duration-500 ease-in-out">
     <div class="bg-[#eeeee4] p-8 rounded-lg shadow-lg w-full max-w-lg border-2 border-black transition-all duration-500 ease-in-out">
         <h2 class="text-3xl font-semibold mb-6 text-black">Add New Vehicle</h2>
-        <form action="{{ url_for('add_vehicle.add_vehicle') }}" method="POST">
+        <form action="{{ url_for('add_vehicle.add_vehicle') }}" method="POST" autocomplete="off">
             {{ form.hidden_tag() }}
         
-            <!-- Car Make and Model Fields -->
-            <div class="grid grid-cols-2 gap-4 mb-6">
-                <div>
-                    <label for="car_make" class="block text-lg font-medium text-black">Car Make</label>
-                    <input type="text" id="make-input" name="car_make" class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white py-3 px-4" readonly>
-                    <select id="car_make" class="mt-1 custom-select block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0 py-3 px-4">
-                        <option value="">Select make</option>
-                        <!-- Options will be populated here -->
-                    </select>
-                    {% if form.car_make.errors %}
-                        <p class="text-red-700 text-sm italic mt-1">{{ form.car_make.errors[0] }}</p>
-                    {% endif %}
-                </div>
-                <div>
-                    <label for="car_model" class="block text-lg font-medium text-black">Car Model</label>
-                    <input type="text" id="model-input" name="car_model" class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white py-3 px-4" readonly>
-                    <select id="car_model" class="mt-1 custom-select block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0 py-3 px-4">
-                        <option value="">Select model</option>
-                        <!-- Options will be populated here -->
-                    </select>
-                    {% if form.car_model.errors %}
-                        <p class="text-red-700 text-sm italic mt-1">{{ form.car_model.errors[0] }}</p>
-                    {% endif %}
-                </div>
+        <!-- Car Make and Model Fields -->
+        <div class="grid grid-cols-2 gap-4 mb-6">
+            <div>
+                <label for="car_make" class="block text-lg font-medium text-black">Car Make</label>
+                <input type="text" id="make-input" name="car_make" class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white py-3 px-4">
+                <select id="car_make" class="mt-1 custom-select block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0 py-3 px-4">
+                    <option value="">Select make</option>
+                    <!-- Options will be populated here -->
+                </select>
+                {% if form.car_make.errors %}
+                    <p class="text-red-700 text-sm italic mt-1">{{ form.car_make.errors[0] }}</p>
+                {% endif %}
             </div>
-
-        
+            <div>
+                <label for="car_model" class="block text-lg font-medium text-black">Car Model</label>
+                <input type="text" id="model-input" name="car_model" class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white py-3 px-4">
+                <select id="car_model" class="mt-1 custom-select block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0 py-3 px-4">
+                    <option value="">Select model</option>
+                    <!-- Options will be populated here -->
+                </select>
+                {% if form.car_model.errors %}
+                    <p class="text-red-700 text-sm italic mt-1">{{ form.car_model.errors[0] }}</p>
+                {% endif %}
+            </div>
+            
+        </div>   
+        <p class="text-black italic mb-6">If your vehicle is not in the dropdown menu. You can type it.</p> 
+            
             <!-- Plate Number -->
             <div class="mb-6">
                 <label for="plate_number" class="block text-lg font-medium text-black">Plate Number</label>
