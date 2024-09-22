@@ -17,11 +17,13 @@ from app.models.database import get_cursor
 #     submit = SubmitField('Login')
 class Admin_AddUserVehicleForm(FlaskForm):
     user_id = SelectField('Select User', validators=[DataRequired()])
-    make = StringField('Vehicle Make', validators=[DataRequired()]) 
+    make = StringField('Vehicle Make', validators=[DataRequired()])  
     model = StringField('Vehicle Model', validators=[DataRequired()])
     license_plate = StringField('License Plate', validators=[DataRequired()])
     rfid_number = StringField('RFID Number', validators=[DataRequired()])
     submit = SubmitField('Add Vehicle')
+
+
 
 class AddVehicleForm(FlaskForm):
     car_make = StringField('Car Make', validators=[DataRequired()])

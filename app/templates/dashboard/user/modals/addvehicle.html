@@ -4,23 +4,32 @@
         <form action="{{ url_for('add_vehicle.add_vehicle') }}" method="POST">
             {{ form.hidden_tag() }}
         
-            <!-- Car Make -->
-            <div class="mb-6">
-                <label for="car_make" class="block text-lg font-medium text-black">Car Make</label>
-                {{ form.car_make(class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0 py-3 px-4", autocomplete="off", placeholder="Enter car make") }}
-                {% if form.car_make.errors %}
-                    <p class="text-red-700 text-sm italic mt-1">{{ form.car_make.errors[0] }}</p>
-                {% endif %}
+            <!-- Car Make and Model Fields -->
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <div>
+                    <label for="car_make" class="block text-lg font-medium text-black">Car Make</label>
+                    <input type="text" id="make-input" name="car_make" class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white py-3 px-4" readonly>
+                    <select id="car_make" class="mt-1 custom-select block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0 py-3 px-4">
+                        <option value="">Select make</option>
+                        <!-- Options will be populated here -->
+                    </select>
+                    {% if form.car_make.errors %}
+                        <p class="text-red-700 text-sm italic mt-1">{{ form.car_make.errors[0] }}</p>
+                    {% endif %}
+                </div>
+                <div>
+                    <label for="car_model" class="block text-lg font-medium text-black">Car Model</label>
+                    <input type="text" id="model-input" name="car_model" class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white py-3 px-4" readonly>
+                    <select id="car_model" class="mt-1 custom-select block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0 py-3 px-4">
+                        <option value="">Select model</option>
+                        <!-- Options will be populated here -->
+                    </select>
+                    {% if form.car_model.errors %}
+                        <p class="text-red-700 text-sm italic mt-1">{{ form.car_model.errors[0] }}</p>
+                    {% endif %}
+                </div>
             </div>
 
-            <!-- Car Model -->
-            <div class="mb-6">
-                <label for="car_model" class="block text-lg font-medium text-black">Car Model</label>
-                {{ form.car_model(class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0 py-3 px-4", autocomplete="off", placeholder="Enter car model") }}
-                {% if form.car_model.errors %}
-                    <p class="text-red-700 text-sm italic mt-1">{{ form.car_model.errors[0] }}</p>
-                {% endif %}
-            </div>
         
             <!-- Plate Number -->
             <div class="mb-6">
@@ -81,4 +90,76 @@
             this.value = this.value.slice(0, 10); 
         }
     });
+
+    document.addEventListener('DOMContentLoaded', function() {
+    const makeSelect = document.getElementById('car_make');
+    const modelSelect = document.getElementById('car_model');
+    const makeInput = document.getElementById('make-input');
+    const modelInput = document.getElementById('model-input');
+
+    if (!makeSelect || !modelSelect) {
+        console.error('Make or Model select element not found.');
+        return;
+    }
+
+    fetchMakes(); // Fetch makes on page load
+
+    makeSelect.addEventListener('change', function() {
+        const selectedMake = makeSelect.value;
+        makeInput.value = selectedMake; // Update make input field
+        fetchModels(selectedMake); // Fetch models based on selected make
+    });
+
+    modelSelect.addEventListener('change', function() {
+        const selectedModel = modelSelect.value;
+        modelInput.value = selectedModel; // Update model input field
+    });
+
+    function fetchMakes() {
+    fetch('/admin/addvehicle/search_makes')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(makes => {
+            makeSelect.innerHTML = '<option value="">Select make</option>'; // Reset options
+            makes.forEach(make => {
+                const option = document.createElement('option');
+                option.value = make;
+                option.textContent = make;
+                makeSelect.appendChild(option);
+            });
+        })
+        .catch(error => console.error('Error fetching makes:', error));
+}
+
+function fetchModels(make) {
+    if (!make) {
+        modelSelect.innerHTML = '<option value="">Select model</option>';
+        return;
+    }
+
+    fetch(`/admin/addvehicle/search_models?make=${make}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(models => {
+            modelSelect.innerHTML = '<option value="">Select model</option>';
+            models.forEach(model => {
+                const option = document.createElement('option');
+                option.value = model;
+                option.textContent = model;
+                modelSelect.appendChild(option);
+            });
+        })
+        .catch(error => console.error('Error fetching models:', error));
+}
+
+});
+
 </script>

@@ -1,7 +1,7 @@
-from flask import Blueprint, redirect, flash, request, url_for, session
+from flask import Blueprint, redirect, flash, request, url_for, session,jsonify
 from app.routes.utils.forms import AddVehicleForm
 import mysql.connector
-from app.models.database import get_cursor, close_db_connection
+from app.models.database import get_cursor, close_db_connection, get_cars_cursor
 from app.routes.utils.session import check_access
 from app.routes.utils.activity_log import log_login_activity
 
@@ -19,22 +19,18 @@ def is_rfid_valid(rfid_number):
 @add_vehicle_bp.route('/add', methods=['GET', 'POST'])
 def add_vehicle():
     print("Entering add_vehicle route")
-    
-    response = check_access('user')
-    print(f"check_access response: {response}")
 
+    response = check_access('user')
     if response:
         print("Unauthorized access detected, redirecting...")
         return response
 
     user_id = session.get('user_id')
-    print(f"User ID from session: {user_id}")
-    
     if not user_id:
         print("User ID is not set in the session. User might not be logged in.")
         flash("You need to be logged in to add a vehicle.", "danger")
         return redirect(url_for('main.index'))
-    
+
     form = AddVehicleForm()
 
     if form.validate_on_submit():
@@ -47,7 +43,7 @@ def add_vehicle():
         print(f"Form data - Car Make: {car_make}, Car Model: {car_model}, Plate Number: {plate_number}, RFID Number: {rfid_number}")
 
         try:
-            cursor, connection = get_cursor()
+            cursor, connection = get_cursor()  # Use get_cursor here
             print("Database connection established")
 
             # Check if the RFID number is registered
@@ -55,18 +51,19 @@ def add_vehicle():
                 flash("The provided RFID number is not registered.", "danger")
                 return redirect(url_for('vehicles.vehicles'))
 
-            # Check for duplicate license plate
+            # Check for duplicate license plate in the vehicle table
             cursor.execute("SELECT vehicle_id FROM vehicle WHERE licenseplate = %s", (plate_number,))
             existing_vehicle = cursor.fetchone()
-            print(f"Existing vehicle check result: {existing_vehicle}")
-
             if existing_vehicle:
                 flash("This license plate is already registered.", "danger")
                 return redirect(url_for('vehicles.vehicles'))
 
-            # Add vehicle to the database
-            cursor.execute("INSERT INTO vehicle (user_id, licenseplate, make, model) VALUES (%s, %s, %s, %s)",
-                           (user_id, plate_number, car_make, car_model))
+            # Add vehicle to the vehicle table
+            cursor.execute(
+                "INSERT INTO vehicle (user_id, licenseplate, make, model) VALUES (%s, %s, %s, %s)",
+                (user_id, plate_number, car_make, car_model)
+            )
+
             vehicle_id = cursor.lastrowid
             print(f"Inserted vehicle ID: {vehicle_id}")
 
@@ -113,3 +110,53 @@ def add_vehicle():
     else:
         print("Form did not validate")
         return redirect(url_for('vehicles.vehicles'))
+
+@add_vehicle_bp.route('/search_makes', methods=['GET'])
+def search_makes():
+    makes = set()
+    
+    try:
+        cursor, connection = get_cars_cursor()
+        for year in range(1992, 2027):
+            table_name = f"`{year}`"
+            cursor.execute(f"SHOW COLUMNS FROM {table_name}")
+            columns = [column[0] for column in cursor.fetchall()]
+            if 'make' in columns:
+                cursor.execute(f"SELECT DISTINCT make FROM {table_name}")
+                for (make,) in cursor.fetchall():
+                    makes.add(make)
+
+        close_db_connection(connection)
+    except Exception as e:
+        print(f"Error fetching makes: {e}")
+        return jsonify({'error': str(e)}), 500
+
+    print(f"Makes fetched: {sorted(makes)}")  # Log the fetched makes
+    return jsonify(sorted(makes))
+
+@add_vehicle_bp.route('/search_models', methods=['GET'])
+def search_models():
+    make = request.args.get('make', '')
+    models = set()
+
+    if not make:
+        return jsonify(list(models))
+
+    try:
+        cursor, connection = get_cars_cursor()
+        for year in range(1992, 2027):
+            table_name = f"`{year}`"
+            cursor.execute(f"SHOW COLUMNS FROM {table_name}")
+            columns = [column[0] for column in cursor.fetchall()]
+            if 'make' in columns and 'model' in columns:
+                cursor.execute(f"SELECT DISTINCT model FROM {table_name} WHERE make = %s", (make,))
+                for (model,) in cursor.fetchall():
+                    models.add(model)
+
+        close_db_connection(connection)
+    except Exception as e:
+        print(f"Error fetching models: {e}")
+        return jsonify({'error': str(e)}), 500
+
+    print(f"Models fetched for make '{make}': {sorted(models)}")  # Log the fetched models
+    return jsonify(sorted(models))

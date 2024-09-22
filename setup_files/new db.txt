@@ -20,7 +20,7 @@ CREATE TABLE `user` (
   `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE `vehicle_new` (
+CREATE TABLE `vehicle` (
   `vehicle_id` INT AUTO_INCREMENT PRIMARY KEY,
   `user_id` INT NOT NULL,
   `licenseplate` VARCHAR(255) UNIQUE NOT NULL,
