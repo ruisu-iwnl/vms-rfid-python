@@ -27,22 +27,16 @@
             <div class="grid grid-cols-2 gap-4 mb-6">
                 <div>
                     <label for="make" class="block text-lg font-medium text-black">Make</label>
-                    {{ vehicle_form.make(
-                        class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0 py-3 px-4", 
-                        placeholder="Enter vehicle make", 
-                        required=True  
-                    ) }}
+                    <input type="text" id="make" name="make" class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0 py-3 px-4" placeholder="Enter vehicle make" required>
+                    <ul id="make_suggestions" class="mt-2 border border-gray-300 bg-white rounded-md max-h-40 overflow-y-auto absolute z-10 hidden"></ul>
                     {% if vehicle_form.make.errors %}
                         <p class="text-red-700 text-sm italic mt-1">{{ vehicle_form.make.errors[0] }}</p>
                     {% endif %}
                 </div>
                 <div>
                     <label for="model" class="block text-lg font-medium text-black">Model</label>
-                    {{ vehicle_form.model(
-                        class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0 py-3 px-4", 
-                        placeholder="Enter vehicle model", 
-                        required=True  
-                    ) }}
+                    <input type="text" id="model" name="model" class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0 py-3 px-4" placeholder="Enter vehicle model" required>
+                    <ul id="model_suggestions" class="mt-2 border border-gray-300 bg-white rounded-md max-h-40 overflow-y-auto absolute z-10 hidden"></ul>
                     {% if vehicle_form.model.errors %}
                         <p class="text-red-700 text-sm italic mt-1">{{ vehicle_form.model.errors[0] }}</p>
                     {% endif %}
@@ -146,4 +140,79 @@ function preventEnter(event) {
             return false;
         }
     }
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+    const makeInput = document.getElementById('make');
+    const modelInput = document.getElementById('model');
+    const makeSuggestions = document.getElementById('make_suggestions');
+    const modelSuggestions = document.getElementById('model_suggestions');
+
+    makeInput.addEventListener('input', function() {
+        const query = makeInput.value;
+        if (query.length > 2) {
+            fetch(`/admin/addvehicle/search_makes?query=${query}`)
+                .then(response => response.json())
+                .then(data => {
+                    makeSuggestions.innerHTML = '';
+                    if (data.length > 0) {
+                        makeSuggestions.classList.remove('hidden');
+                        data.forEach(make => {
+                            const listItem = document.createElement('li');
+                            listItem.textContent = make;
+                            listItem.classList.add('p-2', 'cursor-pointer', 'hover:bg-gray-200');
+                            listItem.addEventListener('click', function() {
+                                makeInput.value = make;
+                                makeSuggestions.classList.add('hidden');
+                            });
+                            makeSuggestions.appendChild(listItem);
+                        });
+                    } else {
+                        makeSuggestions.classList.add('hidden');
+                    }
+                });
+        } else {
+            makeSuggestions.classList.add('hidden');
+        }
+    });
+
+    modelInput.addEventListener('input', function() {
+        const query = modelInput.value;
+        if (query.length > 2) {
+            fetch(`/admin/addvehicle/search_models?query=${query}`)
+                .then(response => response.json())
+                .then(data => {
+                    modelSuggestions.innerHTML = '';
+                    if (data.length > 0) {
+                        modelSuggestions.classList.remove('hidden');
+                        data.forEach(model => {
+                            const listItem = document.createElement('li');
+                            listItem.textContent = model;
+                            listItem.classList.add('p-2', 'cursor-pointer', 'hover:bg-gray-200');
+                            listItem.addEventListener('click', function() {
+                                modelInput.value = model;
+                                modelSuggestions.classList.add('hidden');
+                            });
+                            modelSuggestions.appendChild(listItem);
+                        });
+                    } else {
+                        modelSuggestions.classList.add('hidden');
+                    }
+                });
+        } else {
+            modelSuggestions.classList.add('hidden');
+        }
+    });
+
+    document.addEventListener('click', function(event) {
+        if (!makeSuggestions.contains(event.target) && event.target !== makeInput) {
+            makeSuggestions.classList.add('hidden');
+        }
+        if (!modelSuggestions.contains(event.target) && event.target !== modelInput) {
+            modelSuggestions.classList.add('hidden');
+        }
+    });
+});
+
+
 </script>

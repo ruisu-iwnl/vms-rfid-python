@@ -2,9 +2,66 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request,
 from app.routes.utils.forms import Admin_AddUserVehicleForm
 from app.routes.utils.activity_log import log_login_activity 
 from app.routes.dashboard.admin.modals.addvehicle_utils import add_vehicle_to_db, get_users
-from app.models.database import get_db_connection, close_db_connection
+from app.models.database import get_db_connection, close_db_connection, get_cars_cursor
 
 user_vehicle_bp = Blueprint('user_vehicle', __name__, url_prefix='/admin/addvehicle')
+
+@user_vehicle_bp.route('/search_makes', methods=['GET'])
+def search_makes():
+    query = request.args.get('query', '')
+    makes = set()
+
+    if not query:
+        print("No query provided for make search.")
+        return jsonify(list(makes))
+
+    print(f"Searching for makes with query: {query}")
+
+    try:
+        cursor, connection = get_cars_cursor()  
+        for year in range(1992, 2027):
+            table_name = f"`{year}`"
+            print(f"Querying table: {table_name} for makes matching '{query}'")
+            cursor.execute(f"SELECT DISTINCT make FROM {table_name} WHERE make LIKE %s", (f'%{query}%',))
+            for (make,) in cursor.fetchall():
+                print(f"Found make: {make}")
+                makes.add(make)
+
+        close_db_connection(connection)
+        print(f"Total unique makes found: {len(makes)}")
+    except Exception as e:
+        print(f"Error fetching makes: {e}")
+
+    return jsonify(sorted(makes))
+
+@user_vehicle_bp.route('/search_models', methods=['GET'])
+def search_models():
+    query = request.args.get('query', '')
+    models = set()
+
+    if not query:
+        print("No query provided for model search.")
+        return jsonify(list(models))
+
+    print(f"Searching for models with query: {query}")
+
+    try:
+        cursor, connection = get_cars_cursor() 
+        for year in range(1992, 2027):
+            table_name = f"`{year}`"
+            print(f"Querying table: {table_name} for models matching '{query}'")
+            cursor.execute(f"SELECT DISTINCT model FROM {table_name} WHERE model LIKE %s", (f'%{query}%',))
+            for (model,) in cursor.fetchall():
+                print(f"Found model: {model}")
+                models.add(model)
+
+        close_db_connection(connection)
+        print(f"Total unique models found: {len(models)}")
+    except Exception as e:
+        print(f"Error fetching models: {e}")
+
+    return jsonify(sorted(models))
+
 
 @user_vehicle_bp.route('/search_users', methods=['GET'])
 def search_users():
