@@ -14,9 +14,12 @@ from .routes.dashboard.admin.timeinout import timeinout_bp
 from .routes.dashboard.admin.userlist import userlist_bp
 from .routes.dashboard.admin.activitylog import activitylog_bp
 from .routes.dashboard.admin.rfid import rfid_bp
+from .routes.dashboard.admin.survey_admin import survey_admin_bp
 # user dashboard routes
 from .routes.dashboard.user.user_dashboard import user_dashboard_bp
 from .routes.dashboard.user.vehicles import vehicles_bp
+from .routes.dashboard.user.survey_user import survey_user_bp
+
 from .routes.error import error_bp
 
 from .routes.dashboard.user.modals.addvehicle import add_vehicle_bp
@@ -44,6 +47,8 @@ def create_app():
     app.register_blueprint(userlist_bp, url_prefix='/dashboard/userlist')
     app.register_blueprint(activitylog_bp, url_prefix='/dashboard/activitylog')
     app.register_blueprint(rfid_bp, url_prefix ='/dashboard/rfid')
+    app.register_blueprint(survey_admin_bp, url_prefix ='/survey/admin')
+    app.register_blueprint(survey_user_bp, url_prefix='/survey/user')
 
     app.register_blueprint(add_vehicle_bp)
 
@@ -54,4 +59,3 @@ def create_app():
     app.register_blueprint(user_vehicle_bp)
 
     return app
-
