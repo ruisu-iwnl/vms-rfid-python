@@ -20,7 +20,7 @@ def vehicles(page):
 
     try:
         cursor.execute("""
-            SELECT model, licenseplate
+            SELECT make, model, licenseplate
             FROM vehicle
             WHERE user_id = %s
         """, (user_id,))

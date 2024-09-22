@@ -76,3 +76,14 @@
         opacity: 0;
         display: none;
     }
+
+    .custom-select {
+        max-height: 50px; /* Adjust height as needed */
+        overflow-y: auto;  /* Enable vertical scrolling */
+    }
+    
+    /* Optional: Style for the dropdown when it's open */
+    .custom-select:focus {
+        overflow-y: auto;
+    }
+    
