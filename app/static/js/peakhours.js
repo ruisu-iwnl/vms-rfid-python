@@ -6,26 +6,8 @@ document.addEventListener('DOMContentLoaded', function () {
     console.log('Peak Hours Labels:', labelsString);
     console.log('Peak Hours Data:', dataString);
 
-    // Parse labels and data from data attributes
     var peakHoursLabels = labelsString ? labelsString.split(',').map(label => label.trim()) : [];
     var peakHoursData = dataString ? dataString.split(',').map(Number) : [];
-
-    console.log('Parsed Labels:', peakHoursLabels);
-    console.log('Parsed Data:', peakHoursData);
-
-    // Default to sample data if no data is provided
-    if (peakHoursLabels.length === 0) {
-        const hoursOfDay = Array.from({ length: 24 }, (_, i) => `${i}:00 - ${i + 1}:00`);
-        peakHoursLabels = hoursOfDay;
-        peakHoursData = Array.from({ length: 24 }, () => Math.floor(Math.random() * 20) + 1); // Random vehicle counts
-    } else {
-        // Format labels as hourly intervals
-        peakHoursLabels = peakHoursLabels.map(label => {
-            const date = new Date(label);
-            const hour = date.getHours();
-            return `${hour}:00 - ${hour + 1}:00`;
-        });
-    }
 
     var ctx = document.getElementById('peakHoursChart').getContext('2d');
     var peakHoursChart = new Chart(ctx, {
@@ -38,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 backgroundColor: 'rgba(75, 192, 192, 0.2)',
                 borderColor: 'rgba(75, 192, 192, 1)',
                 borderWidth: 2,
-                fill: true // Fill the area under the line
+                fill: true 
             }]
         },
         options: {
@@ -58,10 +40,17 @@ document.addEventListener('DOMContentLoaded', function () {
             scales: {
                 x: {
                     ticks: {
-                        maxRotation: 45,
-                        minRotation: 30,
-                        autoSkip: true,
-                        maxTicksLimit: 24 // Show one label per hour of the day
+                        callback: function(value, index, values) {
+                            let label = value.toString();
+                            let hour = parseInt(label.split(":")[0]);
+
+                            return hour === 0 ? '12 AM' :
+                                   hour < 12 ? hour + ' AM' :
+                                   hour === 12 ? '12 PM' : (hour - 12) + ' PM';
+                        },
+                        maxRotation: 0,  
+                        autoSkip: true,   
+                        maxTicksLimit: 12 
                     }
                 },
                 y: {
