@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', function () {
         data: {
             labels: durationLabels,
             datasets: [{
-                label: 'Duration of Stay (in hours)',
+                label: 'Average Duration of Stay (in hours)',
                 data: durationData,
                 backgroundColor: 'rgba(153, 102, 255, 0.2)',
                 borderColor: 'rgba(153, 102, 255, 1)',
@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 tooltip: {
                     callbacks: {
                         label: function(context) {
-                            return context.label + ': ' + context.raw + ' hours';
+                            return context.label + ': ' + context.raw.toFixed(2) + ' hours'; // Show two decimal points
                         }
                     }
                 }
@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         maxRotation: 45,
                         minRotation: 30,
                         autoSkip: true,
-                        maxTicksLimit: 7
+                        maxTicksLimit: 24 // Adjust for hourly labels
                     }
                 },
                 y: {
