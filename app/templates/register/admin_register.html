@@ -7,12 +7,20 @@
     <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/custom.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/auth-login-register.css') }}" rel="stylesheet">
+    <style>
+        body {
+            background-color: #eeeee4;
+            color: black;
+        }
+        .button-custom {
+            width: 100%; /* Make button take the full width */
+            padding: 10px; /* Adjust padding as needed */
+        }
+    </style>
 </head>
-<body class="relative min-h-screen bg-cover bg-center" style="background-image: url('/static/images/bg.jpg');">
+<body class="relative min-h-screen bg-cover bg-center">
 
-    <div class="absolute inset-0 bg-black opacity-65"></div>
-
-    <div class="relative flex flex-col min-h-screen justify-center bg-opacity-30 backdrop-blur-md p-4">
+    <div class="relative flex flex-col min-h-screen justify-center bg-opacity-30  p-4">
 
         <div id="flashMessages" class="fixed top-0 left-1/2 transform -translate-x-1/2 m-4 z-50 opacity-100 transition-opacity duration-300">
             {% with messages = get_flashed_messages(with_categories=true) %}
@@ -21,13 +29,13 @@
                         {% for category, message in messages %}
                             <div class="p-3 mb-4 rounded 
                                 {% if category == 'danger' %}
-                                    bg-red-500 bg-opacity-40 text-white
+                                    bg-red-500 bg-opacity-40 text-black
                                 {% elif category == 'success' %}
-                                    bg-green-500 bg-opacity-40 text-white
+                                    bg-green-500 bg-opacity-40 text-black
                                 {% elif category == 'info' %}
-                                    bg-blue-500 bg-opacity-40 text-white
+                                    bg-blue-500 bg-opacity-40 text-black
                                 {% else %}
-                                    bg-gray-500 bg-opacity-40 text-white
+                                    bg-gray-500 bg-opacity-40 text-black
                                 {% endif %}
                                 {{ 'hidden' if not messages else 'block' }}">
                                 {{ message }}
@@ -46,7 +54,7 @@
                 </svg>
             </a>
 
-            <h2 class="text-2xl font-bold mb-4 text-off-white custom-shadow text-center">Admin Registration</h2>
+            <h2 class="text-2xl font-bold mb-4   text-center">Admin Registration</h2>
             <form action="{{ url_for('admin_register.admin_register') }}" method="POST" class="w-full flex flex-col" autocomplete="off">
                 {{ form.hidden_tag() }}
 
@@ -60,7 +68,7 @@
 
                 <!-- Employee Number -->
                 <div class="mb-4 w-full">
-                    <label for="employeenumber" class="block text-left text-off-white custom-shadow text-base font-semibold mb-1">Employee Number</label>
+                    <label for="employeenumber" class="block text-left   text-base font-semibold mb-1">Employee Number</label>
                     <input type="text" id="employeenumber" name="employeenumber" class="shadow-sm appearance-none border border-gray-400 rounded-lg w-full py-2 px-3 text-gray-900 leading-tight focus:outline-none focus:ring-1 focus:ring-blue-600" value="{{ form.employeenumber.data or '' }}" placeholder="Employee Number">
                     {% if form.employeenumber.errors %}
                         <p class="text-red-700 text-sm italic mt-1">{{ form.employeenumber.errors[0] }}</p>
@@ -73,7 +81,7 @@
                 <!-- Name Fields -->
                 <div class="mb-4 w-full flex space-x-4">
                     <div class="w-1/2">
-                        <label for="firstname" class="block text-left text-off-white custom-shadow text-base font-semibold mb-1">First Name</label>
+                        <label for="firstname" class="block text-left   text-base font-semibold mb-1">First Name</label>
                         <input type="text" id="firstname" name="firstname" class="shadow-sm appearance-none border border-gray-400 rounded-lg w-full py-2 px-3 text-gray-900 leading-tight focus:outline-none focus:ring-1 focus:ring-blue-600" value="{{ form.firstname.data or '' }}" placeholder="First Name">
                         {% if form.firstname.errors %}
                             <p class="text-red-700 text-sm italic mt-1">{{ form.firstname.errors[0] }}</p>
@@ -81,7 +89,7 @@
                     </div>
 
                     <div class="w-1/2">
-                        <label for="lastname" class="block text-left text-off-white custom-shadow text-base font-semibold mb-1">Last Name</label>
+                        <label for="lastname" class="block text-left   text-base font-semibold mb-1">Last Name</label>
                         <input type="text" id="lastname" name="lastname" class="shadow-sm appearance-none border border-gray-400 rounded-lg w-full py-2 px-3 text-gray-900 leading-tight focus:outline-none focus:ring-1 focus:ring-blue-600" value="{{ form.lastname.data or '' }}" placeholder="Last Name">
                         {% if form.lastname.errors %}
                             <p class="text-red-700 text-sm italic mt-1">{{ form.lastname.errors[0] }}</p>
@@ -92,7 +100,7 @@
 
                 <!-- Email Address -->
                 <div class="mb-4 w-full">
-                    <label for="email" class="block text-left text-off-white custom-shadow text-base font-semibold mb-1">Email Address</label>
+                    <label for="email" class="block text-left   text-base font-semibold mb-1">Email Address</label>
                     <input type="email" id="email" name="email" class="shadow-sm appearance-none border border-gray-400 rounded-lg w-full py-2 px-3 text-gray-900 leading-tight focus:outline-none focus:ring-1 focus:ring-blue-600" value="{{ form.email.data or '' }}" placeholder="Email">
                     {% if form.email.errors %}
                         <p class="text-red-700 text-sm italic mt-1">{{ form.email.errors[0] }}</p>
@@ -101,7 +109,7 @@
 
                 <!-- Contact Number -->
                 <div class="mb-4 w-full">
-                    <label for="contactnumber" class="block text-left text-off-white custom-shadow text-base font-semibold mb-1">Contact Number</label>
+                    <label for="contactnumber" class="block text-left   text-base font-semibold mb-1">Contact Number</label>
                     <input type="text" id="contactnumber" name="contactnumber" class="shadow-sm appearance-none border border-gray-400 rounded-lg w-full py-2 px-3 text-gray-900 leading-tight focus:outline-none focus:ring-1 focus:ring-blue-600" value="{{ form.contactnumber.data or '' }}" placeholder="Contact Number">
                     {% if form.contactnumber.errors %}
                         <p class="text-red-700 text-sm italic mt-1">{{ form.contactnumber.errors[0] }}</p>
@@ -111,7 +119,7 @@
                 <!-- Password Fields -->
                 <div class="mb-4 w-full flex space-x-4">
                     <div class="w-1/2">
-                        <label for="password" class="block text-left text-off-white custom-shadow text-base font-semibold mb-1">Password</label>
+                        <label for="password" class="block text-left   text-base font-semibold mb-1">Password</label>
                         <input type="password" id="password" name="password" class="shadow-sm appearance-none border border-gray-400 rounded-lg w-full py-2 px-3 text-gray-900 leading-tight focus:outline-none focus:ring-1 focus:ring-blue-600" placeholder="Password">
                         {% if form.password.errors %}
                             <p class="text-red-700 text-sm italic mt-1">{{ form.password.errors[0] }}</p>
@@ -119,14 +127,14 @@
                     </div>
                 
                     <div class="w-1/2">
-                        <label for="password_confirmation" class="block text-left text-off-white custom-shadow text-base font-semibold mb-1">Confirm Password</label>
+                        <label for="password_confirmation" class="block text-left   text-base font-semibold mb-1">Confirm Password</label>
                         <input type="password" id="password_confirmation" name="password_confirmation" class="shadow-sm appearance-none border border-gray-400 rounded-lg w-full py-2 px-3 text-gray-900 leading-tight focus:outline-none focus:ring-1 focus:ring-blue-600" placeholder="Confirm Password">
                     </div>
                 </div>
                 
                 <div class="mb-4 w-full flex items-center">
                     <input type="checkbox" id="togglePasswordCheckbox" class="mr-2" onchange="togglePasswordVisibility()">
-                    <label for="togglePasswordCheckbox" class="text-off-white custom-shadow text-sm">Show Password</label>
+                    <label for="togglePasswordCheckbox" class="  text-sm">Show Password</label>
                 </div>
 
                 {% if recaptcha_error %}
@@ -134,13 +142,12 @@
                 {% endif %}
                 <div class="g-recaptcha" data-sitekey="6LcxWkIqAAAAAEycwl1Z3tWFBg3BeIFe4pQxhpoY"></div>
 
-                <button type="submit" class="btn btn-admin font-semibold rounded-lg py-2 mt-6">
-                    <svg width="510px" height="60px" viewBox="0 0 300 100"></svg>
-                    <span>Register</span>
+                <button class="button-custom mt-4" type="submit">
+                    <img src="{{ url_for('static', filename='images/icons/register.svg') }}" alt="Register"> Register
                 </button>
 
                 <div class="text-center mt-4">
-                    <p class="mt-2 text-base text-off-white custom-shadow">Already have an account? <a href="{{ url_for('admin_login.admin_login') }}" class="text-blue-600 hover:text-blue-800">Login here</a></p>
+                    <p class="mt-2 text-base  ">Already have an account? <a href="{{ url_for('admin_login.admin_login') }}" class="text-blue-600 hover:text-blue-800">Login here</a></p>
                 </div>
             </form>
         </div>

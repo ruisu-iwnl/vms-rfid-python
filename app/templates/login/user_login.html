@@ -3,17 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Login</title>
+    <title>TimeGuard</title>
     <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/custom.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/auth-login-register.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/fonts.css') }}" rel="stylesheet">
+    <style>
+        body {
+            background-color: #eeeee4;
+            color: black;
+        }
+        .button-custom {
+            width: 100%; /* Make button take the full width */
+            padding: 10px; /* Adjust padding as needed */
+        }
+    </style>
 </head>
-<body class="relative min-h-screen bg-cover bg-center" style="background-image: url('/static/images/bg.jpg');">
 
-    <div class="absolute inset-0 bg-black opacity-65"></div>
+<body class="relative min-h-screen bg-cover bg-center">
 
-    <div class="relative flex flex-col min-h-screen justify-center bg-opacity-30 backdrop-blur-md p-4">
+    <div class="relative flex flex-col min-h-screen justify-center bg-opacity-30 p-4">
 
         <div id="flashMessages" class="fixed top-0 left-1/2 transform -translate-x-1/2 m-4 z-50 opacity-100 transition-opacity duration-300">
             {% with messages = get_flashed_messages(with_categories=true) %}
@@ -22,13 +31,13 @@
                         {% for category, message in messages %}
                             <div class="p-3 mb-4 rounded 
                                 {% if category == 'danger' %}
-                                    bg-red-500 bg-opacity-40 text-white
+                                    bg-red-500 bg-opacity-40 text-black
                                 {% elif category == 'success' %}
-                                    bg-green-500 bg-opacity-40 text-white
+                                    bg-green-500 bg-opacity-40 text-black
                                 {% elif category == 'info' %}
-                                    bg-blue-500 bg-opacity-40 text-white
+                                    bg-blue-500 bg-opacity-40 text-black
                                 {% else %}
-                                    bg-gray-500 bg-opacity-40 text-white
+                                    bg-gray-500 bg-opacity-40 text-black
                                 {% endif %}
                                 {{ 'hidden' if not messages else 'block' }}">
                                 {{ message }}
@@ -47,7 +56,7 @@
                 </svg>
             </a>
 
-            <h2 class="text-2xl font-bold mb-4 text-off-white custom-shadow text-center">User Login</h2>
+            <h2 class="text-2xl font-bold mb-4 text-center">User Login</h2>
             <form action="{{ url_for('user_login.user_login') }}" method="POST" class="w-full flex flex-col" autocomplete="off">
                 {{ form.hidden_tag() }}
 
@@ -56,7 +65,7 @@
                 {% endif %}
                 
                 <div class="mb-4 w-full">
-                    <label for="email" class="block text-left text-off-white custom-shadow text-base font-semibold mb-1">Email Address</label>
+                    <label for="email" class="block text-left text-base font-semibold mb-1">Email Address</label>
                     <input type="email" id="email" name="email" class="shadow-sm appearance-none border border-gray-400 rounded-lg w-full py-2 px-3 text-gray-900 leading-tight focus:outline-none focus:ring-1 focus:ring-blue-600" value="{{ form.email.data or '' }}" placeholder="Email">
                     {% if form.email.errors %}
                         <p class="text-red-700 text-sm italic mt-1">{{ form.email.errors[0] }}</p>
@@ -64,7 +73,7 @@
                 </div>
 
                 <div class="mb-4 w-full">
-                    <label for="password" class="block text-left text-off-white custom-shadow text-base font-semibold mb-1">Password</label>
+                    <label for="password" class="block text-left text-base font-semibold mb-1">Password</label>
                     <input type="password" id="password" name="password" class="shadow-sm appearance-none border border-gray-400 rounded-lg w-full py-2 px-3 text-gray-900 leading-tight focus:outline-none focus:ring-1 focus:ring-blue-600" placeholder="Password">
                     {% if form.password.errors %}
                         <p class="text-red-700 text-sm italic mt-1">{{ form.password.errors[0] }}</p>
@@ -78,15 +87,13 @@
                     <div class="g-recaptcha" data-sitekey="6LcxWkIqAAAAAEycwl1Z3tWFBg3BeIFe4pQxhpoY"></div>
                 </div>
 
-                <button type="submit" class="btn btn-admin font-semibold rounded-lg py-2 mt-6">
-                    <!-- User Icon -->
-                    <img src="{{ url_for('static', filename='images/icons/user-icon.svg') }}" alt="User Icon" style="width: 20px; margin-right: 8px;">
-                    <span style="font-size: 1.5em;">Login</span>
+                <!-- Updated Admin Login Button -->
+                <button id="adminLoginBtn" class="button-custom mt-4" type="submit">
+                    <img src="{{ url_for('static', filename='images/icons/login.svg') }}" alt="Admin Icon"> Login
                 </button>
-                
-                
+
                 <div class="text-center mt-4">
-                    <p class="mt-2 text-base text-off-white custom-shadow">Don't have an account? <a href="{{ url_for('user_register.user_register') }}" class="text-blue-600 hover:text-blue-800">Create one</a></p>
+                    <p class="mt-2 text-base">Don't have an account? <a href="{{ url_for('admin_register.admin_register') }}" class="text-blue-600 hover:text-blue-800">Create one</a></p>
                 </div>
             </form>
         </div>

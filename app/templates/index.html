@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vehicle Management System</title>
+    <title>TimeGuard</title>
     <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/custom.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/auth-login-register.css') }}" rel="stylesheet">
@@ -75,20 +75,25 @@
             <!-- Button for User Login -->
             <div class="container mt-4">
                 <div class="center">
-                    <button id="userLoginBtn" class="button-custom">
-                        <img src="{{ url_for('static', filename='images/icons/user-icon.svg') }}" alt="User Icon"> User
-                    </button>
+                    <form action="{{ url_for('user_login.user_login') }}" method="GET">
+                        <button id="userLoginBtn" class="button-custom" type="submit">
+                            <img src="{{ url_for('static', filename='images/icons/user-icon.svg') }}" alt="User Icon"> User
+                        </button>
+                    </form>
                 </div>
             </div>
 
             <!-- Button for Admin Login -->
             <div class="container mt-4">
                 <div class="center">
-                    <button id="adminLoginBtn" class="button-custom">
-                        <img src="{{ url_for('static', filename='images/icons/user-icon.svg') }}" alt="Admin Icon"> Admin
-                    </button>
+                    <form action="{{ url_for('admin_login.admin_login') }}" method="GET">
+                        <button id="adminLoginBtn" class="button-custom" type="submit">
+                            <img src="{{ url_for('static', filename='images/icons/user-icon.svg') }}" alt="Admin Icon"> Admin
+                        </button>
+                    </form>
                 </div>
             </div>
+
 
             </div>
         </div>
