@@ -1,60 +1,191 @@
-from flask import Blueprint, request, jsonify, render_template,session
+from flask import Blueprint, render_template, redirect, url_for, request, flash
 from app.routes.utils.session import check_access
+from app.models.database import get_cursor, close_db_connection
+from wtforms import StringField, SubmitField
+from wtforms.validators import DataRequired
+from flask_wtf import FlaskForm
+from datetime import datetime
+from app.routes.utils.activity_log import log_login_activity
+
+class RFIDForm(FlaskForm):
+    rfid_no = StringField('RFID Scanner', validators=[DataRequired()])
+    submit = SubmitField('Submit')
 
 timeinout_bp = Blueprint('timeinout', __name__, url_prefix='/dashboard/timeinout')
 
 @timeinout_bp.route('/', defaults={'page': 1})
 @timeinout_bp.route('/<int:page>')
 def timeinout(page):
-
     response = check_access('admin')
-    
     if response:
         return response
     
-    records = [
-        {'date': '2024-09-01', 'time_in': '08:00', 'time_out': '17:00', 'employee_id': 'E001', 'name': 'John Doe', 'phone_number': '555-0100'},
-        {'date': '2024-09-02', 'time_in': '09:00', 'time_out': '18:00', 'employee_id': 'E002', 'name': 'Jane Smith', 'phone_number': '555-0101'},
-        {'date': '2024-09-03', 'time_in': '08:30', 'time_out': '17:30', 'employee_id': 'E003', 'name': 'Alice Johnson', 'phone_number': '555-0102'},
-        {'date': '2024-09-04', 'time_in': '08:15', 'time_out': '17:15', 'employee_id': 'E004', 'name': 'Bob Brown', 'phone_number': '555-0103'},
-        {'date': '2024-09-05', 'time_in': '09:00', 'time_out': '18:00', 'employee_id': 'E005', 'name': 'Carol White', 'phone_number': '555-0104'},
-        {'date': '2024-09-06', 'time_in': '08:00', 'time_out': '16:00', 'employee_id': 'E006', 'name': 'David Green', 'phone_number': '555-0105'},
-        {'date': '2024-09-07', 'time_in': '09:00', 'time_out': '17:00', 'employee_id': 'E007', 'name': 'Eva Black', 'phone_number': '555-0106'},
-        {'date': '2024-09-08', 'time_in': '08:45', 'time_out': '17:15', 'employee_id': 'E008', 'name': 'Frank Blue', 'phone_number': '555-0107'},
-        {'date': '2024-09-09', 'time_in': '09:30', 'time_out': '18:00', 'employee_id': 'E009', 'name': 'Grace Red', 'phone_number': '555-0108'},
-        {'date': '2024-09-10', 'time_in': '08:00', 'time_out': '17:00', 'employee_id': 'E010', 'name': 'Henry Grey', 'phone_number': '555-0109'},
-        {'date': '2024-09-11', 'time_in': '09:00', 'time_out': '18:00', 'employee_id': 'E011', 'name': 'Ivy Pink', 'phone_number': '555-0110'},
-        {'date': '2024-09-12', 'time_in': '08:30', 'time_out': '17:30', 'employee_id': 'E012', 'name': 'Jack Orange', 'phone_number': '555-0111'},
-        {'date': '2024-09-13', 'time_in': '08:15', 'time_out': '17:15', 'employee_id': 'E013', 'name': 'Kathy Purple', 'phone_number': '555-0112'},
-        {'date': '2024-09-14', 'time_in': '09:00', 'time_out': '18:00', 'employee_id': 'E014', 'name': 'Louis Gold', 'phone_number': '555-0113'},
-        {'date': '2024-09-15', 'time_in': '08:00', 'time_out': '16:00', 'employee_id': 'E015', 'name': 'Mia Silver', 'phone_number': '555-0114'},
-        {'date': '2024-09-16', 'time_in': '09:00', 'time_out': '17:00', 'employee_id': 'E016', 'name': 'Nick Bronze', 'phone_number': '555-0115'},
-        {'date': '2024-09-17', 'time_in': '08:45', 'time_out': '17:15', 'employee_id': 'E017', 'name': 'Olivia White', 'phone_number': '555-0116'},
-        {'date': '2024-09-18', 'time_in': '09:30', 'time_out': '18:00', 'employee_id': 'E018', 'name': 'Paul Black', 'phone_number': '555-0117'},
-        {'date': '2024-09-19', 'time_in': '08:00', 'time_out': '17:00', 'employee_id': 'E019', 'name': 'Quinn Red', 'phone_number': '555-0118'},
-        {'date': '2024-09-20', 'time_in': '09:00', 'time_out': '18:00', 'employee_id': 'E020', 'name': 'Riley Blue', 'phone_number': '555-0119'},
-        {'date': '2024-09-21', 'time_in': '08:30', 'time_out': '17:30', 'employee_id': 'E021', 'name': 'Samantha Green', 'phone_number': '555-0120'}
-    ]
+    form = RFIDForm()  
+    cursor, connection = get_cursor()
+    
+    try:
+        cursor.execute("""
+            SELECT tl.time_in, tl.time_out, v.user_id, u.firstname, u.lastname, u.contactnumber
+            FROM time_logs tl
+            JOIN vehicle v ON tl.vehicle_id = v.vehicle_id
+            JOIN user u ON v.user_id = u.user_id
+            ORDER BY tl.created_at DESC
+        """)
+        
+        records = cursor.fetchall()
 
-    per_page = 5
-    total_records = len(records)
-    total_pages = (total_records + per_page - 1) // per_page
-    start = (page - 1) * per_page
-    end = start + per_page
-    paginated_records = records[start:end]
+        structured_records = []
+        for record in records:
+            structured_records.append({
+                'date': record[0].date(),
+                'time_in': record[0].time(),
+                'time_out': record[1].time() if record[1] else None,
+                'employee_id': record[2],
+                'name': f"{record[3]} {record[4]}",
+                'phone_number': record[5]
+            })
 
-    print(f"Session active in timelogs: {session}")
-    return render_template('dashboard/admin/timeinout.html', records=paginated_records, page=page, total_pages=total_pages)
+        per_page = 5
+        total_records = len(structured_records)
+        total_pages = (total_records + per_page - 1) // per_page
+        start = (page - 1) * per_page
+        end = start + per_page
+        paginated_records = structured_records[start:end]
 
-@timeinout_bp.route('/process_rfid', methods=['POST'])
-def process_rfid():
-    data = request.get_json()
-    rfid_number = data.get('rfid', '').strip()
+        return render_template('dashboard/admin/timeinout.html', records=paginated_records, page=page, total_pages=total_pages, form=form)
 
-    if rfid_number:
-        print(f'RFID Number scanned: {rfid_number}')
-        response = {'rfid_number': rfid_number}
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return redirect(url_for('timeinout.timeinout')) 
+
+    finally:
+        cursor.close()
+        close_db_connection(connection)
+
+@timeinout_bp.route('/time_logs/rfid', methods=['POST'])
+def handle_rfid():
+    form = RFIDForm()
+    if form.validate_on_submit():
+        rfid_no = form.rfid_no.data
+        print(f"RFID scanned: {rfid_no}")  
+        
+        if rfid_no:
+            cursor, connection = get_cursor()
+            try:
+                cursor.execute("""
+                    SELECT COUNT(*) FROM rfid WHERE rfid_no = %s
+                """, (rfid_no,))
+                exists = cursor.fetchone()[0] > 0
+
+                if not exists:
+                    flash('RFID is not registered.', 'error')
+                    return redirect(url_for('timeinout.timeinout'))
+
+                user_status = check_user_time_status(rfid_no)
+                print(f"User status for RFID {rfid_no}: {user_status}")  
+                
+                if user_status == "No Time Logs":
+                    log_time(rfid_no, 'in')  # Proceed to clock in
+                    flash(f'Successfully scanned RFID: {rfid_no}. User has clocked in.', 'success')
+                elif user_status == "Time In":
+                    log_time(rfid_no, 'out')  # Proceed to clock out
+                    flash(f'Successfully scanned RFID: {rfid_no}. User has clocked out.', 'success')
+                elif user_status == "Already Clocked Out":
+                    log_time(rfid_no, 'in')  # Allow clocking in even if previously clocked out
+                    flash(f'Successfully scanned RFID: {rfid_no}. User has clocked in.', 'success')
+                    
+            except Exception as e:
+                print(f"An error occurred: {e}")
+                flash('An error occurred while checking the RFID.', 'error')
+            finally:
+                cursor.close()
+                close_db_connection(connection)
+        else:
+            flash('No RFID number scanned', 'error')
     else:
-        response = {'rfid_number': 'RFID not detected'}
+        print("Form validation failed.")  
+    return redirect(url_for('timeinout.timeinout'))
 
-    return jsonify(response)
+def check_user_time_status(rfid_no):
+    cursor, connection = get_cursor()
+    try:
+        cursor.execute("""
+            SELECT tl.time_in, tl.time_out
+            FROM time_logs tl
+            JOIN rfid r ON tl.rfid_id = r.rfid_id
+            WHERE r.rfid_no = %s
+            ORDER BY tl.created_at DESC
+            LIMIT 1
+        """, (rfid_no,))
+        
+        result = cursor.fetchone()
+        print(f"Database query result for RFID {rfid_no}: {result}")  
+        
+        if result is None:
+            return "No Time Logs" 
+        
+        time_in, time_out = result
+        if time_in and not time_out:
+            return "Time In"
+        elif time_out:
+            return "Already Clocked Out"  
+        else:
+            return "Time In"  
+    except Exception as e:
+        print(f"An error occurred in check_user_time_status: {e}")
+        return None
+    finally:
+        cursor.close()
+        close_db_connection(connection)
+
+def log_time(rfid_no, action):
+    print(f"Logging time for RFID {rfid_no} with action: {action}")  
+    cursor, connection = get_cursor()
+    try:
+        cursor.execute("""
+            SELECT vehicle_id FROM rfid WHERE rfid_no = %s
+        """, (rfid_no,))
+        vehicle_id = cursor.fetchone()
+        print(f"Vehicle ID for RFID {rfid_no}: {vehicle_id}")  
+        
+        if not vehicle_id:
+            flash(f'RFID {rfid_no} is not associated with any vehicle.', 'error')
+            return 
+        
+        vehicle_id = vehicle_id[0]
+        now = datetime.now()
+        print(f"Current time: {now}")  
+
+        cursor.execute("""
+            SELECT user_id FROM vehicle WHERE vehicle_id = %s
+        """, (vehicle_id,))
+        user_id_result = cursor.fetchone()
+        user_id = user_id_result[0] if user_id_result else None
+        
+        if action == 'in':
+            cursor.execute("""
+                INSERT INTO time_logs (vehicle_id, rfid_id, time_in)
+                VALUES (%s, (SELECT rfid_id FROM rfid WHERE rfid_no = %s), %s)
+            """, (vehicle_id, rfid_no, now))
+            print(f"Time in logged for vehicle ID {vehicle_id}.") 
+            
+            log_login_activity(user_id, 'User', 'Clocked In')
+            
+        elif action == 'out':
+            cursor.execute("""
+                UPDATE time_logs
+                SET time_out = %s
+                WHERE vehicle_id = %s AND time_out IS NULL
+                ORDER BY created_at DESC
+                LIMIT 1
+            """, (now, vehicle_id))
+            print(f"Time out logged for vehicle ID {vehicle_id}.") 
+
+            log_login_activity(user_id, 'User', 'Clocked Out')
+
+        connection.commit()
+    except Exception as e:
+        print(f"An error occurred while logging time: {e}")
+    finally:
+        cursor.close()
+        close_db_connection(connection)
