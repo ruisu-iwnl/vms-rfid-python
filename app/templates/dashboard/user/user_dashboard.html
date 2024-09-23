@@ -3,52 +3,55 @@
 {% block title %}Vehicle Dashboard{% endblock %}
 
 {% block content %}
-
-<h1 class="text-2xl font-bold mb-4">Hello, {{ user_name }}!</h1>
-<p class="mb-2">Track your vehicle's entries and exits.</p>
-
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-    <!-- Time-In and Time-Out Comparison -->
-    <div class="bg-gray-100 text-base p-4 rounded-lg shadow-lg h-full border border-black" style="background-color: #eeeee4; color: black;">
-        <h3 class="text-lg font-semibold mb-3">Time-In and Time-Out Comparison</h3>
-        <canvas id="timeInOutChart" class="w-full h-48"></canvas>
-        <div id="timeInOutData"
-            data-labels="{{ time_in_time_out_data['labels']|join(', ') }}"
-            data-timein="{{ time_in_time_out_data['timein']|join(', ') }}"
-            data-timeout="{{ time_in_time_out_data['timeout']|join(', ') }}">
+<div class="w-full h-full p-4 space-y-4">
+    <h1 class="text-2xl font-bold mb-4">Hello, {{ user_name }}!</h1>
+    <p class="mb-2">Track your vehicle's entries and exits.</p>
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-0">
+        <!-- Time-In and Time-Out Comparison -->
+        <div class="bg-gray-100 text-base p-4 rounded-lg shadow-lg h-full border border-black" style="background-color: #eeeee4; color: black;">
+            <h3 class="text-lg font-semibold mb-3">Time-In and Time-Out Comparison</h3>
+            <canvas id="timeInOutChart" class="w-full h-48"></canvas>
+            <div id="timeInOutData"
+                data-labels="{{ time_in_time_out_data['labels']|join(', ') }}"
+                data-timein="{{ time_in_time_out_data['timein']|join(', ') }}"
+                data-timeout="{{ time_in_time_out_data['timeout'] }}">
+            </div>
         </div>
-    </div>
-
-    <!-- Peak Hours of Vehicle Entries -->
-    <div class="bg-gray-100 text-base p-4 rounded-lg shadow-lg h-full border border-black" style="background-color: #eeeee4; color: black;">
-        <h3 class="text-lg font-semibold mb-3">Peak Hours of Vehicle Entries</h3>
-        <canvas id="peakHoursChart" class="w-full h-48"></canvas>
-        <div id="peakHoursData"
-            data-labels="{{ peak_hours_data['labels']|join(', ') }}"
-            data-data="{{ peak_hours_data['data']|join(', ') }}">
+    
+        <!-- Peak Hours of Vehicle Entries -->
+        <div class="bg-gray-100 text-base p-4 rounded-lg shadow-lg h-full border border-black" style="background-color: #eeeee4; color: black;">
+            <h3 class="text-lg font-semibold mb-3">Peak Hours of Vehicle Entries</h3>
+            <canvas id="peakHoursChart" class="w-full h-48"></canvas>
+            <div id="peakHoursData"
+                data-labels="{{ peak_hours_data['labels']|join(', ') }}"
+                data-data="{{ peak_hours_data['data'] }}">
+            </div>
         </div>
-    </div>
-
-    <!-- Duration of Stay -->
-    <div class="bg-gray-100 text-base p-4 rounded-lg shadow-lg h-full border border-black" style="background-color: #eeeee4; color: black;">
-        <h3 class="text-lg font-semibold mb-3">Duration of Stay</h3>
-        <canvas id="durationHistogram" class="w-full h-48"></canvas>
-        <div id="stayDurationData"
-            data-labels="{{ vehicle_stay_durations_data['labels']|join(', ') }}"
-            data-duration="{{ vehicle_stay_durations_data['duration']|join(', ') }}">
+    
+        <!-- Duration of Stay -->
+        <div class="bg-gray-100 text-base p-4 rounded-lg shadow-lg h-full border border-black" style="background-color: #eeeee4; color: black;">
+            <h3 class="text-lg font-semibold mb-3">Duration of Stay</h3>
+            <canvas id="durationHistogram" class="w-full h-48"></canvas>
+            <div id="stayDurationData"
+                data-labels="{{ vehicle_stay_durations_data['labels']|join(', ') }}"
+                data-duration="{{ vehicle_stay_durations_data['duration']|join(', ') }}">
+            </div>
         </div>
+    
+        <!-- Most Active Days of the Week -->
+        <!-- <div class="bg-gray-100 text-base p-4 rounded-lg shadow-lg h-full border border-black" style="background-color: #eeeee4; color: black;">
+            <h3 class="text-lg font-semibold mb-3">Most Active Days of the Week</h3>
+            <canvas id="mostActiveDaysChart" class="w-full h-48"></canvas>
+            <div id="mostActiveDaysData"
+                data-labels="{{ most_active_days_data['labels']|join(', ') }}"
+                data-data="{{ most_active_days_data['data'] }}">
+            </div>
+        </div> -->
     </div>
-
-    <!-- Most Active Days of the Week -->
-    <div class="bg-gray-100 text-base p-4 rounded-lg shadow-lg h-full border border-black" style="background-color: #eeeee4; color: black;">
-        <h3 class="text-lg font-semibold mb-3">Most Active Days of the Week</h3>
-        <canvas id="mostActiveDaysChart" class="w-full h-48"></canvas>
-        <div id="mostActiveDaysData"
-            data-labels="{{ most_active_days_data['labels']|join(', ') }}"
-            data-data="{{ most_active_days_data['data'] }}">
-        </div>
-    </div>
+    
 </div>
+
+
 
 <script src="{{ url_for('static', filename='js/timeinout-comparison.js') }}"></script>
 <script src="{{ url_for('static', filename='js/peakhours.js') }}"></script>
