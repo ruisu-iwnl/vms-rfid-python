@@ -13,9 +13,26 @@
             background-color: #eeeee4;
             color: black;
         }
+                /* Animation styles */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px); /* Start a bit lower */
+            animation: fadeIn 0.8s cubic-bezier(0.25, 0.1, 0.25, 1) forwards; /* Smoother easing */
+        }
+    
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(30px); /* Start lower */
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0); /* End at original position */
+            }
+        }
     </style>
 </head>
-<body class="relative min-h-screen">
+<body class="relative min-h-screen fade-in">
 
     <!-- Container to hold both sections -->
     <div class="flex flex-col min-h-screen justify-center items-center p-4">

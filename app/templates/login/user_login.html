@@ -17,12 +17,29 @@
             width: 100%; /* Make button take the full width */
             padding: 10px; /* Adjust padding as needed */
         }
+                /* Animation styles */
+                .fade-in {
+            opacity: 0;
+            transform: translateY(30px); /* Start a bit lower */
+            animation: fadeIn 0.8s cubic-bezier(0.25, 0.1, 0.25, 1) forwards; /* Smoother easing */
+        }
+    
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(30px); /* Start lower */
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0); /* End at original position */
+            }
+        }
     </style>
 </head>
 
 <body class="relative min-h-screen bg-cover bg-center">
 
-    <div class="relative flex flex-col min-h-screen justify-center bg-opacity-30 p-4">
+    <div class="relative flex flex-col min-h-screen justify-center bg-opacity-30 p-4 fade-in">
 
         <div id="flashMessages" class="fixed top-0 left-1/2 transform -translate-x-1/2 m-4 z-50 opacity-100 transition-opacity duration-300">
             {% with messages = get_flashed_messages(with_categories=true) %}

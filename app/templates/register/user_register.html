@@ -16,9 +16,26 @@
             width: 100%; /* Make button take the full width */
             padding: 10px; /* Adjust padding as needed */
         }
+                /* Animation styles */
+                .fade-in {
+            opacity: 0;
+            transform: translateY(30px); /* Start a bit lower */
+            animation: fadeIn 0.8s cubic-bezier(0.25, 0.1, 0.25, 1) forwards; /* Smoother easing */
+        }
+    
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(30px); /* Start lower */
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0); /* End at original position */
+            }
+        }
     </style>
 </head>
-<body class="relative min-h-screen bg-cover bg-center">
+<body class="relative min-h-screen bg-cover bg-center fade-in">
 
     <div class="relative flex flex-col min-h-screen justify-center bg-opacity-30  p-4">
 
