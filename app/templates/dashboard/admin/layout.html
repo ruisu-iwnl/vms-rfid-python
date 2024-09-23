@@ -36,7 +36,7 @@
         </button>
         <!-- Logo and Title on the Left -->
         <div class="flex items-center space-x-3">
-            <img src="{{ url_for('static', filename='Images/CelcorCircle.png') }}" alt="logo" class="h-12">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="logo" class="h-12">
             <span class="font-bold text-xl text-off-white custom-shadow">{% block header_title %}Dashboard{% endblock %}</span>
         </div>
         <!-- Hamburger Menu for Mobile -->
@@ -50,7 +50,7 @@
     <!-- Mobile Sidebar -->
     <aside id="mobile-menu" class="bg-white text-gray-800 fixed inset-y-0 left-0 transform -translate-x-full transition-transform sm:hidden w-64 z-20 mt-20 backdrop-blur-md bg-white/30" style="background-color: #eeeee4; color: black;">
         <div class="p-6 flex flex-col items-center mb-4">
-            <img src="{{ url_for('static', filename='Images/CelcorCircle.png') }}" alt="Logo" class="h-20 mb-2">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" class="h-20 mb-2">
             <h1 class="text-xl font-bold mb-4 mt-4 text-center">VMS</h1>
         </div>
         <nav class="p-6 space-y-6">
@@ -67,7 +67,7 @@
     <!-- Desktop Sidebar -->
     <aside id="desktop-sidebar" class="w-64 bg-gray-800 bg-opacity-70 p-6 z-20 fixed top-0 left-0 h-full backdrop-blur-lg transition-transform duration-300" style="background-color: #eeeee4; color: black;">
         <div class="flex flex-col items-center mb-4">
-            <img src="{{ url_for('static', filename='Images/CelcorCircle.png') }}" alt="Logo" class="h-20 mb-2">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" class="h-20 mb-2">
             <h1 class="text-xl font-bold mb-4 mt-4 text-center">VMS</h1>
         </div>
         <nav class="space-y-4 flex flex-col justify-between h-full">

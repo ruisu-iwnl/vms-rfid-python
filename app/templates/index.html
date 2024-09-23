@@ -8,15 +8,17 @@
     <link href="{{ url_for('static', filename='css/custom.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/auth-login-register.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/fonts.css') }}" rel="stylesheet">
-    
+    <style>
+        body {
+            background-color: #eeeee4;
+            color: black;
+        }
+    </style>
 </head>
-<body class="relative min-h-screen text-gray-900">
-
-    <!-- Subtle overlay for enhanced visibility -->
-    <div class="absolute inset-0 bg-black opacity-65"></div>
+<body class="relative min-h-screen">
 
     <!-- Container to hold both sections -->
-    <div class="flex flex-col min-h-screen justify-center items-center bg-opacity-30 backdrop-blur-md p-4">
+    <div class="flex flex-col min-h-screen justify-center items-center p-4">
 
         <div id="flashMessages" class="fixed top-0 left-1/2 transform -translate-x-1/2 m-4 z-50 opacity-100 transition-opacity duration-300">
             {% with messages = get_flashed_messages(with_categories=true) %}
@@ -48,46 +50,48 @@
             <!-- Left Section: Logo & Title -->
             <div class="flex flex-col items-center justify-center p-2 md:p-4">
                 <!-- Logo -->
-                
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" class="mb-4 h-16 md:h-24">
 
                 <!-- Title with custom shadow -->
-                <h1 class="text-6xl md:text-6xl font-extrabold custom-shadow leading-tight mb-1 text-center soft-white">
-                    Vehicle Management System
+                <h1 class="text-6xl md:text-6xl font-extrabold leading-tight mb-1 text-center">
+                    TimeGuard
                 </h1>
-                <p class="text-base md:text-lg soft-white text-center drop-shadow-md">
-                    Effortlessly manage and track all your vehicle data in one place with our intuitive platform.
+                <p class="text-base md:text-lg text-center">
+                    A Web-Based RFID Integrated Time Tracking System.
                 </p>
+                <p class="text-base md:text-lg text-center">
+                    Effortlessly manage and track your vehicle data and time logs in one place with our platform.
+                </p>
+
+                
             </div>
 
             <!-- Right Section: Buttons & Call to Action -->
             <div class="flex flex-col justify-center items-center p-2 md:p-4">
-                <p class="text-lg md:text-xl soft-white text-center mb-2 font-semibold drop-shadow-lg">
+                <p class="text-lg md:text-xl text-center mb-2 font-semibold">
                     Choose your login option below:
                 </p>
 
-        <!-- Button for User Login -->
-        <div class="container mt-4">
-            <div class="center">
-                <a href="{{ url_for('user_login.user_login') }}" class="btn btn-admin">
-                    <!-- User Icon -->
-                    <img src="{{ url_for('static', filename='images/icons/user-icon.svg') }}" alt="User Icon" style="width: 20px; margin-right: 8px;">
-                    <span style="font-size: 1.5em;">User</span>
-                </a>
+            <!-- Button for User Login -->
+            <div class="container mt-4">
+                <div class="center">
+                    <button id="userLoginBtn" class="button-custom">
+                        <img src="{{ url_for('static', filename='images/icons/user-icon.svg') }}" alt="User Icon"> User
+                    </button>
+                </div>
+            </div>
+
+            <!-- Button for Admin Login -->
+            <div class="container mt-4">
+                <div class="center">
+                    <button id="adminLoginBtn" class="button-custom">
+                        <img src="{{ url_for('static', filename='images/icons/user-icon.svg') }}" alt="Admin Icon"> Admin
+                    </button>
+                </div>
+            </div>
+
             </div>
         </div>
-
-        <!-- Button for Admin Login -->
-        <div class="container mt-4">
-            <div class="center">
-                <a href="{{ url_for('admin_login.admin_login') }}" class="btn btn-admin">
-                    <!-- Admin Icon -->
-                    <img src="{{ url_for('static', filename='images/icons/user-icon.svg') }}" alt="User Icon" style="width: 20px; margin-right: 8px;">
-                    <span style="font-size: 1.5em;">Admin</span>
-                </a>
-            </div>
-        </div>
-
-
     </div>
 
 </body>
