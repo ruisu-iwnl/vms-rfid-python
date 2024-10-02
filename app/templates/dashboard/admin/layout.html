@@ -4,10 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{% block title %}Admin Dashboard{% endblock %}</title>
+    <title>{% block title %}Admin Dashboard | TimeGuard {% endblock %}</title>
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
     <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/custom.css') }}" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='/images/logo.png') }}">
     <!-- <link href="{{ url_for('static', filename='css/auth-login-register.css') }}" rel="stylesheet"> -->
 
     <style>
@@ -51,7 +52,7 @@
     <aside id="mobile-menu" class="bg-white text-gray-800 fixed inset-y-0 left-0 transform -translate-x-full transition-transform sm:hidden w-64 z-20 mt-20 backdrop-blur-md bg-white/30" style="background-color: #eeeee4; color: black;">
         <div class="p-6 flex flex-col items-center mb-4">
             <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" class="h-20 mb-2">
-            <h1 class="text-xl font-bold mb-4 mt-4 text-center">VMS</h1>
+            <h1 class="text-xl font-bold mb-4 mt-4 text-center">TimeGuard</h1>
         </div>
         <nav class="p-6 space-y-6">
             <a href="{{ url_for('admin_dashboard.admin_dashboard') }}" class="block py-3 rounded hover:bg-gray-100">Data Analytics</a>
@@ -68,7 +69,7 @@
     <aside id="desktop-sidebar" class="w-64 bg-gray-800 bg-opacity-70 p-6 z-20 fixed top-0 left-0 h-full backdrop-blur-lg transition-transform duration-300" style="background-color: #eeeee4; color: black;">
         <div class="flex flex-col items-center mb-4">
             <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" class="h-20 mb-2">
-            <h1 class="text-xl font-bold mb-4 mt-4 text-center">VMS</h1>
+            <h1 class="text-xl font-bold mb-4 mt-4 text-center">TimeGuard</h1>
         </div>
         <nav class="space-y-4 flex flex-col justify-between h-full">
             <div class="space-y-4">
