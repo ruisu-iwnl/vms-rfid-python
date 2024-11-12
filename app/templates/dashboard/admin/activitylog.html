@@ -9,8 +9,9 @@
     <div class="w-full h-full p-6">
         <div class="mb-4 flex justify-between items-center">
             <a href="{{ url_for('activitylog.download_csv', sort_by=sort_by, order=order) }}" 
-            class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
-             Download CSV
+            class="bg-green-500 text-black py-4 px-8 rounded border border-black hover:bg-green-700" 
+            style="background-color: #eeeee4; font-size: 1.25rem; color: black;">
+             <img src="{{ url_for('static', filename='images/icons/csv.svg') }}" alt="Download CSV" class="inline h-8 w-8 mr-2"> Download CSV
             </a>
             <!-- Search Bar -->
             <div class="relative w-1/3">
