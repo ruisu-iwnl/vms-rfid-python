@@ -73,7 +73,7 @@
                         {% endif %}
                     </a>
                 </th>                    
-                <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">Actions</th>
+                <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">License Plate</th>
             </tr>
         </thead>
         
@@ -105,13 +105,29 @@
                         {% endif %}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-lg text-black">
-                        <!-- Actions (Edit/Delete) can go here -->
+                        {% if user[4] %}
+                            {% if ',' in user[4] %}
+                                <div class="relative">
+                                    <button class="bg-gray-200 text-gray-700 py-1 px-2 rounded hover:bg-gray-300 focus:outline-none toggle-dropdown" data-dropdown-id="plate-dropdown-{{ loop.index }}">
+                                        View Plates
+                                    </button>
+                                    <div id="plate-dropdown-{{ loop.index }}" class="absolute mt-2 py-2 w-48 bg-white rounded-lg shadow-xl z-10 hidden">
+                                        {% for plate in user[4].split(', ') %}
+                                            <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">{{ plate }}</a>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% else %}
+                                {{ user[4] }}
+                            {% endif %}
+                        {% else %}
+                            No Plate Available
+                        {% endif %}
                     </td>
                 </tr>
             {% endfor %}
         </tbody>
     </table>
-
     <!-- Pagination -->
     <div class="flex justify-center mt-4">
         <nav class="relative z-0 inline-flex shadow-sm -space-x-px" aria-label="Pagination">
@@ -135,7 +151,6 @@
 </div>
 
 </div>
-
 
 <script>
 

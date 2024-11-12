@@ -40,6 +40,8 @@
                     <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">Employee ID</th>
                     <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">Name</th>
                     <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">Phone Number</th>
+                    <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">Vehicles</th>
+                    <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">License Plates</th>
                 </tr>
             </thead>
             <tbody class="bg-[#eeeee4] divide-y divide-gray-300">
@@ -51,10 +53,13 @@
                         <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ record.employee_id }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ record.name }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ record.phone_number }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ record.vehicles }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ record.license_plates }}</td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
+        
 
         <!-- Pagination -->
         <div class="flex justify-center mt-4">

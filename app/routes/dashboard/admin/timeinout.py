@@ -19,19 +19,23 @@ def timeinout(page):
     response = check_access('admin')
     if response:
         return response
-    
+
     form = RFIDForm()  
     cursor, connection = get_cursor()
-    
+
     try:
         cursor.execute("""
-            SELECT tl.time_in, tl.time_out, v.user_id, u.firstname, u.lastname, u.contactnumber
+            SELECT tl.time_in, tl.time_out, u.emp_no AS employee_id, 
+                   CONCAT(u.firstname, ' ', u.lastname) AS name, u.contactnumber,
+                   GROUP_CONCAT(CONCAT(v.make, ' ', v.model) SEPARATOR ', ') AS vehicles,
+                   GROUP_CONCAT(v.licenseplate SEPARATOR ', ') AS license_plates
             FROM time_logs tl
             JOIN vehicle v ON tl.vehicle_id = v.vehicle_id
             JOIN user u ON v.user_id = u.user_id
-            ORDER BY tl.created_at DESC
+            GROUP BY tl.time_in, tl.time_out, u.user_id
+            ORDER BY tl.time_in DESC
         """)
-        
+
         records = cursor.fetchall()
 
         structured_records = []
@@ -41,8 +45,10 @@ def timeinout(page):
                 'time_in': record[0].time(),
                 'time_out': record[1].time() if record[1] else None,
                 'employee_id': record[2],
-                'name': f"{record[3]} {record[4]}",
-                'phone_number': record[5]
+                'name': record[3],
+                'phone_number': record[4],
+                'vehicles': record[5] if record[5] else 'No Vehicle Registered',
+                'license_plates': record[6] if record[6] else 'No Plate Available'
             })
 
         per_page = 5
