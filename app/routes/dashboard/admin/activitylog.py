@@ -83,6 +83,11 @@ def download_csv(sort_by='activity_timestamp', order='desc'):
 
     output = StringIO()
     writer = csv.writer(output)
+
+    writer.writerow(['Design and Development'])
+    writer.writerow(['of TimeGuard: A Time Tracking Web System using RFID Technologies'])
+    writer.writerow([])  
+    
     writer.writerow(['Account Type', 'Account ID', 'Activity Type', 'Timestamp'])  
 
     for record in records:
