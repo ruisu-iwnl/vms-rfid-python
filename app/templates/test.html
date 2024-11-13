@@ -4,8 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Test Page</title>
+    <style>
+        video {
+            width: 500px;
+            height: 500px;
+            border: 2px solid black;
+        }
+    </style>
 </head>
 <body>
-    <h1>test route with a separate SSL-enabled app</h1>
+    <h1>Test route with a separate SSL-enabled app</h1>
+    
+    <video id="liveCamera" autoplay></video>
+
+    <script>
+        const videoElement = document.getElementById('liveCamera');
+
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then((stream) => {
+                videoElement.srcObject = stream;
+            })
+            .catch((error) => {
+                console.error('Error accessing webcam: ', error);
+            });
+    </script>
 </body>
 </html>
