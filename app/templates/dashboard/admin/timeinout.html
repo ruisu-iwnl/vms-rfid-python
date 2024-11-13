@@ -49,7 +49,9 @@
                     <tr>
                         <td class="px-6 py-4 whitespace-nowrap text-lg font-medium text-black">{{ record.date }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ record.time_in }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ record.time_out }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-lg text-black">
+                            {{ record.time_out if record.time_out else "Pending" }}
+                        </td>                        
                         <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ record.employee_id }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-lg text-black flex items-center">
                             {% if record.profile_image %}
