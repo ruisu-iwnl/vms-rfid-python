@@ -5,7 +5,6 @@
 {% block header_title %}Activity Logs{% endblock %}
 
 {% block content %}
-    <!-- Main Content -->
     <div class="w-full h-full p-6">
         <div class="mb-4 flex justify-between items-center">
             <a href="{{ url_for('activitylog.download_csv', sort_by=sort_by, order=order) }}" 
@@ -13,103 +12,93 @@
             style="background-color: #eeeee4; font-size: 1.25rem; color: black;">
              <img src="{{ url_for('static', filename='images/icons/csv.svg') }}" alt="Download CSV" class="inline h-8 w-8 mr-2"> Download CSV
             </a>
-            <!-- Search Bar -->
             <div class="relative w-1/3">
                 <input type="text" id="search-bar" placeholder="Search activities..." class="block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
             </div>
         </div>
     
-        <!-- Table Container -->
-        <div class="bg-[#eeeee4] p-6 rounded-lg shadow-md w-full max-w-full mb-8 relative">
-            <!-- Activity Logs Table -->
-            <table class="min-w-full divide-y divide-gray-300">
-                <thead class="bg-[#eeeee4]">
+    <div class="bg-[#eeeee4] p-6 rounded-lg shadow-md w-full max-w-full mb-8 relative">
+        <table class="min-w-full divide-y divide-gray-300">
+            <thead class="bg-[#eeeee4]">
+                <tr>
+                    <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">
+                        <a href="{{ url_for('activitylog.activitylog', page=page, sort_by='activity_timestamp', order='asc' if sort_by != 'activity_timestamp' or order == 'desc' else 'desc') }}">
+                            Timestamp
+                            {% if sort_by == 'activity_timestamp' %}
+                                {% if order == 'asc' %}
+                                    ▲
+                                {% else %}
+                                    ▼
+                                {% endif %}
+                            {% endif %}
+                        </a>
+                    </th>
+                    <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">
+                        <a href="{{ url_for('activitylog.activitylog', page=page, sort_by='activity_type', order='asc' if sort_by != 'activity_type' or order == 'desc' else 'desc') }}">
+                            Activity Type
+                            {% if sort_by == 'activity_type' %}
+                                {% if order == 'asc' %}
+                                    ▲
+                                {% else %}
+                                    ▼
+                                {% endif %}
+                            {% endif %}
+                        </a>
+                    </th>
+                    <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">
+                        <a href="{{ url_for('activitylog.activitylog', page=page, sort_by='account_type', order='asc' if sort_by != 'account_type' or order == 'desc' else 'desc') }}">
+                            Account Type
+                            {% if sort_by == 'account_type' %}
+                                {% if order == 'asc' %}
+                                    ▲
+                                {% else %}
+                                    ▼
+                                {% endif %}
+                            {% endif %}
+                        </a>
+                    </th>
+                    <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">
+                        Employee Name
+                    </th>
+                    <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">
+                        Employee ID
+                    </th>
+                </tr>
+            </thead>
+            <tbody class="bg-[#eeeee4] divide-y divide-gray-300">
+                {% for record in records %}
                     <tr>
-                        <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">
-                            <a href="{{ url_for('activitylog.activitylog', page=page, sort_by='account_type', order='asc' if sort_by != 'account_type' or order == 'desc' else 'desc') }}">
-                                Account Type
-                                {% if sort_by == 'account_type' %}
-                                    {% if order == 'asc' %}
-                                        ▲
-                                    {% else %}
-                                        ▼
-                                    {% endif %}
-                                {% endif %}
-                            </a>
-                        </th>
-                        <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">
-                            <a href="{{ url_for('activitylog.activitylog', page=page, sort_by='account_id', order='asc' if sort_by != 'account_id' or order == 'desc' else 'desc') }}">
-                                Account ID
-                                {% if sort_by == 'account_id' %}
-                                    {% if order == 'asc' %}
-                                        ▲
-                                    {% else %}
-                                        ▼
-                                    {% endif %}
-                                {% endif %}
-                            </a>
-                        </th>
-                        <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">
-                            <a href="{{ url_for('activitylog.activitylog', page=page, sort_by='activity_type', order='asc' if sort_by != 'activity_type' or order == 'desc' else 'desc') }}">
-                                Activity Type
-                                {% if sort_by == 'activity_type' %}
-                                    {% if order == 'asc' %}
-                                        ▲
-                                    {% else %}
-                                        ▼
-                                    {% endif %}
-                                {% endif %}
-                            </a>
-                        </th>
-                        <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">
-                            <a href="{{ url_for('activitylog.activitylog', page=page, sort_by='activity_timestamp', order='asc' if sort_by != 'activity_timestamp' or order == 'desc' else 'desc') }}">
-                                Timestamp
-                                {% if sort_by == 'activity_timestamp' %}
-                                    {% if order == 'asc' %}
-                                        ▲
-                                    {% else %}
-                                        ▼
-                                    {% endif %}
-                                {% endif %}
-                            </a>
-                        </th>                        
+                        <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ record[5] }}</td> 
+                        <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ record[4] }}</td> 
+                        <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ record[3] }}</td> 
+                        <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ record[0] }} {{ record[1] }}</td> 
+                        <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ record[2] }}</td>
                     </tr>
-                </thead>
-    
-                <tbody class="bg-[#eeeee4] divide-y divide-gray-300">
-                    {% for record in records %}
-                        <tr>
-                            <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ record[0] }}</td> <!-- Account Type -->
-                            <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ record[1] }}</td> <!-- Account ID -->
-                            <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ record[2] }}</td> <!-- Activity Type -->
-                            <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ record[3] }}</td> <!-- Timestamp -->
-                        </tr>
-                    {% endfor %}
-                </tbody>
-                
-            </table>
-    
-            <!-- Pagination -->
-            <div class="flex justify-center mt-4">
-                <nav class="relative z-0 inline-flex shadow-sm -space-x-px" aria-label="Pagination">
-                    {% if page > 1 %}
-                        <a href="{{ url_for('activitylog.activitylog', page=page-1, sort_by=sort_by, order=order) }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-lg font-medium text-black bg-white hover:bg-gray-50">
-                            Previous
-                        </a>
-                    {% endif %}
-                    {% for p in range(1, total_pages + 1) %}
-                        <a href="{{ url_for('activitylog.activitylog', page=p, sort_by=sort_by, order=order) }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-lg font-medium {{ 'bg-gray-200' if p == page else 'bg-white' }} hover:bg-gray-50">
-                            {{ p }}
-                        </a>
-                    {% endfor %}
-                    {% if page < total_pages %}
-                        <a href="{{ url_for('activitylog.activitylog', page=page+1, sort_by=sort_by, order=order) }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-lg font-medium text-black bg-white hover:bg-gray-50">
-                            Next
-                        </a>
-                    {% endif %}
-                </nav>
-            </div>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="flex justify-center mt-4">
+            <nav class="relative z-0 inline-flex shadow-sm -space-x-px" aria-label="Pagination">
+                {% if page > 1 %}
+                    <a href="{{ url_for('activitylog.activitylog', page=page-1, sort_by=sort_by, order=order) }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-lg font-medium text-black bg-white hover:bg-gray-50">
+                        Previous
+                    </a>
+                {% endif %}
+                {% for p in range(1, total_pages + 1) %}
+                    <a href="{{ url_for('activitylog.activitylog', page=p, sort_by=sort_by, order=order) }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-lg font-medium {{ 'bg-gray-200' if p == page else 'bg-white' }} hover:bg-gray-50">
+                        {{ p }}
+                    </a>
+                {% endfor %}
+                {% if page < total_pages %}
+                    <a href="{{ url_for('activitylog.activitylog', page=page+1, sort_by=sort_by, order=order) }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-lg font-medium text-black bg-white hover:bg-gray-50">
+                        Next
+                    </a>
+                {% endif %}
+            </nav>
         </div>
+    </div>
+
     </div>
 
     <script>
