@@ -20,7 +20,6 @@
             </button>
             {% include 'dashboard/admin/modals/addvehicle.html' %}
         </div>
-        
 
         <!-- Search Bar -->
         <div class="relative w-1/3">
@@ -81,8 +80,15 @@
             {% for user in users %}
                 <tr>
                     <td class="px-6 py-4 whitespace-nowrap text-lg font-medium text-black">{{ user[0] }}</td> <!-- emp_no -->
-                    <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ user[1] }}</td> <!-- full_name -->
-                    <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ user[5] }}</td> <!-- created_at -->
+                    <td class="px-6 py-4 whitespace-nowrap text-lg text-black flex items-center">
+                        {% if user[7] %}
+                            <img src="{{ url_for('static', filename='images/users/' + user[7]) }}" alt="Profile Image" class="w-[50px] h-[50px] rounded-full mr-4">
+                        {% else %}
+                            <img src="{{ url_for('static', filename='images/users/profile.svg') }}" alt="Default Profile Image" class="w-[50px] h-[50px] rounded-full mr-4">
+                        {% endif %}
+                        {{ user[1] }} <!-- full_name -->
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ user[6] }}</td> <!-- created_at -->
                     <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ user[2] }}</td> <!-- contactnumber -->
                     <td class="px-6 py-4 whitespace-nowrap text-lg text-black">
                         {% if user[3] %}
@@ -127,6 +133,7 @@
                 </tr>
             {% endfor %}
         </tbody>
+        
     </table>
     <!-- Pagination -->
     <div class="flex justify-center mt-4">
@@ -149,6 +156,7 @@
         </nav>
     </div>
 </div>
+
 
 </div>
 

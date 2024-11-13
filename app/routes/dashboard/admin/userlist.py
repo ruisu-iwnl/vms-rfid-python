@@ -27,13 +27,12 @@ def userlist(page, sort_by='emp_no', order='asc'):
             SELECT u.emp_no, CONCAT(u.firstname, ' ', u.lastname) AS full_name, u.contactnumber, 
                 GROUP_CONCAT(CONCAT(v.make, ' ', v.model) SEPARATOR ', ') AS vehicles,
                 GROUP_CONCAT(v.licenseplate SEPARATOR ', ') AS license_plates,
-                COUNT(v.vehicle_id) AS vehicle_count, u.created_at
+                COUNT(v.vehicle_id) AS vehicle_count, u.created_at, u.profile_image
             FROM user u
             LEFT JOIN vehicle v ON u.user_id = v.user_id
             GROUP BY u.user_id
             ORDER BY {sort_column} {order}, u.emp_no
         """)
-
 
         users = cursor.fetchall()
         
