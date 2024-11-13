@@ -28,7 +28,7 @@ def admin_dashboard():
     
     print(f"Session active in admin_dashboard: {session}")
     print("Daily Data:", daily_data)
-    print("duration of stay data:", vehicle_stay_durations_data)
+    # print("duration of stay data:", vehicle_stay_durations_data)
     print("Time-In/Time-Out Data:", time_in_time_out_data)
     print("user register data: ", user_registration_data)
     print("most active days entry: ",most_active_days_data)
