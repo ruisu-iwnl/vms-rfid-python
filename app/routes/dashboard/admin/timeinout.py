@@ -33,9 +33,12 @@ def timeinout(page):
             FROM time_logs tl
             JOIN vehicle v ON tl.vehicle_id = v.vehicle_id
             JOIN user u ON v.user_id = u.user_id
+            WHERE tl.time_out IS NULL OR tl.time_out IS NOT NULL  -- includes records with empty time_out
             GROUP BY tl.time_in, tl.time_out, u.user_id
-            ORDER BY tl.time_in DESC
+            ORDER BY 
+                GREATEST(tl.time_in, COALESCE(tl.time_out, tl.time_in)) DESC
         """)
+
         records = cursor.fetchall()
 
         structured_records = []
@@ -146,49 +149,66 @@ def check_user_time_status(rfid_no):
         close_db_connection(connection)
 
 def log_time(rfid_no, action):
-    print(f"Logging time for RFID {rfid_no} with action: {action}")  
+    print(f"Logging time for RFID {rfid_no} with action: {action}")
     cursor, connection = get_cursor()
     try:
+        # Retrieve vehicle and user information using RFID
         cursor.execute("""
             SELECT vehicle_id FROM rfid WHERE rfid_no = %s
         """, (rfid_no,))
         vehicle_id = cursor.fetchone()
-        print(f"Vehicle ID for RFID {rfid_no}: {vehicle_id}")  
-        
+
         if not vehicle_id:
             flash(f'RFID {rfid_no} is not associated with any vehicle.', 'error')
             return 
-        
+
         vehicle_id = vehicle_id[0]
         now = datetime.now()
-        print(f"Current time: {now}")  
 
         cursor.execute("""
             SELECT user_id FROM vehicle WHERE vehicle_id = %s
         """, (vehicle_id,))
         user_id_result = cursor.fetchone()
         user_id = user_id_result[0] if user_id_result else None
-        
-        if action == 'in':
-            cursor.execute("""
-                INSERT INTO time_logs (vehicle_id, rfid_id, time_in)
-                VALUES (%s, (SELECT rfid_id FROM rfid WHERE rfid_no = %s), %s)
-            """, (vehicle_id, rfid_no, now))
-            print(f"Time in logged for vehicle ID {vehicle_id}.") 
-            
-            log_login_activity(user_id, 'User', 'Clocked In')
-            
-        elif action == 'out':
-            cursor.execute("""
-                UPDATE time_logs
-                SET time_out = %s
-                WHERE vehicle_id = %s AND time_out IS NULL
-                ORDER BY created_at DESC
-                LIMIT 1
-            """, (now, vehicle_id))
-            print(f"Time out logged for vehicle ID {vehicle_id}.") 
 
-            log_login_activity(user_id, 'User', 'Clocked Out')
+        # Retrieve the latest time log status for this vehicle and RFID
+        cursor.execute("""
+            SELECT time_in, time_out FROM time_logs
+            WHERE vehicle_id = %s AND rfid_id = (SELECT rfid_id FROM rfid WHERE rfid_no = %s)
+            ORDER BY created_at DESC
+            LIMIT 1
+        """, (vehicle_id, rfid_no))
+        latest_log = cursor.fetchone()
+
+        if action == 'in':
+            # If there's no log or the last log has a time_out (meaning it's completed), log a new "in"
+            if not latest_log or latest_log[1] is not None:
+                cursor.execute("""
+                    INSERT INTO time_logs (vehicle_id, rfid_id, time_in)
+                    VALUES (%s, (SELECT rfid_id FROM rfid WHERE rfid_no = %s), %s)
+                """, (vehicle_id, rfid_no, now))
+                log_login_activity(user_id, 'User', 'Clocked In')
+                flash(f'Clocked in successfully for RFID: {rfid_no}', 'success')
+            else:
+                # If there's already an open "in" with no "out", inform the user
+                flash(f'Already clocked in for RFID: {rfid_no}. Please clock out before clocking in again.', 'error')
+
+        elif action == 'out':
+            # Only log a "clock out" if there is an open "in" entry with no "out" yet
+            if latest_log and latest_log[1] is None:
+                cursor.execute("""
+                    UPDATE time_logs
+                    SET time_out = %s
+                    WHERE vehicle_id = %s AND rfid_id = (SELECT rfid_id FROM rfid WHERE rfid_no = %s)
+                    AND time_out IS NULL
+                    ORDER BY created_at DESC
+                    LIMIT 1
+                """, (now, vehicle_id, rfid_no))
+                log_login_activity(user_id, 'User', 'Clocked Out')
+                flash(f'Clocked out successfully for RFID: {rfid_no}', 'success')
+            else:
+                # If there is no open "in" entry, inform the user they need to clock in first
+                flash(f'No active clock-in found for RFID: {rfid_no}. Please clock in before clocking out.', 'error')
 
         connection.commit()
     except Exception as e:
