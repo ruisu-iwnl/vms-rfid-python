@@ -1,6 +1,6 @@
 {% extends 'dashboard/user/layout.html' %}
 
-{% block title %}Vehicles | TimeGuard {% endblock %}
+{% block title %}Vehicles | TimeGuard{% endblock %}
 
 {% block header_title %}Vehicles{% endblock %}
 
@@ -23,7 +23,8 @@
                         <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">Car Make</th>
                         <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">Car Model</th>
                         <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">License Plate</th>
-                        <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">Actions</th>
+                        <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">RFID No.</th>
+                        <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">Created At</th>
                     </tr>
                 </thead>
                 <tbody class="bg-[#eeeee4] divide-y divide-gray-300">
@@ -32,9 +33,8 @@
                             <td class="px-6 py-4 whitespace-nowrap text-lg font-medium text-black">{{ vehicle[0] }}</td> 
                             <td class="px-6 py-4 whitespace-nowrap text-lg font-medium text-black">{{ vehicle[1] }}</td>  
                             <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ vehicle[2] }}</td>  
-                            <td class="px-6 py-4 whitespace-nowrap text-lg text-black">
-                                <!-- Action buttons can go here -->
-                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ vehicle[4] }}</td>  
+                            <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ vehicle[3] }}</td>  
                         </tr>
                     {% endfor %}
                 </tbody>
@@ -64,12 +64,10 @@
 
     </div>
     
-
     <script>
         document.getElementById('openModalBtn').addEventListener('click', function() {
             const modal = document.getElementById('vehicleModal');
             modal.classList.remove('hidden');
-            // Trigger the transition
             setTimeout(() => modal.classList.add('show'), 10);
         });
 

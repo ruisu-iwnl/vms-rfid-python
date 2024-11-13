@@ -46,22 +46,22 @@ def get_dashboard_data():
 
 
     # Get recent user registrations (last 30 days)
-    cursor.execute('''
-        SELECT COUNT(*) 
-        FROM user 
-        WHERE created_at >= NOW() - INTERVAL 30 DAY
-    ''')
-    recent_user_registrations = cursor.fetchone()[0]
+    # cursor.execute('''
+    #     SELECT COUNT(*) 
+    #     FROM user 
+    #     WHERE created_at >= NOW() - INTERVAL 30 DAY
+    # ''')
+    # recent_user_registrations = cursor.fetchone()[0]
 
-    # Get most common vehicle model
-    cursor.execute('''
-        SELECT model
-        FROM vehicle
-        GROUP BY model
-        ORDER BY COUNT(*) DESC
-        LIMIT 1
-    ''')
-    most_common_vehicle_model = cursor.fetchone()[0]
+    # # Get most common vehicle model
+    # cursor.execute('''
+    #     SELECT model
+    #     FROM vehicle
+    #     GROUP BY model
+    #     ORDER BY COUNT(*) DESC
+    #     LIMIT 1
+    # ''')
+    # most_common_vehicle_model = cursor.fetchone()[0]
 
     cursor.close()
     close_db_connection(connection)
@@ -73,7 +73,7 @@ def get_dashboard_data():
         'users_with_no_vehicles': users_with_no_vehicles,
         'total_rfid_tags': total_rfid_tags,
         'registered_rfid_count': registered_rfid_count,
-        'recent_user_registrations': recent_user_registrations,
-        'most_common_vehicle_model': most_common_vehicle_model
+        # 'recent_user_registrations': recent_user_registrations,
+        # 'most_common_vehicle_model': most_common_vehicle_model
     }
 

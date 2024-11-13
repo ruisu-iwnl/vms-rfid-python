@@ -30,7 +30,7 @@
 
     <!-- Time In/Out Table -->
     <div class="bg-[#eeeee4] p-6 rounded-lg shadow-md w-full max-w-full mb-8 relative">
-        <h2 class="text-xl font-bold mb-4">Time In/Out Table</h2>
+        <!-- <h2 class="text-xl font-bold mb-4">Time In/Out Table</h2> -->
         <table class="min-w-full divide-y divide-gray-300">
             <thead class="bg-[#eeeee4]">
                 <tr>
@@ -40,6 +40,8 @@
                     <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">Employee ID</th>
                     <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">Name</th>
                     <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">Phone Number</th>
+                    <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">Vehicles</th>
+                    <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">License Plates</th>
                 </tr>
             </thead>
             <tbody class="bg-[#eeeee4] divide-y divide-gray-300">
@@ -49,13 +51,22 @@
                         <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ record.time_in }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ record.time_out }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ record.employee_id }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ record.name }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-lg text-black flex items-center">
+                            {% if record.profile_image %}
+                                <img src="{{ url_for('static', filename='images/users/' + record.profile_image) }}" alt="Profile Image" class="w-[50px] h-[50px] rounded-full mr-4">
+                            {% else %}
+                                <img src="{{ url_for('static', filename='images/users/profile.svg') }}" alt="Default Profile Image" class="w-[50px] h-[50px] rounded-full mr-4">
+                            {% endif %}
+                            {{ record.name }}
+                        </td>
                         <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ record.phone_number }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ record.vehicles }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ record.license_plates }}</td>
                     </tr>
                 {% endfor %}
             </tbody>
+            
         </table>
-
         <!-- Pagination -->
         <div class="flex justify-center mt-4">
             <nav class="relative z-0 inline-flex shadow-sm -space-x-px" aria-label="Pagination">

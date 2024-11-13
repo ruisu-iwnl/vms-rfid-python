@@ -7,6 +7,40 @@ from app.models.database import get_cursor, close_db_connection
 
 load_dotenv()
 
+def get_user_profile_info(user_id):
+    cursor, connection = get_cursor()
+    try:
+        cursor.execute("""
+            SELECT emp_no, firstname, lastname, email, contactnumber, profile_image
+            FROM user
+            WHERE user_id = %s
+        """, (user_id,))
+        user_profile = cursor.fetchone()
+
+        if user_profile:
+            cursor.execute("""
+                SELECT COUNT(*) 
+                FROM vehicle 
+                WHERE user_id = %s
+            """, (user_id,))
+            vehicle_count = cursor.fetchone()[0]
+
+            return {
+                'emp_no': user_profile[0],
+                'firstname': user_profile[1],
+                'lastname': user_profile[2],
+                'email': user_profile[3],
+                'contactnumber': user_profile[4],
+                'profile_image': user_profile[5],
+                'vehicle_count': vehicle_count
+            }
+        else:
+            return None  
+
+    finally:
+        close_db_connection(connection)
+
+
 def get_name(user_id):
     cursor, connection = get_cursor()
     try:

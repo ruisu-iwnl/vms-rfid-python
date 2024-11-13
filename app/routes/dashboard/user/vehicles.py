@@ -20,9 +20,10 @@ def vehicles(page):
 
     try:
         cursor.execute("""
-            SELECT make, model, licenseplate
-            FROM vehicle
-            WHERE user_id = %s
+            SELECT v.make, v.model, v.licenseplate, v.created_at, r.rfid_no
+            FROM vehicle v
+            LEFT JOIN rfid r ON v.vehicle_id = r.vehicle_id
+            WHERE v.user_id = %s
         """, (user_id,))
         
         vehicles = cursor.fetchall()  
@@ -36,7 +37,7 @@ def vehicles(page):
     start = (page - 1) * per_page
     end = start + per_page
     paginated_vehicles = vehicles[start:end]
-    print(f"Session active in vehicles: {session}")
+
     return render_template(
         'dashboard/user/vehicles.html',
         vehicles=paginated_vehicles,
