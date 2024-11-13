@@ -34,7 +34,8 @@ def timeinout(page):
             JOIN vehicle v ON tl.vehicle_id = v.vehicle_id
             JOIN user u ON v.user_id = u.user_id
             GROUP BY tl.time_in, tl.time_out, u.user_id
-            ORDER BY tl.time_in DESC
+            ORDER BY 
+                GREATEST(tl.time_in, tl.time_out) DESC
         """)
         records = cursor.fetchall()
 
