@@ -51,16 +51,22 @@
                         <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ record.time_in }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ record.time_out }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ record.employee_id }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ record.name }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-lg text-black flex items-center">
+                            {% if record.profile_image %}
+                                <img src="{{ url_for('static', filename='images/users/' + record.profile_image) }}" alt="Profile Image" class="w-[50px] h-[50px] rounded-full mr-4">
+                            {% else %}
+                                <img src="{{ url_for('static', filename='images/users/profile.svg') }}" alt="Default Profile Image" class="w-[50px] h-[50px] rounded-full mr-4">
+                            {% endif %}
+                            {{ record.name }}
+                        </td>
                         <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ record.phone_number }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ record.vehicles }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ record.license_plates }}</td>
                     </tr>
                 {% endfor %}
             </tbody>
+            
         </table>
-        
-
         <!-- Pagination -->
         <div class="flex justify-center mt-4">
             <nav class="relative z-0 inline-flex shadow-sm -space-x-px" aria-label="Pagination">

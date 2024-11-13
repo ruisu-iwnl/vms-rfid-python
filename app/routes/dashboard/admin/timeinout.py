@@ -26,16 +26,16 @@ def timeinout(page):
     try:
         cursor.execute("""
             SELECT tl.time_in, tl.time_out, u.emp_no AS employee_id, 
-                   CONCAT(u.firstname, ' ', u.lastname) AS name, u.contactnumber,
-                   GROUP_CONCAT(CONCAT(v.make, ' ', v.model) SEPARATOR ', ') AS vehicles,
-                   GROUP_CONCAT(v.licenseplate SEPARATOR ', ') AS license_plates
+                CONCAT(u.firstname, ' ', u.lastname) AS name, u.contactnumber,
+                GROUP_CONCAT(CONCAT(v.make, ' ', v.model) SEPARATOR ', ') AS vehicles,
+                GROUP_CONCAT(v.licenseplate SEPARATOR ', ') AS license_plates,
+                u.profile_image
             FROM time_logs tl
             JOIN vehicle v ON tl.vehicle_id = v.vehicle_id
             JOIN user u ON v.user_id = u.user_id
             GROUP BY tl.time_in, tl.time_out, u.user_id
             ORDER BY tl.time_in DESC
         """)
-
         records = cursor.fetchall()
 
         structured_records = []
@@ -48,7 +48,8 @@ def timeinout(page):
                 'name': record[3],
                 'phone_number': record[4],
                 'vehicles': record[5] if record[5] else 'No Vehicle Registered',
-                'license_plates': record[6] if record[6] else 'No Plate Available'
+                'license_plates': record[6] if record[6] else 'No Plate Available',
+                'profile_image': record[7]
             })
 
         per_page = 5
