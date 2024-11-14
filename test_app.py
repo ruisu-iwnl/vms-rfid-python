@@ -96,11 +96,15 @@ def process_frame(frame_data):
         if len(detected_text_history) > plate_detection_threshold:
             detected_text_history.pop(0)  # Remove the oldest detection
 
-        # If the same plate is detected consecutively (based on history), stop further scanning
-        if detected_text_history.count(text) >= plate_detection_threshold:
-            detected_plate = text
-            plate_detected_flag = True  # Set the flag to stop further processing
-            return f"Plate detected: {detected_plate}"
+        # Validate the length of the detected text
+        if len(text) >= 7 and len(text) <= 8:
+            # If the same plate is detected consecutively (based on history), stop further scanning
+            if detected_text_history.count(text) >= plate_detection_threshold:
+                detected_plate = text
+                plate_detected_flag = True  # Set the flag to stop further processing
+                return f"Plate detected: {detected_plate}"
+        else:
+            return f"Plate detected but does not match expected length (6-7 characters): {text}"
 
         return f"Detecting plate... Current text: {text}"
 
