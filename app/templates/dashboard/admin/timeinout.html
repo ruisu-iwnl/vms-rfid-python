@@ -28,9 +28,26 @@
         <p id="scanned_display" class="mt-2 text-lg font-semibold"><span id="rfid_number"></span></p> 
     </form>
 
+    <!-- Camera Section -->
+    <div class="flex flex-col items-center space-y-4 mt-6">
+        <h2 class="text-xl font-semibold">License Plate Detection</h2>
+        
+        <!-- Video Feed from Camera -->
+        <div class="flex justify-center">
+            <video id="liveCamera" autoplay style="width: 400px; height: 400px; border: 2px solid black;"></video>
+        </div>
+
+        <div class="flex space-x-4">
+            <button id="captureBtn" class="bg-blue-500 text-white font-semibold py-2 px-6 rounded-lg text-lg">Capture Image</button>
+            <button id="toggleCameraBtn" class="bg-yellow-500 text-white font-semibold py-2 px-6 rounded-lg text-lg">Enable Camera</button>
+        </div>
+        
+        <!-- Display Detected Text -->
+        <div id="detectedText" class="mt-4 text-lg font-semibold text-center text-black"></div>
+    </div>
+
     <!-- Time In/Out Table -->
     <div class="bg-[#eeeee4] p-6 rounded-lg shadow-md w-full max-w-full mb-8 relative">
-        <!-- <h2 class="text-xl font-bold mb-4">Time In/Out Table</h2> -->
         <table class="min-w-full divide-y divide-gray-300">
             <thead class="bg-[#eeeee4]">
                 <tr>
@@ -67,7 +84,6 @@
                     </tr>
                 {% endfor %}
             </tbody>
-            
         </table>
         <!-- Pagination -->
         <div class="flex justify-center mt-4">
@@ -94,4 +110,60 @@
 </div>
 
 <script src="{{ url_for('static', filename='js/rfid_scanner.js') }}"></script>
+
+<!-- Camera Script -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.1/socket.io.min.js"></script>
+<script>
+    const videoElement = document.getElementById('liveCamera');
+    const captureBtn = document.getElementById('captureBtn');
+    const toggleCameraBtn = document.getElementById('toggleCameraBtn');
+    const detectedTextElement = document.getElementById('detectedText');  // Added for displaying detected text
+    const socket = io.connect('https://' + window.location.hostname + ':8443');
+
+    let cameraStream = null;
+
+    function toggleCamera() {
+        if (cameraStream) {
+            // Stop the camera feed
+            const tracks = cameraStream.getTracks();
+            tracks.forEach(track => track.stop());
+            cameraStream = null;
+            videoElement.srcObject = null;
+            toggleCameraBtn.textContent = 'Enable Camera';  // Change button text
+        } else {
+            // Start the camera feed
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then((stream) => {
+                    cameraStream = stream;
+                    videoElement.srcObject = stream;
+                    console.log('Camera feed started');
+                    toggleCameraBtn.textContent = 'Disable Camera';  // Change button text
+                })
+                .catch((error) => {
+                    console.error('Error accessing webcam:', error);
+                });
+        }
+    }
+
+    function captureAndSendFrame() {
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        canvas.width = videoElement.videoWidth;
+        canvas.height = videoElement.videoHeight;
+
+        context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+        const frame = canvas.toDataURL('image/jpeg');  // Capture frame as JPEG data URL
+
+        socket.emit('frame', { image: frame });
+    }
+
+    captureBtn.addEventListener('click', captureAndSendFrame);
+    toggleCameraBtn.addEventListener('click', toggleCamera);
+
+    // Listen for the detected text and update the UI
+    socket.on('update_text', (data) => {
+        detectedTextElement.innerHTML = 'Detected Text: ' + data.text;  // Display the detected text
+    });
+</script>
+
 {% endblock %}

@@ -148,12 +148,18 @@ def check_user_time_status(rfid_no):
         cursor.close()
         close_db_connection(connection)
 
-def log_time(rfid_no, action):
-    print(f"Logging time for RFID {rfid_no} with action: {action}")
+def log_time(rfid_no, action, flag=True):
+    print(f"Logging time for RFID {rfid_no} with action: {action} (Flag: {flag})")
+    
+    # If the flag is False, don't proceed with the database operations
+    if not flag:
+        print("Action held. Flag is False. Not logging time.")
+        return
+
     cursor, connection = get_cursor()
     try:
         # Retrieve vehicle and user information using RFID
-        cursor.execute("""
+        cursor.execute(""" 
             SELECT vehicle_id FROM rfid WHERE rfid_no = %s
         """, (rfid_no,))
         vehicle_id = cursor.fetchone()
