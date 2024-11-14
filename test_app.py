@@ -39,33 +39,41 @@ def process_frame(frame_data):
         # Convert image to OpenCV format (BGR)
         open_cv_image = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
 
-        # Step 1: Convert to grayscale (simplified)
+        # Increase the image resolution by resizing
+        height, width = open_cv_image.shape[:2]
+        open_cv_image = cv2.resize(open_cv_image, (width * 2, height * 2))  # Resize to 2x the original size
+
+        # Step 1: Convert to grayscale
         gray = cv2.cvtColor(open_cv_image, cv2.COLOR_BGR2GRAY)
 
-        # Step 2: Apply adaptive histogram equalization to improve contrast
-        clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
-        enhanced_gray = clahe.apply(gray)
+        # Step 2: Apply Gaussian Blur to reduce noise and smooth the image
+        blurred = cv2.GaussianBlur(gray, (5, 5), 0)
 
-        # Step 3: Apply a simple binary threshold to enhance contrast further
-        _, thresh = cv2.threshold(enhanced_gray, 127, 255, cv2.THRESH_BINARY)
+        # Step 3: Apply adaptive thresholding for binarization (black and white image)
+        _, thresh = cv2.threshold(blurred, 127, 255, cv2.THRESH_BINARY)
 
-        # Show the thresholded image to visualize the filter effect
-        thresh_image_b64 = encode_image_to_base64(thresh)
+        # Step 4: Apply morphological operations to clean up noise (opening and closing)
+        kernel = np.ones((3, 3), np.uint8)
+        opened = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, kernel)
+        closed = cv2.morphologyEx(opened, cv2.MORPH_CLOSE, kernel)
 
-        # Step 4: Use EasyOCR to read text from the enhanced image
-        result = reader.readtext(thresh)
+        # Show the thresholded and morphologically processed image to visualize the effect
+        closed_image_b64 = encode_image_to_base64(closed)
+
+        # Step 5: Use EasyOCR to read text from the processed image
+        result = reader.readtext(closed)
 
         if not result:
-            return "No text detected", thresh_image_b64, ""
+            return "No text detected", "", closed_image_b64
 
-        # Step 5: Filter results by confidence score (greater than 0.5)
+        # Step 6: Filter results by confidence score (greater than 0.5)
         detected_texts = [item[-2].upper() for item in result if item[-1] > 0.5]
         detected_text = ' '.join(detected_texts)
 
-        # Step 6: Filter for valid plate characters (numbers and uppercase letters)
+        # Step 7: Filter for valid plate characters (numbers and uppercase letters)
         detected_text = ''.join(filter(str.isalnum, detected_text))
 
-        # Step 7: Render the result with bounding box and detected text
+        # Step 8: Render the result with bounding box and detected text
         font = cv2.FONT_HERSHEY_SIMPLEX
         for (bbox, text, prob) in result:
             if prob > 0.5:  # Confidence threshold
@@ -75,8 +83,8 @@ def process_frame(frame_data):
                 cv2.rectangle(open_cv_image, top_left, bottom_right, (0, 255, 0), 3)
                 cv2.putText(open_cv_image, text, (top_left[0], top_left[1] - 10), font, 1, (0, 255, 0), 2)
 
-        # Return the final detected text and thresholded image
-        return detected_text, thresh_image_b64, ""
+        # Return the final detected text and processed image
+        return detected_text, "", closed_image_b64
 
     except Exception as e:
         return f"Error processing image: {str(e)}", "", ""
@@ -90,8 +98,8 @@ def encode_image_to_base64(image):
 @socketio.on('frame')
 def handle_frame(data):
     frame_data = data['image']  # Image is sent from frontend as base64
-    detected_text, thresh_image_b64, _ = process_frame(frame_data)  # Process the image to extract text
-    emit('update_text', {'text': detected_text, 'thresh_image': thresh_image_b64})  # Send detected text and images back to frontend
+    detected_text, _, closed_image_b64 = process_frame(frame_data)  # Process the image to extract text
+    emit('update_text', {'text': detected_text, 'processed_image': closed_image_b64})  # Send detected text and processed image back to frontend
 
 # Route for the test page
 @app.route('/test')
