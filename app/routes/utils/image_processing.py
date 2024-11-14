@@ -9,55 +9,59 @@ import imutils
 # Initialize EasyOCR reader
 reader = easyocr.Reader(['en'])
 
+# Function to process frames with EasyOCR and OpenCV
 def process_frame(frame_data):
     try:
-        # Decode the base64 image data from the frontend
+        # Decode the base64 image data
         img_data = base64.b64decode(frame_data.split(',')[1])
         image = Image.open(BytesIO(img_data))
-        
-        # Convert image to OpenCV format (BGR)
+
+        # Convert image to OpenCV format
         open_cv_image = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
 
-        # Step 1: Grayscale the image
+        # Increase resolution (resize image)
+        height, width = open_cv_image.shape[:2]
+        open_cv_image = cv2.resize(open_cv_image, (width * 2, height * 2))
+
+        # Preprocess image (grayscale, blur, threshold)
         gray = cv2.cvtColor(open_cv_image, cv2.COLOR_BGR2GRAY)
+        blurred = cv2.GaussianBlur(gray, (5, 5), 0)
+        _, thresh = cv2.threshold(blurred, 127, 255, cv2.THRESH_BINARY)
+        kernel = np.ones((3, 3), np.uint8)
+        opened = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, kernel)
+        closed = cv2.morphologyEx(opened, cv2.MORPH_CLOSE, kernel)
 
-        # Step 2: Noise reduction with bilateral filter
-        bfilter = cv2.bilateralFilter(gray, 9, 75, 75)
-        edged = cv2.Canny(bfilter, 10, 100)
+        # Encode processed image to base64 for frontend display
+        closed_image_b64 = encode_image_to_base64(closed)
 
-        # Step 3: Find contours and apply mask
-        keypoints = cv2.findContours(edged.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-        contours = imutils.grab_contours(keypoints)
-        contours = sorted(contours, key=cv2.contourArea, reverse=True)[:10]
+        # Use EasyOCR to detect text
+        result = reader.readtext(closed)
 
-        location = None
-        for contour in contours:
-            approx = cv2.approxPolyDP(contour, 10, True)
-            if len(approx) == 4:
-                location = approx
-                break
-
-        # If no contour found, return message
-        if location is None:
-            return "No plate detected"
-
-        # Create a mask for the plate region
-        mask = np.zeros(gray.shape, np.uint8)
-        cv2.drawContours(mask, [location], 0, 255, -1)
-        cropped_image = cv2.bitwise_and(open_cv_image, open_cv_image, mask=mask)
-
-        # Step 4: Use EasyOCR to read text from the image
-        result = reader.readtext(cropped_image)
-        
         if not result:
-            return "No text detected"
+            return "No text detected", "", closed_image_b64
 
-        # Extract all detected text regions and join them
-        detected_texts = [item[-2].upper() for item in result if item[-1] > 0.5]  # Confidence > 0.5
-        text = ' '.join(detected_texts)
-        print("Detected Text:", text)
+        # Sanitize detected text (remove non-alphanumeric characters)
+        detected_text = ''.join(filter(str.isalnum, ' '.join([item[-2].upper() for item in result if item[-1] > 0.5])))
 
-        return text
+        # Print bounding box size (width, height) for each detected text
+        for (bbox, text, prob) in result:
+            if prob > 0.5: 
+                top_left, top_right, bottom_right, bottom_left = map(lambda x: tuple(map(int, x)), bbox)
+
+                letter_width = bottom_right[0] - top_left[0]
+                letter_height = bottom_right[1] - top_left[1]
+
+                print(f"Detected letter: '{text}' | Width: {letter_width} pixels, Height: {letter_height} pixels")
+
+                cv2.rectangle(open_cv_image, top_left, bottom_right, (0, 255, 0), 3)
+                cv2.putText(open_cv_image, text, (top_left[0], top_left[1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+
+        return detected_text, "", closed_image_b64
 
     except Exception as e:
-        return f"Error processing image: {str(e)}"
+        return f"Error processing image: {str(e)}", "", ""
+
+# Encode OpenCV image to base64
+def encode_image_to_base64(image):
+    _, buffer = cv2.imencode('.jpg', image)
+    return base64.b64encode(buffer).decode('utf-8')

@@ -1,6 +1,6 @@
 {% extends 'dashboard/admin/layout.html' %}
 
-{% block title %}Time Logs | TimeGuard {% endblock %}
+{% block title %}License Plate Detection | TimeGuard{% endblock %}
 
 {% block header_title %}Time In/Out{% endblock %}
 
@@ -34,16 +34,21 @@
         
         <!-- Video Feed from Camera -->
         <div class="flex justify-center">
-            <video id="liveCamera" autoplay style="width: 400px; height: 400px; border: 2px solid black;"></video>
+            <video id="liveCamera" autoplay style="width: 500px; height: 500px; border: 2px solid black; display: none;"></video>
         </div>
 
         <div class="flex space-x-4">
-            <button id="captureBtn" class="bg-blue-500 text-white font-semibold py-2 px-6 rounded-lg text-lg">Capture Image</button>
+            <button id="captureBtn" class="bg-blue-500 text-white font-semibold py-2 px-6 rounded-lg text-lg" style="display: none;">Capture Image</button>
             <button id="toggleCameraBtn" class="bg-yellow-500 text-white font-semibold py-2 px-6 rounded-lg text-lg">Enable Camera</button>
+            <button id="retryBtn" class="bg-red-500 text-white font-semibold py-2 px-6 rounded-lg text-lg" style="display: none;">Retry</button>
         </div>
-        
-        <!-- Display Detected Text -->
-        <div id="detectedText" class="mt-4 text-lg font-semibold text-center text-black"></div>
+
+        <div id="detectedText" class="mt-4 text-lg font-semibold text-center text-black" style="display: none;"></div>
+
+        <!-- Captured Images -->
+        <img id="capturedImage" alt="Captured Image" style="display: none;">
+        <img id="threshImage" alt="Thresholded Image" style="display: none;">
+        <img id="edgedImage" alt="Edge-detected Image" style="display: none;">
     </div>
 
     <!-- Time In/Out Table -->
@@ -66,9 +71,7 @@
                     <tr>
                         <td class="px-6 py-4 whitespace-nowrap text-lg font-medium text-black">{{ record.date }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ record.time_in }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-lg text-black">
-                            {{ record.time_out if record.time_out else "Pending" }}
-                        </td>                        
+                        <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ record.time_out if record.time_out else "Pending" }}</td>                        
                         <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ record.employee_id }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-lg text-black flex items-center">
                             {% if record.profile_image %}
@@ -117,52 +120,81 @@
     const videoElement = document.getElementById('liveCamera');
     const captureBtn = document.getElementById('captureBtn');
     const toggleCameraBtn = document.getElementById('toggleCameraBtn');
-    const detectedTextElement = document.getElementById('detectedText');  // Added for displaying detected text
+    const retryBtn = document.getElementById('retryBtn');
+    const detectedTextElement = document.getElementById('detectedText');
     const socket = io.connect('https://' + window.location.hostname + ':8443');
 
     let cameraStream = null;
 
+    // Toggle camera visibility and functionality
     function toggleCamera() {
         if (cameraStream) {
             // Stop the camera feed
             const tracks = cameraStream.getTracks();
             tracks.forEach(track => track.stop());
             cameraStream = null;
-            videoElement.srcObject = null;
-            toggleCameraBtn.textContent = 'Enable Camera';  // Change button text
+            videoElement.style.display = 'none';
+            toggleCameraBtn.innerText = 'Enable Camera';
+            captureBtn.style.display = 'none';
+            retryBtn.style.display = 'none';
+            detectedTextElement.style.display = 'none';
+            console.log('Camera disabled');
         } else {
             // Start the camera feed
             navigator.mediaDevices.getUserMedia({ video: true })
-                .then((stream) => {
+                .then(stream => {
                     cameraStream = stream;
                     videoElement.srcObject = stream;
-                    console.log('Camera feed started');
-                    toggleCameraBtn.textContent = 'Disable Camera';  // Change button text
+                    videoElement.style.display = 'block';
+                    toggleCameraBtn.innerText = 'Disable Camera';
+                    captureBtn.style.display = 'inline-block';
+                    retryBtn.style.display = 'none';
+                    detectedTextElement.style.display = 'none';
+                    console.log('Camera enabled');
                 })
-                .catch((error) => {
-                    console.error('Error accessing webcam:', error);
+                .catch(error => {
+                    console.error('Error accessing camera: ', error);
                 });
         }
     }
 
+    // Capture frame from video and send to server
     function captureAndSendFrame() {
+        console.log('Capture button clicked');
         const canvas = document.createElement('canvas');
         const context = canvas.getContext('2d');
         canvas.width = videoElement.videoWidth;
         canvas.height = videoElement.videoHeight;
-
         context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
-        const frame = canvas.toDataURL('image/jpeg');  // Capture frame as JPEG data URL
 
-        socket.emit('frame', { image: frame });
+        const imageData = canvas.toDataURL('image/png');
+        capturedImage.src = imageData;
+        capturedImage.style.display = 'block';
+        videoElement.style.display = 'none';
+        captureBtn.style.display = 'none';
+        toggleCameraBtn.style.display = 'none'; 
+        retryBtn.style.display = 'inline';
+        socket.emit('frame', { image: imageData });
+        console.log('Image sent to server');
+    }
+
+    // Retry capturing
+    function retryCapture() {
+        capturedImage.style.display = 'none';
+        videoElement.style.display = 'block';
+        captureBtn.style.display = cameraStream ? 'inline' : 'none';
+        retryBtn.style.display = 'none';
+        toggleCameraBtn.style.display = 'inline';
+        detectedTextElement.style.display = 'none';
     }
 
     captureBtn.addEventListener('click', captureAndSendFrame);
+    retryBtn.addEventListener('click', retryCapture);
     toggleCameraBtn.addEventListener('click', toggleCamera);
 
-    // Listen for the detected text and update the UI
     socket.on('update_text', (data) => {
-        detectedTextElement.innerHTML = 'Detected Text: ' + data.text;  // Display the detected text
+        detectedTextElement.innerText = 'Detected Plate Number: ' + data.text;
+        detectedTextElement.style.display = 'block';
     });
 </script>
 
