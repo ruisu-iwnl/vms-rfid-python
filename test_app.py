@@ -73,15 +73,22 @@ def process_frame(frame_data):
         # Step 7: Filter for valid plate characters (numbers and uppercase letters)
         detected_text = ''.join(filter(str.isalnum, detected_text))
 
-        # Step 8: Render the result with bounding box and detected text
-        font = cv2.FONT_HERSHEY_SIMPLEX
+        # Print the size (width and height) of each detected letter
         for (bbox, text, prob) in result:
             if prob > 0.5:  # Confidence threshold
                 (top_left, top_right, bottom_right, bottom_left) = bbox
                 top_left = tuple(map(int, top_left))
                 bottom_right = tuple(map(int, bottom_right))
+
+                # Calculate width and height of each detected letter (bounding box size)
+                letter_width = bottom_right[0] - top_left[0]
+                letter_height = bottom_right[1] - top_left[1]
+                
+                print(f"Detected letter: '{text}' | Width: {letter_width} pixels, Height: {letter_height} pixels")
+
+                # Draw bounding boxes for visual feedback
                 cv2.rectangle(open_cv_image, top_left, bottom_right, (0, 255, 0), 3)
-                cv2.putText(open_cv_image, text, (top_left[0], top_left[1] - 10), font, 1, (0, 255, 0), 2)
+                cv2.putText(open_cv_image, text, (top_left[0], top_left[1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
 
         # Return the final detected text and processed image
         return detected_text, "", closed_image_b64
