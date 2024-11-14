@@ -16,7 +16,7 @@ socketio = SocketIO(app)
 # EasyOCR Reader initialization
 reader = easyocr.Reader(['en'])
 
-# Paths for the SSL certificates
+# SSL certificate paths
 linux_cert_path = '/etc/ssl/certs/selfsigned-cert.pem'
 linux_key_path = '/etc/ssl/private/selfsigned-key.pem'
 windows_cert_path = r'C:\certs\selfsigned-cert.pem'
