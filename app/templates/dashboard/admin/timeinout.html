@@ -10,27 +10,31 @@
     <h1 id="date" class="flex text-4xl justify-center font-bold mb-4">Date Placeholder</h1>
     <h1 id="time" class="flex text-4xl justify-center font-bold mb-4">Time Placeholder</h1>
 
-    <form action="{{ url_for('timeinout.handle_rfid') }}" method="POST" class="flex flex-col items-start space-y-4 mb-4" autocomplete="off">
-        {{ form.hidden_tag() }}
+    <!-- RFID Scanner Section (Initially Hidden) -->
+    <div id="rfidSection" style="display: none;">
+        <form action="{{ url_for('timeinout.handle_rfid') }}" method="POST" class="flex flex-col items-start space-y-4 mb-4" autocomplete="off">
+            {{ form.hidden_tag() }}
 
-        <label for="rfid_no" class="text-lg font-bold">RFID Scanner:</label>
-        <input type="text" name="rfid_no" id="rfid-input" class="border border-gray-300 rounded-lg p-4 text-lg w-full" placeholder="RFID Number" style="opacity: 0; position: absolute; left: -9999px;">
+            <label for="rfid_no" class="text-lg font-bold">RFID Scanner:</label>
+            <!-- Hide the RFID input field -->
+            <input type="text" name="rfid_no" id="rfid-input" class="border border-gray-300 rounded-lg p-4 text-lg w-full" placeholder="RFID Number" style="opacity: 0; position: absolute; left: -9999px;">
 
-        <button 
-            type="button" 
-            id="scan_button"
-            class="bg-green-500 text-white font-semibold py-4 px-8 rounded-lg text-lg hover:bg-green-600"
-            onclick="toggleScanning()"
-        >
-            RFID Scan
-        </button>
+            <button 
+                type="button" 
+                id="scan_button"
+                class="bg-green-500 text-white font-semibold py-4 px-8 rounded-lg text-lg hover:bg-green-600"
+                onclick="toggleScanning()"
+            >
+                RFID Scan
+            </button>
 
-        <p id="scanned_display" class="mt-2 text-lg font-semibold"><span id="rfid_number"></span></p> 
-    </form>
+            <p id="scanned_display" class="mt-2 text-lg font-semibold"><span id="rfid_number"></span></p> 
+        </form>
+    </div>
 
     <!-- Camera Section -->
-    <div class="flex flex-col items-center space-y-4 mt-6">
-        <h2 class="text-xl font-semibold">License Plate Detection</h2>
+    <div id="cameraSection" class="flex flex-col items-center space-y-4 mt-6">
+        <!-- <h2 class="text-xl font-semibold">License Plate Detection</h2> -->
         
         <!-- Video Feed from Camera -->
         <div class="flex justify-center">
@@ -49,6 +53,14 @@
         <img id="capturedImage" alt="Captured Image" style="display: none;">
         <img id="threshImage" alt="Thresholded Image" style="display: none;">
         <img id="edgedImage" alt="Edge-detected Image" style="display: none;">
+    </div>
+
+    <!-- Navigation Buttons -->
+    <div class="flex justify-between mt-6">
+        <button id="nextBtn" class="bg-blue-500 text-white font-semibold py-2 px-6 rounded-lg text-lg" style="display: none;">
+            Next
+        </button>
+        <button id="retryBtn" class="bg-red-500 text-white font-semibold py-2 px-6 rounded-lg text-lg" style="display: none;" onclick="retryCapture()">Retry</button>
     </div>
 
     <!-- Time In/Out Table -->
@@ -123,6 +135,9 @@
     const retryBtn = document.getElementById('retryBtn');
     const detectedTextElement = document.getElementById('detectedText');
     const socket = io.connect('https://' + window.location.hostname + ':8443');
+    const rfidSection = document.getElementById('rfidSection');
+    const cameraSection = document.getElementById('cameraSection');
+    const nextBtn = document.getElementById('nextBtn');
 
     let cameraStream = null;
 
@@ -176,6 +191,9 @@
         retryBtn.style.display = 'inline';
         socket.emit('frame', { image: imageData });
         console.log('Image sent to server');
+
+        // Show the Next button after capturing the image
+        nextBtn.style.display = 'inline-block';
     }
 
     // Retry capturing
@@ -187,6 +205,14 @@
         toggleCameraBtn.style.display = 'inline';
         detectedTextElement.style.display = 'none';
     }
+
+    // Handle Next Button click
+    nextBtn.addEventListener('click', function() {
+        // Switch to RFID section
+        cameraSection.style.display = 'none';
+        rfidSection.style.display = 'block';
+        nextBtn.style.display = 'none';
+    });
 
     captureBtn.addEventListener('click', captureAndSendFrame);
     retryBtn.addEventListener('click', retryCapture);
