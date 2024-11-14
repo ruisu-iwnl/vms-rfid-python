@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>License Plate Detection</title>
     <style>
-        #capturedImage, #detectedText, #retryBtn, #captureBtn, #liveCamera { display: none; }
-        video, #capturedImage { width: 500px; height: 500px; border: 2px solid black; }
+        #capturedImage, #detectedText, #retryBtn, #captureBtn, #liveCamera, #threshImage, #edgedImage { display: none; }
+        video, #capturedImage, #threshImage, #edgedImage { width: 500px; height: 500px; border: 2px solid black; }
         button { margin-top: 20px; }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.1/socket.io.min.js"></script>
@@ -15,6 +15,8 @@
     <h1 id="detectedText">Detected Plate Number</h1>
     <video id="liveCamera" autoplay></video>
     <img id="capturedImage" alt="Captured Image">
+    <img id="threshImage" alt="Thresholded Image">
+    <img id="edgedImage" alt="Edge-detected Image">
     <button id="captureBtn">Capture Image</button>
     <button id="toggleCameraBtn">Enable Camera</button>
     <button id="retryBtn">Retry</button>
@@ -22,6 +24,8 @@
     <script>
         const videoElement = document.getElementById('liveCamera');
         const capturedImage = document.getElementById('capturedImage');
+        const threshImage = document.getElementById('threshImage');
+        const edgedImage = document.getElementById('edgedImage');
         const detectedTextElement = document.getElementById('detectedText');
         const captureBtn = document.getElementById('captureBtn');
         const toggleCameraBtn = document.getElementById('toggleCameraBtn');
@@ -78,6 +82,8 @@
             retryBtn.style.display = 'none'; // Hide retry button
             toggleCameraBtn.style.display = 'inline'; // Show toggle camera button again
             detectedTextElement.style.display = 'none';
+            threshImage.style.display = 'none';
+            edgedImage.style.display = 'none';
         }
 
         captureBtn.addEventListener('click', captureAndSendFrame);
@@ -87,6 +93,16 @@
         socket.on('update_text', (data) => {
             detectedTextElement.textContent = "Detected Plate Number: " + data.text;
             detectedTextElement.style.display = 'block';
+
+            if (data.thresh_image) {
+                threshImage.src = 'data:image/jpeg;base64,' + data.thresh_image;
+                threshImage.style.display = 'block';
+            }
+
+            if (data.edged_image) {
+                edgedImage.src = 'data:image/jpeg;base64,' + data.edged_image;
+                edgedImage.style.display = 'block';
+            }
         });
     </script>
 </body>
