@@ -20,22 +20,40 @@
     <h1 id="detectedText">Detected Plate Number</h1>
     <video id="liveCamera" autoplay></video>
     <button id="captureBtn">Capture Image</button>
+    <button id="toggleCameraBtn">Enable Camera</button>
 
     <script>
         const videoElement = document.getElementById('liveCamera');
         const detectedTextElement = document.getElementById('detectedText');
         const captureBtn = document.getElementById('captureBtn');
+        const toggleCameraBtn = document.getElementById('toggleCameraBtn');
         const socket = io.connect('https://' + window.location.hostname + ':8443');
 
-        // Start the live camera feed
-        navigator.mediaDevices.getUserMedia({ video: true })
-            .then((stream) => {
-                videoElement.srcObject = stream;
-                console.log('Camera feed started');
-            })
-            .catch((error) => {
-                console.error('Error accessing webcam:', error);
-            });
+        let cameraStream = null;
+
+        // Function to enable/disable camera feed
+        function toggleCamera() {
+            if (cameraStream) {
+                // Stop the camera feed
+                const tracks = cameraStream.getTracks();
+                tracks.forEach(track => track.stop());
+                cameraStream = null;
+                videoElement.srcObject = null;
+                toggleCameraBtn.textContent = 'Enable Camera';  // Change button text
+            } else {
+                // Start the camera feed
+                navigator.mediaDevices.getUserMedia({ video: true })
+                    .then((stream) => {
+                        cameraStream = stream;
+                        videoElement.srcObject = stream;
+                        console.log('Camera feed started');
+                        toggleCameraBtn.textContent = 'Disable Camera';  // Change button text
+                    })
+                    .catch((error) => {
+                        console.error('Error accessing webcam:', error);
+                    });
+            }
+        }
 
         // Function to capture frames and send them to the server when the button is clicked
         function captureAndSendFrame() {
@@ -53,6 +71,9 @@
 
         // Add event listener to the capture button
         captureBtn.addEventListener('click', captureAndSendFrame);
+
+        // Add event listener to the toggle camera button
+        toggleCameraBtn.addEventListener('click', toggleCamera);
 
         // Listen for 'update_text' event and update the page with detected text
         socket.on('update_text', (data) => {
