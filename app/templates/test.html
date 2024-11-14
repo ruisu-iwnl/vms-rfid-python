@@ -10,16 +10,21 @@
             height: 500px;
             border: 2px solid black;
         }
+        button {
+            margin-top: 20px;
+        }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.1/socket.io.min.js"></script>
 </head>
 <body>
     <h1 id="detectedText">Detected Plate Number</h1>
     <video id="liveCamera" autoplay></video>
+    <button id="captureBtn">Capture Image</button>
 
     <script>
         const videoElement = document.getElementById('liveCamera');
         const detectedTextElement = document.getElementById('detectedText');
+        const captureBtn = document.getElementById('captureBtn');
         const socket = io.connect('https://' + window.location.hostname + ':8443');
 
         // Start the live camera feed
@@ -32,7 +37,7 @@
                 console.error('Error accessing webcam:', error);
             });
 
-        // Function to capture frames and send them to the server
+        // Function to capture frames and send them to the server when the button is clicked
         function captureAndSendFrame() {
             const canvas = document.createElement('canvas');
             const context = canvas.getContext('2d');
@@ -46,8 +51,8 @@
             socket.emit('frame', { image: frame });
         }
 
-        // Capture and send a frame every 500 milliseconds (adjustable)
-        setInterval(captureAndSendFrame, 500);
+        // Add event listener to the capture button
+        captureBtn.addEventListener('click', captureAndSendFrame);
 
         // Listen for 'update_text' event and update the page with detected text
         socket.on('update_text', (data) => {

@@ -30,18 +30,8 @@ else:
     cert_path = linux_cert_path
     key_path = linux_key_path
 
-# Global variables for plate detection
-detected_plate = None
-detected_text_history = []  # Track last few detections to handle repetitions
-plate_detection_threshold = 5  # How many times the same plate should be detected before stopping
-plate_detected_flag = False  # Flag to stop processing once plate is detected
-
 # Function to process frames with EasyOCR and OpenCV
 def process_frame(frame_data):
-    global detected_plate, detected_text_history, plate_detected_flag
-    if plate_detected_flag:  # If the plate has been detected, skip further processing
-        return f"Plate already detected: {detected_plate}"
-
     try:
         # Decode the base64 image data from the frontend
         img_data = base64.b64decode(frame_data.split(',')[1])
@@ -53,9 +43,9 @@ def process_frame(frame_data):
         # Step 1: Grayscale the image
         gray = cv2.cvtColor(open_cv_image, cv2.COLOR_BGR2GRAY)
 
-        # Step 2: Noise reduction with lower bilateral filter parameters
-        bfilter = cv2.bilateralFilter(gray, 9, 75, 75)  # Reduced parameters for clarity
-        edged = cv2.Canny(bfilter, 10, 100)  # Lowered Canny thresholds
+        # Step 2: Noise reduction with bilateral filter
+        bfilter = cv2.bilateralFilter(gray, 9, 75, 75)
+        edged = cv2.Canny(bfilter, 10, 100)
 
         # Step 3: Find contours and apply mask
         keypoints = cv2.findContours(edged.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
@@ -75,38 +65,21 @@ def process_frame(frame_data):
 
         # Create a mask for the plate region
         mask = np.zeros(gray.shape, np.uint8)
-        new_image = cv2.drawContours(mask, [location], 0, 255, -1)
+        cv2.drawContours(mask, [location], 0, 255, -1)
         cropped_image = cv2.bitwise_and(open_cv_image, open_cv_image, mask=mask)
 
-        # Step 4: Use EasyOCR to read text from multiple regions, with filtering
+        # Step 4: Use EasyOCR to read text from the image
         result = reader.readtext(cropped_image)
         
         if not result:
-            return "No plate detected"
+            return "No text detected"
 
-        # Extract all detected text regions with confidence filtering and join them
+        # Extract all detected text regions and join them
         detected_texts = [item[-2].upper() for item in result if item[-1] > 0.5]  # Confidence > 0.5
         text = ' '.join(detected_texts)
         print("Detected Text:", text)
 
-        # Check if the detected text is consistent over time
-        detected_text_history.append(text)
-        
-        # Keep the list length within the threshold
-        if len(detected_text_history) > plate_detection_threshold:
-            detected_text_history.pop(0)  # Remove the oldest detection
-
-        # Validate the length of the detected text
-        if len(text) >= 7 and len(text) <= 8:
-            # If the same plate is detected consecutively (based on history), stop further scanning
-            if detected_text_history.count(text) >= plate_detection_threshold:
-                detected_plate = text
-                plate_detected_flag = True  # Set the flag to stop further processing
-                return f"Plate detected: {detected_plate}"
-        else:
-            return f"Plate detected but does not match expected length (6-7 characters): {text}"
-
-        return f"Detecting plate... Current text: {text}"
+        return text
 
     except Exception as e:
         return f"Error processing image: {str(e)}"
