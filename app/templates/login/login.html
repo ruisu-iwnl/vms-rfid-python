@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | TimeGuard</title>
+    <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/custom.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/auth-login-register.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/fonts.css') }}" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='/images/logo.png') }}">
+    <style>
+        body {
+            background-color: #eeeee4;
+            color: black;
+        }
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeIn 0.8s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: translateY(30px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .button-custom {
+            width: 100%;
+            padding: 10px;
+        }
+
+        .split-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .login-container {
+            padding: 2rem;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .hidden { display: none; }
+        .active { display: block; }
+    </style>
+</head>
+
+<body class="relative fade-in">
+    <div class="split-container">
+        <div class="login-container" style="background-color: transparent;">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" class="mb-4 h-16 md:h-24 mx-auto">
+            <h1 class="text-4xl font-extrabold leading-tight mb-2">TimeGuard</h1>
+            <p class="text-lg mb-4">A Web-Based RFID Integrated Time Tracking System</p>
+    
+            <form action="{{ url_for('login.login') }}" method="POST" class="w-full flex flex-col" autocomplete="off">
+                {{ form.hidden_tag() }}
+    
+                {% if login_error %}
+                <p class="text-red-700 text-sm italic mt-2 text-center">{{ login_error }}</p>
+                {% endif %}
+    
+                <div class="mb-4 w-full">
+                    <label for="email" class="block text-left text-base font-semibold mb-1">Email Address</label>
+                    <input type="email" id="email" name="email" class="shadow-sm appearance-none border border-gray-400 rounded-lg w-full py-2 px-3 text-gray-900 leading-tight focus:outline-none focus:ring-1 focus:ring-blue-600" value="{{ form.email.data or '' }}" placeholder="Email">
+                    {% if form.email.errors %}
+                        <p class="text-red-700 text-sm italic mt-1">{{ form.email.errors[0] }}</p>
+                    {% endif %}
+                </div>
+    
+                <div class="mb-4 w-full">
+                    <label for="password" class="block text-left text-base font-semibold mb-1">Password</label>
+                    <input type="password" id="password" name="password" class="shadow-sm appearance-none border border-gray-400 rounded-lg w-full py-2 px-3 text-gray-900 leading-tight focus:outline-none focus:ring-1 focus:ring-blue-600" placeholder="Password">
+                    {% if form.password.errors %}
+                        <p class="text-red-700 text-sm italic mt-1">{{ form.password.errors[0] }}</p>
+                    {% endif %}
+                </div>
+    
+                {% if recaptcha_error %}
+                    <div class="mb-4 text-red-700 text-sm italic text-center">{{ recaptcha_error }}</div>
+                {% endif %}
+                <div class="recaptcha-container">
+                    <div class="g-recaptcha" data-sitekey="6LcxWkIqAAAAAEycwl1Z3tWFBg3BeIFe4pQxhpoY"></div>
+                </div>
+    
+                <button id="adminLoginBtn" class="button-custom mt-4" type="submit">
+                    <img src="{{ url_for('static', filename='images/icons/login.svg') }}" alt="Admin Icon"> Login
+                </button>
+    
+                <div class="text-center mt-4">
+                    <p class="mt-2 text-base">Don't have an account? <a href="{{ url_for('user_register.user_register') }}" class="text-blue-600 hover:text-blue-800">Create one</a></p>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+</body>
+</html>
