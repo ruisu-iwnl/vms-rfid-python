@@ -42,13 +42,14 @@ def login():
                 print("Database connection established.")
 
                 # Check if email belongs to an admin or user
-                cursor.execute("SELECT email FROM admin WHERE email = %s", (email,))
+                cursor.execute("SELECT email, is_super_admin FROM admin WHERE email = %s", (email,))
                 admin = cursor.fetchone()
                 
                 if admin:
                     user_type = 'admin'
                     table_name = 'admin'
                     user_id_column = 'admin_id'
+                    is_super_admin = admin[1]  # is_super_admin column is at index 1
                 else:
                     # Check user table if not found in admin
                     cursor.execute("SELECT email FROM user WHERE email = %s", (email,))
@@ -80,6 +81,11 @@ def login():
                         print("Password verified successfully.")
                         session[f'{user_type}_id'] = user_id
                         session['email'] = email
+
+                        # Store super admin status in session for admins
+                        if user_type == 'admin':
+                            session['is_super_admin'] = is_super_admin
+
                         print(f"Session after login: {session}")
                         flash('Login successful!', 'success')
 

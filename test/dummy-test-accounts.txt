@@ -18,6 +18,8 @@ Registered Admins
 
 test@example.us
 
+johnnotsuper@gmail.com
+
 ----------------------------
 PASSWORD:
 
