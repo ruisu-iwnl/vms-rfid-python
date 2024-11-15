@@ -18,8 +18,7 @@ def admin_dashboard():
     if response:
         return response
 
-    # Check if the admin is a super admin
-    is_super_admin = session.get('is_super_admin', False)  # Default to False if not set
+    is_super_admin = session.get('is_super_admin', False)
 
     # Get dashboard data
     dashboard_data = get_dashboard_data()
@@ -31,15 +30,14 @@ def admin_dashboard():
     peak_hours_data = get_peak_hours_of_vehicle_entries()
 
     # Print session for debugging purposes
-    print(f"Session active in admin_dashboard: {session}")
-    print("Daily Data:", daily_data)
-    # print("duration of stay data:", vehicle_stay_durations_data)
-    print("Time-In/Time-Out Data:", time_in_time_out_data)
-    print("User Register Data:", user_registration_data)
-    print("Most Active Days Entry:", most_active_days_data)
-    print("Peak Hours:", peak_hours_data)
+    # print(f"Session active in admin_dashboard: {session}")
+    # print("Daily Data:", daily_data)
+    # # print("duration of stay data:", vehicle_stay_durations_data)
+    # print("Time-In/Time-Out Data:", time_in_time_out_data)
+    # print("User Register Data:", user_registration_data)
+    # print("Most Active Days Entry:", most_active_days_data)
+    # print("Peak Hours:", peak_hours_data)
 
-    # Conditional logic based on super admin status
     if is_super_admin:
         print("This admin is a super admin.")
 

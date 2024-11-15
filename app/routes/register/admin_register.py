@@ -108,7 +108,7 @@ def admin_register():
                 print("Database connection closed.")
 
                 flash("Registration successful", "success")
-                return redirect_to('admin_login.admin_login')
+                return redirect_to('login.login')
 
             except mysql.connector.IntegrityError as e:
                 print(f"Database error: {e}")
