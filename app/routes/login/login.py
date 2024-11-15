@@ -41,7 +41,6 @@ def login():
                 cursor, connection = get_cursor()
                 print("Database connection established.")
 
-                # Check if email belongs to an admin or user
                 cursor.execute("SELECT email, is_super_admin FROM admin WHERE email = %s", (email,))
                 admin = cursor.fetchone()
                 
@@ -49,9 +48,8 @@ def login():
                     user_type = 'admin'
                     table_name = 'admin'
                     user_id_column = 'admin_id'
-                    is_super_admin = admin[1]  # is_super_admin column is at index 1
+                    is_super_admin = admin[1]  
                 else:
-                    # Check user table if not found in admin
                     cursor.execute("SELECT email FROM user WHERE email = %s", (email,))
                     user = cursor.fetchone()
                     
@@ -67,7 +65,6 @@ def login():
                         close_db_connection(connection)
                         return render_template('login/login.html', form=form, recaptcha_error=recaptcha_error, login_error=login_error)
 
-                # Now that we know the user type, we can proceed to check the password
                 query = f"SELECT {user_id_column}, password FROM {table_name} WHERE email = %s"
                 cursor.execute(query, (email,))
                 user = cursor.fetchone()
@@ -82,7 +79,6 @@ def login():
                         session[f'{user_type}_id'] = user_id
                         session['email'] = email
 
-                        # Store super admin status in session for admins
                         if user_type == 'admin':
                             session['is_super_admin'] = is_super_admin
 
