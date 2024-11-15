@@ -7,7 +7,8 @@ CREATE TABLE `admin` (
   `email` VARCHAR(255) NOT NULL,
   `password` VARCHAR(255) NOT NULL,
   `profile_image` VARCHAR(255) DEFAULT NULL,
-  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+   'is_super_admin' BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE `user` (
