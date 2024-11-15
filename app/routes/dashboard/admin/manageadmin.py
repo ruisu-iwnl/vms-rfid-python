@@ -1,6 +1,5 @@
 from flask import Blueprint, render_template, session
-from app.routes.utils.session import check_access
-from app.routes.utils.forms import AddUserForm, Admin_AddUserVehicleForm
+from app.routes.utils.forms import AddAdminForm
 from app.models.database import get_cursor, close_db_connection
 
 adminlist_bp = Blueprint('adminlist', __name__)
@@ -48,10 +47,13 @@ def adminlist(page, sort_by='emp_no', order='asc'):
         cursor.close()
         close_db_connection(connection)
 
+    form = AddAdminForm()
+
     return render_template('dashboard/admin/manageadmin.html', 
                            admins=paginated_admins, 
                            page=page, 
                            total_pages=total_pages, 
                            sort_by=sort_by, 
                            order=order, 
-                           super_admin_features=super_admin_features)
+                           super_admin_features=super_admin_features,
+                           form=form)  

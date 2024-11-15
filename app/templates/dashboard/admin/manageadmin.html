@@ -11,6 +11,8 @@
             <button id="openAdminModalBtn" class="bg-green-500 text-black py-4 px-8 rounded border border-black hover:bg-green-700" style="background-color: #eeeee4; font-size: 1.25rem;">
                 <img src="{{ url_for('static', filename='images/icons/adduser.svg') }}" alt="Add Admin" class="inline h-8 w-8 mr-2"> Add Admin
             </button>
+            {% include 'dashboard/admin/modals/addadmin.html' %}
+        
         </div>
 
         <div class="relative w-1/3">
