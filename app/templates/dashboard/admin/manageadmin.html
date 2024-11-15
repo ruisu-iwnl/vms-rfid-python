@@ -1,0 +1,129 @@
+{% extends 'dashboard/admin/layout.html' %}
+
+{% block title %}Manage Admins | TimeGuard {% endblock %}
+
+{% block header_title %}Admin List{% endblock %}
+
+{% block content %}
+<div class="w-full h-full p-6">
+    <div class="mb-4 flex justify-between items-center">
+        <div class="flex space-x-4 mb-4">
+            <button id="openAdminModalBtn" class="bg-green-500 text-black py-4 px-8 rounded border border-black hover:bg-green-700" style="background-color: #eeeee4; font-size: 1.25rem;">
+                <img src="{{ url_for('static', filename='images/icons/adduser.svg') }}" alt="Add Admin" class="inline h-8 w-8 mr-2"> Add Admin
+            </button>
+        </div>
+
+        <div class="relative w-1/3">
+            <input type="text" id="search-bar" placeholder="Search admins..." class="block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+        </div>
+    </div>
+    
+    <div class="bg-[#eeeee4] p-6 rounded-lg shadow-md w-full max-w-full mb-8 relative">
+        <table class="min-w-full divide-y divide-gray-300" id="admin-table">
+            <thead class="bg-[#eeeee4]">
+                <tr>
+                    <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">
+                        <a href="{{ url_for('adminlist.adminlist', page=page, sort_by='emp_no', order='asc' if sort_by != 'emp_no' or order == 'desc' else 'desc') }}">
+                            Employee ID
+                            {% if sort_by == 'emp_no' %}
+                                {% if order == 'asc' %}▲{% else %}▼{% endif %}
+                            {% endif %}
+                        </a>
+                    </th>
+                    <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">
+                        <a href="{{ url_for('adminlist.adminlist', page=page, sort_by='full_name', order='asc' if sort_by != 'full_name' or order == 'desc' else 'desc') }}">
+                            Full Name
+                            {% if sort_by == 'full_name' %}
+                                {% if order == 'asc' %}▲{% else %}▼{% endif %}
+                            {% endif %}
+                        </a>
+                    </th>
+                    <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">
+                        <a href="{{ url_for('adminlist.adminlist', page=page, sort_by='created_at', order='asc' if sort_by != 'created_at' or order == 'desc' else 'desc') }}">
+                            Created At
+                            {% if sort_by == 'created_at' %}
+                                {% if order == 'asc' %}▲{% else %}▼{% endif %}
+                            {% endif %}
+                        </a>
+                    </th>
+                    <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">
+                        <a href="{{ url_for('adminlist.adminlist', page=page, sort_by='contactnumber', order='asc' if sort_by != 'contactnumber' or order == 'desc' else 'desc') }}">
+                            Contact Number
+                            {% if sort_by == 'contactnumber' %}
+                                {% if order == 'asc' %}▲{% else %}▼{% endif %}
+                            {% endif %}
+                        </a>
+                    </th>
+                    <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">Email</th>
+                </tr>
+            </thead>
+            
+            <tbody class="bg-[#eeeee4] divide-y divide-gray-300" id="admin-table-body">
+                {% for admin in admins %}
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-lg font-medium text-black">{{ admin[0] }}</td> <!-- Employee ID -->
+                        <td class="px-6 py-4 whitespace-nowrap text-lg text-black flex items-center">
+                            {% if admin[5] %}
+                                <img src="{{ url_for('static', filename='images/admins/' + admin[5]) }}" alt="Profile Image" class="w-[50px] h-[50px] rounded-full mr-4">
+                            {% else %}
+                                <img src="{{ url_for('static', filename='images/admins/profile.svg') }}" alt="Default Profile Image" class="w-[50px] h-[50px] rounded-full mr-4">
+                            {% endif %}
+                            {{ admin[1] }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ admin[4] }}</td> <!-- Created At -->
+                        <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ admin[2] }}</td> <!-- Contact Number -->
+                        <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ admin[3] }}</td> <!-- Email -->
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <!-- Pagination -->
+        <div class="flex justify-center mt-4">
+            <nav class="relative z-0 inline-flex shadow-sm -space-x-px" aria-label="Pagination">
+                {% if page > 1 %}
+                    <a href="{{ url_for('adminlist.adminlist', page=page-1, sort_by=sort_by, order=order) }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-lg font-medium text-black bg-white hover:bg-gray-50">
+                        Previous
+                    </a>
+                {% endif %}
+                {% for p in range(1, total_pages + 1) %}
+                    <a href="{{ url_for('adminlist.adminlist', page=p, sort_by=sort_by, order=order) }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-lg font-medium {{ 'bg-gray-200' if p == page else 'bg-white' }} hover:bg-gray-50">
+                        {{ p }}
+                    </a>
+                {% endfor %}
+                {% if page < total_pages %}
+                    <a href="{{ url_for('adminlist.adminlist', page=page+1, sort_by=sort_by, order=order) }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-lg font-medium text-black bg-white hover:bg-gray-50">
+                        Next
+                    </a>
+                {% endif %}
+            </nav>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Search bar functionality
+    document.getElementById('search-bar').addEventListener('input', function() {
+        const query = this.value.toLowerCase();
+        const rows = document.querySelectorAll('#admin-table-body tr');
+
+        rows.forEach(row => {
+            const cells = row.querySelectorAll('td');
+            let match = false;
+
+            cells.forEach(cell => {
+                if (cell.textContent.toLowerCase().includes(query)) {
+                    match = true;
+                }
+            });
+
+            if (match) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+</script>
+
+{% endblock %}

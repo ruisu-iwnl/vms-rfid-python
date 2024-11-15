@@ -13,6 +13,16 @@ def userlist(page, sort_by='emp_no', order='asc'):
     if response:
         return response
 
+    is_super_admin = session.get('is_super_admin', False)
+    if is_super_admin:
+        print("This admin is a super admin.")
+
+        super_admin_features = True
+    else:
+        print("This admin is NOT a super admin.")
+        super_admin_features = False
+
+
     valid_columns = {'emp_no': 'u.emp_no', 'full_name': 'full_name', 'contactnumber': 'u.contactnumber', 'vehicle_count': 'vehicle_count', 'created_at': 'u.created_at'}
     
     sort_column = valid_columns.get(sort_by, 'u.emp_no')
@@ -58,4 +68,5 @@ def userlist(page, sort_by='emp_no', order='asc'):
                            sort_by=sort_by, 
                            order=order, 
                            form=form,
-                           vehicle_form=vehicle_form)
+                           vehicle_form=vehicle_form,
+                           super_admin_features=super_admin_features)

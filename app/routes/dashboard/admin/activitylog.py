@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, make_response
+from flask import Blueprint, render_template, request, make_response,session
 from app.routes.utils.session import check_access
 from app.routes.models.database import get_cursor, close_db_connection
 import csv
@@ -12,6 +12,15 @@ def activitylog(page, sort_by='activity_timestamp', order='desc'):
     response = check_access('admin')
     if response:
         return response
+    
+    is_super_admin = session.get('is_super_admin', False)
+    if is_super_admin:
+        print("This admin is a super admin.")
+
+        super_admin_features = True
+    else:
+        print("This admin is NOT a super admin.")
+        super_admin_features = False
 
     valid_columns = {'activity_timestamp': 'activity_timestamp', 'activity_type': 'activity_type', 'account_type': 'account_type'}
     
@@ -71,7 +80,7 @@ def activitylog(page, sort_by='activity_timestamp', order='desc'):
 
     close_db_connection(connection)
 
-    return render_template('dashboard/admin/activitylog.html', records=records, page=page, total_pages=total_pages, sort_by=sort_by, order=order)
+    return render_template('dashboard/admin/activitylog.html', records=records, page=page, total_pages=total_pages, sort_by=sort_by, order=order, super_admin_features=super_admin_features )
 
 @activitylog_bp.route('/download_csv/<string:sort_by>/<string:order>')
 def download_csv(sort_by='activity_timestamp', order='desc'):

@@ -26,6 +26,8 @@ from .routes.dashboard.user.modals.addvehicle import add_vehicle_bp
 from .routes.dashboard.admin.modals.adduser import adduser_bp
 from .routes.dashboard.admin.modals.addvehicle import user_vehicle_bp
 
+from .routes.dashboard.admin.manageadmin import adminlist_bp
+
 def create_app():
     app = Flask(__name__)
 
@@ -53,5 +55,7 @@ def create_app():
     app.register_blueprint(error_bp)
     app.register_blueprint(adduser_bp)
     app.register_blueprint(user_vehicle_bp)
+
+    app.register_blueprint(adminlist_bp, url_prefix='/adminlist')
 
     return app

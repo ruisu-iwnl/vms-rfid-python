@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, request, flash
+from flask import Blueprint, render_template, redirect, url_for, request, flash,session
 from app.routes.utils.session import check_access
 from app.models.database import get_cursor, close_db_connection
 from wtforms import StringField, SubmitField
@@ -19,6 +19,16 @@ def timeinout(page):
     response = check_access('admin')
     if response:
         return response
+    
+    is_super_admin = session.get('is_super_admin', False)
+    if is_super_admin:
+        print("This admin is a super admin.")
+
+        super_admin_features = True
+    else:
+        print("This admin is NOT a super admin.")
+        super_admin_features = False
+
 
     form = RFIDForm()  
     cursor, connection = get_cursor()
@@ -62,7 +72,7 @@ def timeinout(page):
         end = start + per_page
         paginated_records = structured_records[start:end]
 
-        return render_template('dashboard/admin/timeinout.html', records=paginated_records, page=page, total_pages=total_pages, form=form)
+        return render_template('dashboard/admin/timeinout.html', records=paginated_records, page=page, total_pages=total_pages, form=form, super_admin_features=super_admin_features)
 
     except Exception as e:
         print(f"An error occurred: {e}")
