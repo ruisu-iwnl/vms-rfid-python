@@ -1,6 +1,6 @@
 {% extends 'dashboard/admin/layout.html' %}
 
-{% block title %}License Plate Detection | TimeGuard{% endblock %}
+{% block title %}Time Logs | TimeGuard{% endblock %}
 
 {% block header_title %}Time In/Out{% endblock %}
 
@@ -22,7 +22,8 @@
             <button 
                 type="button" 
                 id="scan_button"
-                class="bg-green-500 text-white font-semibold py-4 px-8 rounded-lg text-lg hover:bg-green-600"
+                class="bg-green-500 text-black py-4 px-8 rounded border border-black hover:bg-green-700"
+                style="background-color: #eeeee4; font-size: 1.25rem;"
                 onclick="toggleScanning()"
             >
                 RFID Scan
@@ -42,9 +43,29 @@
         </div>
 
         <div class="flex space-x-4">
-            <button id="captureBtn" class="bg-blue-500 text-white font-semibold py-2 px-6 rounded-lg text-lg" style="display: none;">Capture Image</button>
-            <button id="toggleCameraBtn" class="bg-yellow-500 text-white font-semibold py-2 px-6 rounded-lg text-lg">Enable Camera</button>
-            <button id="retryBtn" class="bg-red-500 text-white font-semibold py-2 px-6 rounded-lg text-lg" style="display: none;">Retry</button>
+            <button 
+            id="captureBtn" 
+            class="bg-green-500 text-black py-2 px-6 rounded border border-black hover:bg-green-700"
+            style="background-color: #eeeee4; font-size: 1.25rem; display: none;"
+        >
+            Capture Image
+        </button>
+        
+        <button 
+            id="toggleCameraBtn" 
+            class="bg-green-500 text-black py-2 px-6 rounded border border-black hover:bg-green-700"
+            style="background-color: #eeeee4; font-size: 1.25rem;"
+        >
+            Record Time In/Out
+        </button>
+        
+        <button 
+            id="retryBtn" 
+            class="bg-green-500 text-black py-2 px-6 rounded border border-black hover:bg-green-700"
+            style="background-color: #eeeee4; font-size: 1.25rem; display: none;"
+        >
+            Retry
+        </button>
         </div>
 
         <div id="detectedText" class="mt-4 text-lg font-semibold text-center text-black" style="display: none;"></div>
@@ -57,10 +78,22 @@
 
     <!-- Navigation Buttons -->
     <div class="flex justify-between mt-6">
-        <button id="nextBtn" class="bg-blue-500 text-white font-semibold py-2 px-6 rounded-lg text-lg" style="display: none;">
+        <button 
+            id="nextBtn" 
+            class="bg-green-500 text-black py-2 px-6 rounded border border-black hover:bg-green-700" 
+            style="background-color: #eeeee4; font-size: 1.25rem; display: none;"
+        >
             Next
         </button>
-        <button id="retryBtn" class="bg-red-500 text-white font-semibold py-2 px-6 rounded-lg text-lg" style="display: none;" onclick="retryCapture()">Retry</button>
+        
+        <button 
+            id="retryBtn" 
+            class="bg-green-500 text-black py-2 px-6 rounded border border-black hover:bg-green-700" 
+            style="background-color: #eeeee4; font-size: 1.25rem; display: none;" 
+            onclick="retryCapture()"
+        >
+            Retry
+        </button>
     </div>
 
     <!-- Time In/Out Table -->
