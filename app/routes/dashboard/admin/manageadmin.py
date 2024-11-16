@@ -59,7 +59,6 @@ def adminlist(page, sort_by='emp_no', order='asc'):
                            order=order, 
                            super_admin_features=super_admin_features,
                            form=form)  
-
 @adminlist_bp.route('/delete_admin/<string:admin_id>', methods=['POST'])
 def delete_admin(admin_id):
     if not session.get('is_super_admin'):
@@ -73,7 +72,7 @@ def delete_admin(admin_id):
             SET deleted_at = NOW()
             WHERE employee_id = %s AND deleted_at IS NULL
         """, (admin_id,))
-        
+
         connection.commit()
 
         flash('Admin has been soft-deleted.', 'success')
