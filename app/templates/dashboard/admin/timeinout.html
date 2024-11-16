@@ -229,31 +229,33 @@
         }
     }
 
-    // Capture and Send Frame Functionality
     function captureAndSendFrame() {
-        // Show "Scanning..." text with typing effect
-        scanningText.style.display = 'block';
-        typeScanningText("Scanning... Please wait.");
+    // Show "Scanning..." text with typing effect
+    scanningText.style.display = 'block';
+    typeScanningText("Scanning... Please wait.");
 
-        const canvas = document.createElement('canvas');
-        const context = canvas.getContext('2d');
-        canvas.width = videoElement.videoWidth;
-        canvas.height = videoElement.videoHeight;
-        context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    canvas.width = videoElement.videoWidth;
+    canvas.height = videoElement.videoHeight;
+    context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
 
-        const frame = canvas.toDataURL('image/jpeg');
-        capturedImage.src = frame;
-        capturedImage.style.display = 'block';
-        videoElement.style.display = 'none';
-        captureBtn.style.display = 'none';
-        toggleCameraBtn.style.display = 'none';
-        retryBtn.style.display = 'inline'; // Show retry button
+    const frame = canvas.toDataURL('image/jpeg');
 
-        // Show the "Next" button after capturing the image
-        document.getElementById('nextBtn').style.display = 'inline-block';
+    // Capture the image but hide the displayed image element
+    capturedImage.src = frame;
+    capturedImage.style.display = 'none'; // Hide the image element
+    videoElement.style.display = 'none';
+    captureBtn.style.display = 'none';
+    toggleCameraBtn.style.display = 'none';
+    retryBtn.style.display = 'inline'; // Show retry button
 
-        socket.emit('frame', { image: frame });
-    }
+    // Show the "Next" button after capturing the image
+    document.getElementById('nextBtn').style.display = 'inline-block';
+
+    socket.emit('frame', { image: frame });
+}
+
 
     // Retry Capture Functionality
     function retryCapture() {
