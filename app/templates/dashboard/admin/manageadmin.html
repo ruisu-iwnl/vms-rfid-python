@@ -92,7 +92,7 @@
 </div>
 
 <!-- Delete Modal -->
-<div id="deleteAdminModal" class="fixed inset-0 flex justify-center items-center bg-gray-500 bg-opacity-50 hidden">
+<div id="deleteAdminModal" class="fixed inset-0 flex justify-center items-center bg-gray-500 bg-opacity-50 opacity-0 scale-95 transform transition-all duration-500 hidden">
     <div class="bg-white p-6 rounded-lg shadow-lg w-1/3">
         <h2 class="text-lg font-semibold text-black mb-4">Are you sure you want to delete this admin?</h2>
         <div class="flex justify-between">
@@ -122,14 +122,25 @@ document.addEventListener('DOMContentLoaded', function () {
             const adminId = this.getAttribute('data-admin-id');
             const deleteUrl = this.getAttribute('data-url');
 
-            deleteForm.action = deleteUrl;  
+            deleteForm.action = deleteUrl;
 
-            deleteModal.classList.remove('hidden'); 
+            // Show the modal with a smooth fade and slide effect
+            deleteModal.classList.remove('hidden');
+            setTimeout(() => {
+                deleteModal.classList.remove('opacity-0', 'scale-95');
+                deleteModal.classList.add('opacity-100', 'scale-100');
+            }, 10); // Small delay to trigger transition
         });
     });
 
     cancelDeleteBtn.addEventListener('click', function () {
-        deleteModal.classList.add('hidden'); 
+        // Close the modal with a smooth fade and slide effect
+        deleteModal.classList.remove('opacity-100', 'scale-100');
+        deleteModal.classList.add('opacity-0', 'scale-95');
+
+        setTimeout(() => {
+            deleteModal.classList.add('hidden');
+        }, 500); // Duration of the animation
     });
 });
 </script>

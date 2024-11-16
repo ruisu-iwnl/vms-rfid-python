@@ -19,7 +19,9 @@ def adminlist(page, sort_by='emp_no', order='asc'):
     valid_columns = {'emp_no': 'a.employee_id', 'full_name': 'full_name', 'contactnumber': 'a.contactnumber', 'created_at': 'a.created_at'}
 
     sort_column = valid_columns.get(sort_by, 'a.employee_id')
-    
+
+    logged_in_admin_email = session.get('email')  # assuming email is stored in session
+
     try:
         cursor, connection = get_cursor()
         
@@ -28,9 +30,9 @@ def adminlist(page, sort_by='emp_no', order='asc'):
                 a.email, a.created_at, a.profile_image
             FROM admin a
             WHERE a.deleted_at IS NULL
+            AND a.email != %s  -- Exclude the logged-in admin
             ORDER BY {sort_column} {order}, a.employee_id
-        """)
-
+        """, (logged_in_admin_email,))
 
         admins = cursor.fetchall()
         
@@ -58,7 +60,8 @@ def adminlist(page, sort_by='emp_no', order='asc'):
                            sort_by=sort_by, 
                            order=order, 
                            super_admin_features=super_admin_features,
-                           form=form)  
+                           form=form)
+
 @adminlist_bp.route('/delete_admin/<string:admin_id>', methods=['POST'])
 def delete_admin(admin_id):
     if not session.get('is_super_admin'):
