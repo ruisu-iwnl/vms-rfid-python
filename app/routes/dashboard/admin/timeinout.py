@@ -87,43 +87,49 @@ def handle_rfid():
     form = RFIDForm()
     if form.validate_on_submit():
         rfid_no = form.rfid_no.data
-        print(f"RFID scanned: {rfid_no}")  
-        
+        print(f"RFID scanned: {rfid_no}")
+
         if rfid_no:
             cursor, connection = get_cursor()
             try:
                 cursor.execute("""
-                    SELECT COUNT(*) FROM rfid WHERE rfid_no = %s
+                    SELECT rfid_id, vehicle_id FROM rfid WHERE rfid_no = %s
                 """, (rfid_no,))
-                exists = cursor.fetchone()[0] > 0
+                rfid_data = cursor.fetchone()
 
-                if not exists:
+                if not rfid_data:
                     flash('RFID is not registered.', 'error')
                     return redirect(url_for('timeinout.timeinout'))
 
+                rfid_id, vehicle_id = rfid_data
+                if not vehicle_id:
+                    flash('RFID is registered but not associated with a vehicle.', 'error')
+                    return redirect(url_for('timeinout.timeinout'))
+
                 user_status = check_user_time_status(rfid_no)
-                print(f"User status for RFID {rfid_no}: {user_status}")  
-                
+                print(f"User status for RFID {rfid_no}: {user_status}")
+
                 if user_status == "No Time Logs":
-                    log_time(rfid_no, 'in')  # Proceed to clock in
+                    log_time(rfid_no, 'in')  # Clock in
                     flash(f'Successfully scanned RFID: {rfid_no}. User has clocked in.', 'success')
                 elif user_status == "Time In":
-                    log_time(rfid_no, 'out')  # Proceed to clock out
+                    log_time(rfid_no, 'out')  # Clock out
                     flash(f'Successfully scanned RFID: {rfid_no}. User has clocked out.', 'success')
                 elif user_status == "Already Clocked Out":
-                    log_time(rfid_no, 'in')  # Allow clocking in even if previously clocked out
+                    log_time(rfid_no, 'in')  # Allow clocking in again
                     flash(f'Successfully scanned RFID: {rfid_no}. User has clocked in.', 'success')
-                    
+
             except Exception as e:
                 print(f"An error occurred: {e}")
-                flash('An error occurred while checking the RFID.', 'error')
+                flash('An error occurred while processing the RFID.', 'error')
             finally:
                 cursor.close()
                 close_db_connection(connection)
         else:
             flash('No RFID number scanned', 'error')
     else:
-        print("Form validation failed.")  
+        flash('Invalid RFID form submission.', 'error')
+
     return redirect(url_for('timeinout.timeinout'))
 
 def check_user_time_status(rfid_no):
@@ -160,23 +166,21 @@ def check_user_time_status(rfid_no):
 
 def log_time(rfid_no, action, flag=True):
     print(f"Logging time for RFID {rfid_no} with action: {action} (Flag: {flag})")
-    
-    # If the flag is False, don't proceed with the database operations
+
     if not flag:
         print("Action held. Flag is False. Not logging time.")
         return
 
     cursor, connection = get_cursor()
     try:
-        # Retrieve vehicle and user information using RFID
-        cursor.execute(""" 
+        cursor.execute("""
             SELECT vehicle_id FROM rfid WHERE rfid_no = %s
         """, (rfid_no,))
         vehicle_id = cursor.fetchone()
 
         if not vehicle_id:
             flash(f'RFID {rfid_no} is not associated with any vehicle.', 'error')
-            return 
+            return
 
         vehicle_id = vehicle_id[0]
         now = datetime.now()
@@ -187,7 +191,6 @@ def log_time(rfid_no, action, flag=True):
         user_id_result = cursor.fetchone()
         user_id = user_id_result[0] if user_id_result else None
 
-        # Retrieve the latest time log status for this vehicle and RFID
         cursor.execute("""
             SELECT time_in, time_out FROM time_logs
             WHERE vehicle_id = %s AND rfid_id = (SELECT rfid_id FROM rfid WHERE rfid_no = %s)
@@ -197,7 +200,6 @@ def log_time(rfid_no, action, flag=True):
         latest_log = cursor.fetchone()
 
         if action == 'in':
-            # If there's no log or the last log has a time_out (meaning it's completed), log a new "in"
             if not latest_log or latest_log[1] is not None:
                 cursor.execute("""
                     INSERT INTO time_logs (vehicle_id, rfid_id, time_in)
@@ -206,11 +208,8 @@ def log_time(rfid_no, action, flag=True):
                 log_login_activity(user_id, 'User', 'Clocked In')
                 flash(f'Clocked in successfully for RFID: {rfid_no}', 'success')
             else:
-                # If there's already an open "in" with no "out", inform the user
-                flash(f'Already clocked in for RFID: {rfid_no}. Please clock out before clocking in again.', 'error')
-
+                flash(f'Already clocked in for RFID: {rfid_no}. Please clock out first.', 'error')
         elif action == 'out':
-            # Only log a "clock out" if there is an open "in" entry with no "out" yet
             if latest_log and latest_log[1] is None:
                 cursor.execute("""
                     UPDATE time_logs
@@ -223,12 +222,12 @@ def log_time(rfid_no, action, flag=True):
                 log_login_activity(user_id, 'User', 'Clocked Out')
                 flash(f'Clocked out successfully for RFID: {rfid_no}', 'success')
             else:
-                # If there is no open "in" entry, inform the user they need to clock in first
-                flash(f'No active clock-in found for RFID: {rfid_no}. Please clock in before clocking out.', 'error')
+                flash(f'No active clock-in found for RFID: {rfid_no}. Please clock in first.', 'error')
 
         connection.commit()
     except Exception as e:
         print(f"An error occurred while logging time: {e}")
+        flash('An error occurred while logging time.', 'error')
     finally:
         cursor.close()
         close_db_connection(connection)
