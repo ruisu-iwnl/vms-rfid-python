@@ -9,6 +9,14 @@ document.addEventListener('DOMContentLoaded', function () {
     var peakHoursLabels = labelsString ? labelsString.split(',').map(label => label.trim()) : [];
     var peakHoursData = dataString ? dataString.split(',').map(Number) : [];
 
+    if (peakHoursLabels.length === 0 || peakHoursData.length === 0) {
+        // console.log('No data found. Generating random dummy data...');
+        
+        peakHoursLabels = Array.from({ length: 24 }, (_, i) => `${i}:00`);
+        
+        peakHoursData = Array.from({ length: 24 }, () => Math.floor(Math.random() * 101)); 
+    }
+
     var ctx = document.getElementById('peakHoursChart').getContext('2d');
     var peakHoursChart = new Chart(ctx, {
         type: 'line',
