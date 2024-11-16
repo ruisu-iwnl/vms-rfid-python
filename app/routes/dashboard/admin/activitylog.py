@@ -117,12 +117,9 @@ def download_csv(sort_by='activity_timestamp', order='desc'):
         ) AS al
         LEFT JOIN admin a ON al.account_type = 'Admin' AND a.admin_id = al.user_id
         LEFT JOIN user u ON al.account_type = 'User' AND u.user_id = al.user_id
-        ORDER BY {sort_column} {sort_order}
-        LIMIT %s OFFSET %s;
+        ORDER BY {sort_column} {sort_order};
     """
 
-
-    
     cursor.execute(query)
     records = cursor.fetchall()
     close_db_connection(connection)
@@ -130,17 +127,20 @@ def download_csv(sort_by='activity_timestamp', order='desc'):
     output = StringIO()
     writer = csv.writer(output)
 
+    # Write metadata and headers
     writer.writerow(['Design and Development'])
     writer.writerow(['of TimeGuard: A Time Tracking Web System using RFID Technologies'])
-    writer.writerow([])  
+    writer.writerow([])  # Blank line
     
-    writer.writerow(['Account Type', 'Activity Type', 'Timestamp'])  
+    writer.writerow(['First Name', 'Last Name', 'Employee ID', 'Account Type', 'Activity Type', 'Timestamp'])  
 
+    # Write data rows
     for record in records:
         writer.writerow(record)
 
     output.seek(0)
 
+    # Create CSV response
     response = make_response(output.getvalue())
     response.headers['Content-Disposition'] = 'attachment; filename=activity_log.csv'
     response.headers['Content-Type'] = 'text/csv'
