@@ -30,6 +30,7 @@ def adminlist(page, sort_by='emp_no', order='asc'):
             ORDER BY {sort_column} {order}, a.employee_id
         """, (logged_in_admin_email,))
 
+
         admins = cursor.fetchall()
         
         per_page = 5
@@ -93,18 +94,20 @@ def toggle_super_admin(admin_id):
     try:
         cursor, connection = get_cursor()
 
+        # Get current super admin status
         cursor.execute("SELECT is_super_admin FROM admin WHERE admin_id = %s", (admin_id,))
         current_status = cursor.fetchone()
 
         if current_status is None:
             return "Admin not found", 404
 
-        print(f"Current status of super admin for admin {admin_id}: {current_status[0]}")  # Add print for debugging
+        print(f"Current status of super admin for admin {admin_id}: {current_status[0]}")  # Debugging output
 
-        is_super_admin = 1 if request.form.get('is_super_admin') == 'on' else 0
+        # Toggle the super admin status (flip 1 to 0 or 0 to 1)
+        is_super_admin = 0 if current_status[0] == 1 else 1  # Flip the current status
+        print(f"Toggled super admin status for admin {admin_id} to {is_super_admin}")
 
-        print(f"Requested toggle state for admin {admin_id}: {is_super_admin}")
-
+        # Update the super admin status in the database
         cursor.execute("""
             UPDATE admin
             SET is_super_admin = %s
@@ -112,6 +115,7 @@ def toggle_super_admin(admin_id):
         """, (is_super_admin, admin_id))
         connection.commit()
 
+        # Log the activity
         logged_in_admin_email = session.get('email')
         cursor.execute("SELECT admin_id FROM admin WHERE email = %s", (logged_in_admin_email,))
         logged_in_admin_id = cursor.fetchone()[0]
@@ -120,6 +124,7 @@ def toggle_super_admin(admin_id):
 
         print(f"Super admin status for admin {admin_id} updated to {is_super_admin}")
 
+        # Redirect to reload the page and show the updated status
         return redirect(url_for('adminlist.adminlist', page=1))
 
     except Exception as e:

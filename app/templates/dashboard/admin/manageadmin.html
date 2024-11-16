@@ -63,40 +63,49 @@
             <tbody class="bg-[#eeeee4] divide-y divide-gray-300" id="admin-table-body">
                 {% for admin in admins %}
                     <tr>
+                        <!-- Emp No -->
                         <td class="px-6 py-4 whitespace-nowrap text-lg font-medium text-black">{{ admin[1] }}</td>
-
+                
+                        <!-- Full Name and Profile Image -->
                         <td class="px-6 py-4 whitespace-nowrap text-lg text-black flex items-center">
-                            {% if admin[5] %}
-                            <img src="{{ url_for('static', filename='images/admins/' + (admin[6] if admin[6] else 'profile.svg')) }}" alt="Profile Image" class="w-[50px] h-[50px] rounded-full mr-4">
-
+                            {% if admin[6] %}
+                                <img src="{{ url_for('static', filename='images/admins/' + (admin[6] if admin[6] else 'profile.svg')) }}" alt="Profile Image" class="w-[50px] h-[50px] rounded-full mr-4">
                             {% else %}
                                 <img src="{{ url_for('static', filename='images/admins/profile.svg') }}" alt="Default Profile Image" class="w-[50px] h-[50px] rounded-full mr-4">
                             {% endif %}
-                            {{ admin[1] }}
+                            {{ admin[2] }}
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ admin[3] }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ admin[2] }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ admin[4] }}</td>
-
+                
+                        <!-- Contact Number -->
+                        <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ admin[3] }}</td> <!-- Corrected index for contactnumber -->
+                
+                        <!-- Email -->
+                        <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ admin[4] }}</td> <!-- Corrected index for email -->
+                
+                        <!-- Created At -->
+                        <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ admin[5] }}</td> <!-- Corrected index for created_at -->
+                
+                        <!-- Toggle Super Admin -->
                         <td class="px-6 py-4 whitespace-nowrap text-lg text-black">
-                            <form method="POST" action="{{ url_for('adminlist.toggle_super_admin', admin_id=admin[0]) }}">
+                            <form method="POST" action="{{ url_for('adminlist.toggle_super_admin', admin_id=admin[0]) }}" id="toggle-form-{{ admin[0] }}">
                                 {{ form.hidden_tag() }}
                                 <label for="toggle-{{ admin[0] }}" class="inline-flex items-center cursor-pointer">
                                     <span class="mr-2 text-black"></span>
                                     <span class="relative">
-                                        <input type="checkbox" id="toggle-{{ admin[0] }}" name="is_super_admin" class="sr-only peer" 
-                                            {% if admin[7] == 1 %} checked {% endif %} />
+                                        <input type="checkbox" 
+                                               id="toggle-{{ admin[0] }}" 
+                                               name="is_super_admin" 
+                                               class="sr-only peer" 
+                                               data-admin-id="{{ admin[0] }}" 
+                                               {% if admin[7] == 1 %} checked {% endif %} />
                                         <div class="toggle-track bg-gray-300 w-10 h-5 rounded-full transition-colors duration-200 ease-in-out peer-checked:bg-green-500"></div>
                                         <div class="toggle-dot absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full transition-all duration-200 ease-in-out peer-checked:translate-x-5"></div>
                                     </span>
                                 </label>
                             </form>
                         </td>
-                        
-                        
-                        
-                        
-
+                
+                        <!-- Delete Admin -->
                         <td class="px-6 py-4 whitespace-nowrap text-lg text-black">
                             <button class="delete-admin-btn bg-red-500 text-white py-2 px-4 rounded border border-black hover:bg-red-700" data-admin-id="{{ admin[0] }}" data-url="{{ url_for('adminlist.delete_admin', admin_id=admin[0]) }}">
                                 <img src="{{ url_for('static', filename='images/icons/delete.svg') }}" alt="Delete Admin" class="inline h-6 w-6 mr-2">
@@ -106,6 +115,7 @@
                 {% endfor %}
             </tbody>
         </table>
+        
         
     <!-- Pagination -->
     <div class="flex justify-center mt-4">
@@ -194,6 +204,21 @@ document.addEventListener('DOMContentLoaded', function () {
         }, 500); // Duration of the animation
     });
 });
+
+    // Add event listener for all checkbox changes
+    document.querySelectorAll('input[type="checkbox"]').forEach(function(checkbox) {
+        checkbox.addEventListener('change', function() {
+            // Get the admin ID from the data attribute
+            var adminId = this.getAttribute('data-admin-id');
+            
+            // Get the corresponding form and submit it
+            var form = document.getElementById('toggle-form-' + adminId);
+            if (form) {
+                form.submit(); // Submit the form
+            }
+        });
+    });
 </script>
+
 
 {% endblock %}
