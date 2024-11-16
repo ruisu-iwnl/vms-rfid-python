@@ -84,6 +84,8 @@ def timeinout(page):
         cursor.close()
         close_db_connection(connection)
 
+from datetime import datetime, timedelta
+
 @timeinout_bp.route('/time_logs/rfid', methods=['POST'])
 def handle_rfid():
     form = RFIDForm()
@@ -145,7 +147,7 @@ def handle_rfid():
                     log_time(rfid_no, 'in')
                     flash(f'Successfully scanned RFID: {rfid_no}. User has clocked in.', 'success')
                 elif user_status == "Time In":
-                    # Fetch the time of the last "clock-in"
+                    # Fetch the date of the last "clock-in"
                     cursor.execute("""
                         SELECT time_in FROM time_logs WHERE rfid_id = %s AND time_out IS NULL ORDER BY time_in DESC LIMIT 1
                     """, (rfid_id,))
@@ -153,6 +155,16 @@ def handle_rfid():
 
                     if last_time_in_data:
                         last_time_in = last_time_in_data[0]
+                        last_clock_in_date = last_time_in.date()
+                        current_date = datetime.now().date()
+
+                        if last_clock_in_date != current_date:
+                            print(f"Clock-in from previous day detected. Allowing new clock-in.")
+                            # User clocked in on a previous day, so they can clock in again
+                            log_time(rfid_no, 'in')
+                            flash(f'Successfully scanned RFID: {rfid_no}. User has clocked in.', 'success')
+                            return redirect(url_for('timeinout.timeinout'))
+
                         # Check if 30 minutes have passed since the last clock-in
                         if datetime.now() - last_time_in < timedelta(minutes=30):
                             flash(f"Cannot clock out yet. Please wait at least 30 minutes after clocking in.", 'error')
