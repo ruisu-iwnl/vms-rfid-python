@@ -70,6 +70,9 @@
         </button>
         </div>
 
+        <div id="scanningText" class="text-lg font-semibold text-center" style="display: none;">
+            Scanning... Please wait.
+        </div>
         <div id="detectedText" class="mt-4 text-lg font-semibold text-center text-black" style="display: none;"></div>
 
         <!-- Captured Images -->
@@ -198,10 +201,12 @@
     const captureBtn = document.getElementById('captureBtn');
     const toggleCameraBtn = document.getElementById('toggleCameraBtn');
     const retryBtn = document.getElementById('retryBtn');
+    const scanningText = document.getElementById('scanningText'); // Scanning text element
     const socket = io.connect('https://' + window.location.hostname + ':8443'); // HTTPS connection
 
     let cameraStream = null;
 
+    // Toggle Camera Functionality
     function toggleCamera() {
         if (cameraStream) {
             const tracks = cameraStream.getTracks();
@@ -224,7 +229,11 @@
         }
     }
 
+    // Capture and Send Frame Functionality
     function captureAndSendFrame() {
+        // Show "Scanning..." text
+        scanningText.style.display = 'block';
+
         const canvas = document.createElement('canvas');
         const context = canvas.getContext('2d');
         canvas.width = videoElement.videoWidth;
@@ -245,19 +254,24 @@
         socket.emit('frame', { image: frame });
     }
 
+    // Retry Capture Functionality
     function retryCapture() {
         location.reload(); // This will reload the current page
     }
 
+    // Event Listeners
     captureBtn.addEventListener('click', captureAndSendFrame);
     retryBtn.addEventListener('click', retryCapture);
     toggleCameraBtn.addEventListener('click', toggleCamera);
 
+    // Handle server response when the text is detected
     socket.on('update_text', (data) => {
         detectedTextElement.textContent = "Detected Plate Number: " + data.text;
         detectedTextElement.style.display = 'block';
-    });
 
+        // Hide "Scanning..." text once the result is received
+        scanningText.style.display = 'none';
+    });
 </script>
 
 
