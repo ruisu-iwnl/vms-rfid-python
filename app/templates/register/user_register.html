@@ -66,7 +66,7 @@
 
         <!-- Registration Form Section -->
         <div class="w-full md:w-1/4 p-4 flex flex-col items-center bg-transparent rounded-lg mx-auto">
-            <a href="{{ url_for('user_login.user_login') }}" class="absolute top-2 left-2 flex items-center justify-center w-6 h-6 rounded-full bg-transparent shadow-md hover:bg-gray-100 transition duration-300 ease-in-out">
+            <a href="{{ url_for('login.login') }}" class="absolute top-2 left-2 flex items-center justify-center w-6 h-6 rounded-full bg-transparent shadow-md hover:bg-gray-100 transition duration-300 ease-in-out">
                 <svg class="w-4 h-4 text-blue-600 hover:text-blue-800" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l-7-7 7-7"></path>
                 </svg>
@@ -170,7 +170,7 @@
                 </button>
 
                 <div class="text-center mt-4">
-                    <p class="mt-2 text-base  ">Already have an account? <a href="{{ url_for('user_login.user_login') }}" class="text-blue-600 hover:text-blue-800">Login here</a></p>
+                    <p class="mt-2 text-base  ">Already have an account? <a href="{{ url_for('login.login') }}" class="text-blue-600 hover:text-blue-800">Login here</a></p>
                 </div>
             </form>
         </div>

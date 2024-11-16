@@ -40,7 +40,6 @@ def get_user_profile_info(user_id):
     finally:
         close_db_connection(connection)
 
-
 def get_name(user_id):
     cursor, connection = get_cursor()
     try:

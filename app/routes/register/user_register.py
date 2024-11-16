@@ -108,7 +108,8 @@ def user_register():
                 print("Database connection closed.")
 
                 flash("Registration successful", "success")
-                return redirect_to('user_login.user_login')
+                return redirect_to('login.login')
+
 
             except mysql.connector.IntegrityError as e:
                 print(f"Database error: {e}")

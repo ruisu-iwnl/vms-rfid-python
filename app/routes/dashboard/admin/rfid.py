@@ -17,6 +17,16 @@ def add_rfid():
     response = check_access('admin')
     if response:
         return response
+    
+    is_super_admin = session.get('is_super_admin', False)
+    if is_super_admin:
+        print("This admin is a super admin.")
+
+        super_admin_features = True
+    else:
+        print("This admin is NOT a super admin.")
+        super_admin_features = False
+
 
     form = RFIDForm()
 
@@ -42,24 +52,23 @@ def add_rfid():
     page = 1  # You can change this based on user navigation
     sort_by = 'rfid_id'
     order = 'asc'
-    
-    # Fetch records for the current page
-    rfid_records = fetch_rfids()  # You may need to modify this to fetch based on pagination
+
+    rfid_records = fetch_rfids() 
     per_page = 5
     total_pages = (len(rfid_records) + per_page - 1) // per_page
     
-    # Now only fetch the records for the current page
     start = (page - 1) * per_page
     paginated_records = rfid_records[start:start + per_page]
 
     return render_template(
         'dashboard/admin/rfid.html',
         form=form,
-        records=paginated_records,  # Use paginated records here
+        records=paginated_records,  
         page=page,
         total_pages=total_pages,
         sort_by=sort_by,
-        order=order
+        order=order,
+        super_admin_features=super_admin_features
     )
 
 @rfid_bp.route('/list', defaults={'page': 1, 'sort_by': 'rfid_id', 'order': 'asc'})
@@ -68,6 +77,15 @@ def list_rfid(page, sort_by='rfid_id', order='asc'):
     response = check_access('admin')
     if response:
         return response
+    
+    is_super_admin = session.get('is_super_admin', False)
+    if is_super_admin:
+        print("This admin is a super admin.")
+
+        super_admin_features = True
+    else:
+        print("This admin is NOT a super admin.")
+        super_admin_features = False
 
     valid_columns = {'rfid_id': 'rfid_id', 'rfid_no': 'rfid_no', 'vehicle_id': 'vehicle_id', 'created_at': 'created_at'}
     
@@ -102,7 +120,7 @@ def list_rfid(page, sort_by='rfid_id', order='asc'):
 
     form = RFIDForm()  
 
-    return render_template('dashboard/admin/rfid.html', records=records, page=page, total_pages=total_pages, sort_by=sort_by, order=order, form=form)
+    return render_template('dashboard/admin/rfid.html', records=records, page=page, total_pages=total_pages, sort_by=sort_by, order=order, form=form, super_admin_features=super_admin_features)
 
 def fetch_rfids():
     conn = get_db_connection()

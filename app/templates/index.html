@@ -78,44 +78,18 @@
                     A Web-Based RFID Integrated Time Tracking System.
                 </p>
                 <p class="text-base md:text-lg text-center">
-                    Effortlessly manage and track your vehicle data and time logs in one place with our platform.
+                    Track vehicle time logs in one place with our platform.
                 </p>
-
-                
             </div>
 
             <!-- Right Section: Buttons & Call to Action -->
             <div class="flex flex-col justify-center items-center p-2 md:p-4">
-                <p class="text-lg md:text-xl text-center mb-2 font-semibold">
-                    Choose your login option below:
-                </p>
-
-            <!-- Button for User Login -->
-            <div class="container mt-4">
-                <div class="center">
-                    <form action="{{ url_for('user_login.user_login') }}" method="GET">
-                        <button id="userLoginBtn" class="button-custom" type="submit">
-                            <img src="{{ url_for('static', filename='images/icons/user-icon.svg') }}" alt="User Icon"> User
-                        </button>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Button for Admin Login -->
-            <div class="container mt-4">
-                <div class="center">
-                    <form action="{{ url_for('admin_login.admin_login') }}" method="GET">
-                        <button id="adminLoginBtn" class="button-custom" type="submit">
-                            <img src="{{ url_for('static', filename='images/icons/user-icon.svg') }}" alt="Admin Icon"> Admin
-                        </button>
-                    </form>
-                </div>
-            </div>
-
+                <!-- <p class="text-lg md:text-xl text-center mb-2 font-semibold">
+                    Join Us!
+                </p> -->
 
             </div>
         </div>
     </div>
-
 </body>
 </html>

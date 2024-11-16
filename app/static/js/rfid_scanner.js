@@ -79,11 +79,19 @@ function handleSubmit(event) {
     }
 
     const rfidInput = document.getElementById('rfid-input');
+    const form = document.forms[0];
 
+    // Create a hidden input to store the detected plate number
+    const hiddenPlateInput = document.createElement('input');
+    hiddenPlateInput.type = 'hidden';
+    hiddenPlateInput.name = 'detected_plate_number';
+    hiddenPlateInput.value = detectedPlateNumber; // Set detected plate number value
+
+    form.appendChild(hiddenPlateInput); // Append to form
     if (scanning) {
         stopScanning();
     }
 
     rfidInput.disabled = false;
-    document.forms[0].submit(); // Submit the form
+    form.submit(); // Submit the form
 }

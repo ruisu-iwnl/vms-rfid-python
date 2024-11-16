@@ -18,6 +18,9 @@ def admin_dashboard():
     if response:
         return response
 
+    is_super_admin = session.get('is_super_admin', False)
+
+    # Get dashboard data
     dashboard_data = get_dashboard_data()
     daily_data = get_daily_vehicle_distribution()
     time_in_time_out_data = get_time_in_time_out_comparison()
@@ -25,16 +28,24 @@ def admin_dashboard():
     user_registration_data = get_daily_user_registration()
     most_active_days_data = most_active_days()
     peak_hours_data = get_peak_hours_of_vehicle_entries()
-    
-    print(f"Session active in admin_dashboard: {session}")
-    print("Daily Data:", daily_data)
-    # print("duration of stay data:", vehicle_stay_durations_data)
-    print("Time-In/Time-Out Data:", time_in_time_out_data)
-    print("user register data: ", user_registration_data)
-    print("most active days entry: ",most_active_days_data)
-    print("peak hours: ", peak_hours_data)
 
-    
+    # Print session for debugging purposes
+    # print(f"Session active in admin_dashboard: {session}")
+    # print("Daily Data:", daily_data)
+    # # print("duration of stay data:", vehicle_stay_durations_data)
+    # print("Time-In/Time-Out Data:", time_in_time_out_data)
+    # print("User Register Data:", user_registration_data)
+    # print("Most Active Days Entry:", most_active_days_data)
+    # print("Peak Hours:", peak_hours_data)
+
+    if is_super_admin:
+        print("This admin is a super admin.")
+
+        super_admin_features = True
+    else:
+        print("This admin is NOT a super admin.")
+        super_admin_features = False
+
     return render_template(
         'dashboard/admin/admin_dashboard.html',
         **dashboard_data,
@@ -43,5 +54,6 @@ def admin_dashboard():
         vehicle_stay_durations_data=vehicle_stay_durations_data,
         user_registration_data=user_registration_data,
         most_active_days_data=most_active_days_data,
-        peak_hours_data=peak_hours_data
+        peak_hours_data=peak_hours_data,
+        super_admin_features=super_admin_features  
     )

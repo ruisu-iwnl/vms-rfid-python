@@ -23,8 +23,6 @@ class Admin_AddUserVehicleForm(FlaskForm):
     rfid_number = StringField('RFID Number', validators=[DataRequired()])
     submit = SubmitField('Add Vehicle')
 
-
-
 class AddVehicleForm(FlaskForm):
     car_make = StringField('Car Make', validators=[DataRequired()])
     car_model = StringField('Car Model', validators=[DataRequired()])
@@ -109,3 +107,6 @@ class AdminRegisterForm(BaseRegisterForm):
 
 class AddUserForm(BaseRegisterForm):
     table_name = 'user'
+
+class AddAdminForm(BaseRegisterForm):
+    table_name = 'admin'

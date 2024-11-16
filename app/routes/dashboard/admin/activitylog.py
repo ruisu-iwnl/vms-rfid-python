@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, make_response
+from flask import Blueprint, render_template, request, make_response,session
 from app.routes.utils.session import check_access
 from app.routes.models.database import get_cursor, close_db_connection
 import csv
@@ -12,6 +12,15 @@ def activitylog(page, sort_by='activity_timestamp', order='desc'):
     response = check_access('admin')
     if response:
         return response
+    
+    is_super_admin = session.get('is_super_admin', False)
+    if is_super_admin:
+        print("This admin is a super admin.")
+
+        super_admin_features = True
+    else:
+        print("This admin is NOT a super admin.")
+        super_admin_features = False
 
     valid_columns = {'activity_timestamp': 'activity_timestamp', 'activity_type': 'activity_type', 'account_type': 'account_type'}
     
@@ -71,7 +80,7 @@ def activitylog(page, sort_by='activity_timestamp', order='desc'):
 
     close_db_connection(connection)
 
-    return render_template('dashboard/admin/activitylog.html', records=records, page=page, total_pages=total_pages, sort_by=sort_by, order=order)
+    return render_template('dashboard/admin/activitylog.html', records=records, page=page, total_pages=total_pages, sort_by=sort_by, order=order, super_admin_features=super_admin_features )
 
 @activitylog_bp.route('/download_csv/<string:sort_by>/<string:order>')
 def download_csv(sort_by='activity_timestamp', order='desc'):
@@ -108,12 +117,9 @@ def download_csv(sort_by='activity_timestamp', order='desc'):
         ) AS al
         LEFT JOIN admin a ON al.account_type = 'Admin' AND a.admin_id = al.user_id
         LEFT JOIN user u ON al.account_type = 'User' AND u.user_id = al.user_id
-        ORDER BY {sort_column} {sort_order}
-        LIMIT %s OFFSET %s;
+        ORDER BY {sort_column} {sort_order};
     """
 
-
-    
     cursor.execute(query)
     records = cursor.fetchall()
     close_db_connection(connection)
@@ -121,17 +127,20 @@ def download_csv(sort_by='activity_timestamp', order='desc'):
     output = StringIO()
     writer = csv.writer(output)
 
+    # Write metadata and headers
     writer.writerow(['Design and Development'])
     writer.writerow(['of TimeGuard: A Time Tracking Web System using RFID Technologies'])
-    writer.writerow([])  
+    writer.writerow([])  # Blank line
     
-    writer.writerow(['Account Type', 'Activity Type', 'Timestamp'])  
+    writer.writerow(['First Name', 'Last Name', 'Employee ID', 'Account Type', 'Activity Type', 'Timestamp'])  
 
+    # Write data rows
     for record in records:
         writer.writerow(record)
 
     output.seek(0)
 
+    # Create CSV response
     response = make_response(output.getvalue())
     response.headers['Content-Disposition'] = 'attachment; filename=activity_log.csv'
     response.headers['Content-Type'] = 'text/csv'

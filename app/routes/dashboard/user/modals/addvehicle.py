@@ -40,34 +40,32 @@ def add_vehicle():
         plate_number = form.plate_number.data
         rfid_number = form.rfid_number.data
 
-        print(f"Form data - Car Make: {car_make}, Car Model: {car_model}, Plate Number: {plate_number}, RFID Number: {rfid_number}")
+        cleaned_plate_number = plate_number.replace(" ", "").upper()
+
+        print(f"Form data - Car Make: {car_make}, Car Model: {car_model}, Plate Number: {cleaned_plate_number}, RFID Number: {rfid_number}")
 
         try:
-            cursor, connection = get_cursor()  # Use get_cursor here
+            cursor, connection = get_cursor()  
             print("Database connection established")
 
-            # Check if the RFID number is registered
             if rfid_number and not is_rfid_valid(rfid_number):
                 flash("The provided RFID number is not registered.", "danger")
                 return redirect(url_for('vehicles.vehicles'))
 
-            # Check for duplicate license plate in the vehicle table
-            cursor.execute("SELECT vehicle_id FROM vehicle WHERE licenseplate = %s", (plate_number,))
+            cursor.execute("SELECT vehicle_id FROM vehicle WHERE REPLACE(licenseplate, ' ', '') = %s", (cleaned_plate_number,))
             existing_vehicle = cursor.fetchone()
             if existing_vehicle:
                 flash("This license plate is already registered.", "danger")
                 return redirect(url_for('vehicles.vehicles'))
 
-            # Add vehicle to the vehicle table
             cursor.execute(
                 "INSERT INTO vehicle (user_id, licenseplate, make, model) VALUES (%s, %s, %s, %s)",
-                (user_id, plate_number, car_make, car_model)
+                (user_id, cleaned_plate_number, car_make, car_model)
             )
 
             vehicle_id = cursor.lastrowid
             print(f"Inserted vehicle ID: {vehicle_id}")
 
-            # Associate RFID with the vehicle
             if rfid_number:
                 cursor.execute('SELECT vehicle_id FROM rfid WHERE rfid_no = %s', (rfid_number,))
                 existing_rfid = cursor.fetchone()
