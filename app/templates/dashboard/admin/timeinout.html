@@ -231,8 +231,9 @@
 
     // Capture and Send Frame Functionality
     function captureAndSendFrame() {
-        // Show "Scanning..." text
+        // Show "Scanning..." text with typing effect
         scanningText.style.display = 'block';
+        typeScanningText("Scanning... Please wait.");
 
         const canvas = document.createElement('canvas');
         const context = canvas.getContext('2d');
@@ -272,6 +273,30 @@
         // Hide "Scanning..." text once the result is received
         scanningText.style.display = 'none';
     });
+
+    // Function for dynamically typing the "Scanning..." text
+    function typeScanningText(text) {
+        let i = 0;
+        scanningText.textContent = ""; // Clear any previous text
+        const typingSpeed = 100; // Milliseconds between each character
+
+        function type() {
+            if (i < text.length) {
+                scanningText.textContent += text.charAt(i);
+                i++;
+                setTimeout(type, typingSpeed); // Call the function again after a delay
+            } else {
+                // Once typing is done, restart the process
+                setTimeout(() => {
+                    scanningText.textContent = ''; // Clear the text
+                    i = 0; // Reset character counter
+                    type(); // Start typing again
+                }, 1000); // Delay before starting again
+            }
+        }
+
+        type(); // Start the typing effect
+    }
 </script>
 
 
