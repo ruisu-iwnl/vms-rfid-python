@@ -6,6 +6,8 @@ from wtforms.validators import DataRequired
 from flask_wtf import FlaskForm
 from datetime import datetime
 from app.routes.utils.activity_log import log_login_activity
+from datetime import datetime, timedelta
+
 
 class RFIDForm(FlaskForm):
     rfid_no = StringField('RFID Scanner', validators=[DataRequired()])
@@ -95,7 +97,6 @@ def handle_rfid():
         if rfid_no:
             cursor, connection = get_cursor()
             try:
-                # First, check if the RFID is registered
                 cursor.execute("""
                     SELECT rfid_id, vehicle_id FROM rfid WHERE rfid_no = %s
                 """, (rfid_no,))
@@ -112,11 +113,12 @@ def handle_rfid():
                     flash('RFID is registered but not associated with a vehicle.', 'error')
                     return redirect(url_for('timeinout.timeinout'))
 
-                # Now check if the detected plate number matches the vehicle's license plate
                 print(f"Checking if detected plate number {detected_plate_number} exists in the database...")
+
+                cleaned_detected_plate_number = detected_plate_number.replace(" ", "")
                 cursor.execute("""
-                    SELECT vehicle_id, licenseplate FROM vehicle WHERE licenseplate = %s
-                """, (detected_plate_number,))
+                    SELECT vehicle_id, licenseplate FROM vehicle WHERE REPLACE(licenseplate, ' ', '') = %s
+                """, (cleaned_detected_plate_number,))
                 vehicle_data = cursor.fetchone()
 
                 if not vehicle_data:
@@ -127,7 +129,6 @@ def handle_rfid():
                 detected_vehicle_id, license_plate = vehicle_data
                 print(f"Found vehicle with plate number {detected_plate_number}: vehicle_id {detected_vehicle_id}")
 
-                # Check if the vehicle_id associated with the detected plate number matches the rfid's vehicle_id
                 print(f"Comparing RFID vehicle_id {vehicle_id} with detected vehicle_id {detected_vehicle_id}")
                 if vehicle_id != detected_vehicle_id:
                     print(f"Cross-check failed: RFID vehicle_id {vehicle_id} does not match detected vehicle_id {detected_vehicle_id}")
@@ -136,18 +137,32 @@ def handle_rfid():
                 else:
                     print(f"Cross-check successful: RFID vehicle_id {vehicle_id} matches detected vehicle_id {detected_vehicle_id}")
 
-                # Now proceed with checking the time status and logging the time
                 user_status = check_user_time_status(rfid_no)
                 print(f"User status for RFID {rfid_no}: {user_status}")
 
+                # Check if the user has already clocked in
                 if user_status == "No Time Logs":
-                    log_time(rfid_no, 'in')  # Clock in
+                    log_time(rfid_no, 'in')
                     flash(f'Successfully scanned RFID: {rfid_no}. User has clocked in.', 'success')
                 elif user_status == "Time In":
-                    log_time(rfid_no, 'out')  # Clock out
+                    # Fetch the time of the last "clock-in"
+                    cursor.execute("""
+                        SELECT time_in FROM time_logs WHERE rfid_id = %s AND time_out IS NULL ORDER BY time_in DESC LIMIT 1
+                    """, (rfid_id,))
+                    last_time_in_data = cursor.fetchone()
+
+                    if last_time_in_data:
+                        last_time_in = last_time_in_data[0]
+                        # Check if 30 minutes have passed since the last clock-in
+                        if datetime.now() - last_time_in < timedelta(minutes=30):
+                            flash(f"Cannot clock out yet. Please wait at least 30 minutes after clocking in.", 'error')
+                            print(f"User {rfid_no} tried to clock out too soon. Last clock-in was at {last_time_in}")
+                            return redirect(url_for('timeinout.timeinout'))
+
+                    log_time(rfid_no, 'out')
                     flash(f'Successfully scanned RFID: {rfid_no}. User has clocked out.', 'success')
                 elif user_status == "Already Clocked Out":
-                    log_time(rfid_no, 'in')  # Allow clocking in again
+                    log_time(rfid_no, 'in')
                     flash(f'Successfully scanned RFID: {rfid_no}. User has clocked in.', 'success')
 
             except Exception as e:
