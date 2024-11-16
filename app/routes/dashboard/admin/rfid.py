@@ -77,6 +77,15 @@ def list_rfid(page, sort_by='rfid_id', order='asc'):
     response = check_access('admin')
     if response:
         return response
+    
+    is_super_admin = session.get('is_super_admin', False)
+    if is_super_admin:
+        print("This admin is a super admin.")
+
+        super_admin_features = True
+    else:
+        print("This admin is NOT a super admin.")
+        super_admin_features = False
 
     valid_columns = {'rfid_id': 'rfid_id', 'rfid_no': 'rfid_no', 'vehicle_id': 'vehicle_id', 'created_at': 'created_at'}
     
@@ -111,7 +120,7 @@ def list_rfid(page, sort_by='rfid_id', order='asc'):
 
     form = RFIDForm()  
 
-    return render_template('dashboard/admin/rfid.html', records=records, page=page, total_pages=total_pages, sort_by=sort_by, order=order, form=form)
+    return render_template('dashboard/admin/rfid.html', records=records, page=page, total_pages=total_pages, sort_by=sort_by, order=order, form=form, super_admin_features=super_admin_features)
 
 def fetch_rfids():
     conn = get_db_connection()

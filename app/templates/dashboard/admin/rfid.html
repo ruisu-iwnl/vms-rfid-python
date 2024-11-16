@@ -32,7 +32,7 @@
                 <tr>
                     <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">
                         <a href="{{ url_for('rfid.list_rfid', page=page, sort_by='rfid_id', order='asc' if sort_by != 'rfid_id' or order == 'desc' else 'desc') }}">
-                            RFID ID
+                            #
                             {% if sort_by == 'rfid_id' %}
                                 {% if order == 'asc' %}
                                     ▲
@@ -101,22 +101,36 @@
         <div class="flex justify-center mt-4">
             <nav class="relative z-0 inline-flex shadow-sm -space-x-px" aria-label="Pagination">
                 {% if page > 1 %}
-                    <a href="{{ url_for('rfid.list_rfid', page=page-1, sort_by=sort_by, order=order) }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-lg font-medium text-black bg-white hover:bg-gray-50">
-                        Previous
+                    <a href="{{ url_for('rfid.list_rfid', page=1, sort_by=sort_by, order=order) }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-lg font-medium text-black bg-white hover:bg-gray-50">
+                        <i class="fas fa-angle-double-left"></i>
                     </a>
                 {% endif %}
-                {% for p in range(1, total_pages + 1) %}
+                
+                {% set start_page = page - 2 %}
+                {% set end_page = page + 2 %}
+                
+                {% if start_page < 1 %}
+                    {% set start_page = 1 %}
+                {% endif %}
+                
+                {% if end_page > total_pages %}
+                    {% set end_page = total_pages %}
+                {% endif %}
+                
+                {% for p in range(start_page, end_page + 1) %}
                     <a href="{{ url_for('rfid.list_rfid', page=p, sort_by=sort_by, order=order) }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-lg font-medium {{ 'bg-gray-200' if p == page else 'bg-white' }} hover:bg-gray-50">
                         {{ p }}
                     </a>
                 {% endfor %}
+                
                 {% if page < total_pages %}
-                    <a href="{{ url_for('rfid.list_rfid', page=page+1, sort_by=sort_by, order=order) }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-lg font-medium text-black bg-white hover:bg-gray-50">
-                        Next
+                    <a href="{{ url_for('rfid.list_rfid', page=total_pages, sort_by=sort_by, order=order) }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-lg font-medium text-black bg-white hover:bg-gray-50">
+                        <i class="fas fa-angle-double-right"></i>
                     </a>
                 {% endif %}
             </nav>
         </div>
+
     </div>
 </div>
 
