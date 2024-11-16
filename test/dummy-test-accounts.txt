@@ -16,12 +16,11 @@ juliiiaaaannn@gmail.com
 
 Registered Admins
 
-test@example.us
-
 johnnotsuper@gmail.com
+jazpertom@gmail.com
 
 SUPER:
-herroin29@gmail.com
+e.luis.pelaez@gmail.com
 
 ----------------------------
 PASSWORD:
@@ -29,3 +28,6 @@ PASSWORD:
 PasswordTest@123
 
 #0a0099
+
+
+

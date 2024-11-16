@@ -59,7 +59,7 @@ def adminlist(page, sort_by='emp_no', order='asc'):
                            super_admin_features=super_admin_features,
                            form=form)
 
-@adminlist_bp.route('/delete_admin/<string:admin_id>', methods=['POST'])
+@adminlist_bp.route('/delete_admin/<int:admin_id>', methods=['POST'])
 def delete_admin(admin_id):
     if not session.get('is_super_admin'):
         return "Access denied. You are not authorized to perform this action.", 403
@@ -70,11 +70,13 @@ def delete_admin(admin_id):
         cursor.execute("""
             UPDATE admin
             SET deleted_at = NOW()
-            WHERE employee_id = %s AND deleted_at IS NULL
+            WHERE admin_id = %s AND deleted_at IS NULL
         """, (admin_id,))
 
+        # Commit the changes
         connection.commit()
 
+        # Flash a success message
         flash('Admin has been soft-deleted.', 'success')
     except Exception as e:
         print(f"Error deleting admin: {e}")
@@ -85,6 +87,7 @@ def delete_admin(admin_id):
         close_db_connection(connection)
 
     return redirect(url_for('adminlist.adminlist', page=1))
+
 
 @adminlist_bp.route('/toggle_super_admin/<int:admin_id>', methods=['POST'])
 def toggle_super_admin(admin_id):
