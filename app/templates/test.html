@@ -91,6 +91,7 @@
         toggleCameraBtn.addEventListener('click', toggleCamera);
 
         socket.on('update_text', (data) => {
+            console.log("Received text:", data.text);  // Log the detected text
             detectedTextElement.textContent = "Detected Plate Number: " + data.text;
             detectedTextElement.style.display = 'block';
 

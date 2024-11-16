@@ -87,7 +87,8 @@ def encode_image_to_base64(image):
 def handle_frame(data):
     frame_data = data['image'] 
     detected_text, _, closed_image_b64 = process_frame(frame_data)  
-    emit('update_text', {'text': detected_text, 'processed_image': closed_image_b64})  
+    print(f"Detected Text: {detected_text}")  # Print detected text on the server
+    emit('update_text', {'text': detected_text, 'processed_image': closed_image_b64})  # Emit to frontend
 
 @app.route('/test')
 def test_route():

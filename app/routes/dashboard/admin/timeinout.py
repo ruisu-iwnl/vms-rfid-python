@@ -87,7 +87,10 @@ def handle_rfid():
     form = RFIDForm()
     if form.validate_on_submit():
         rfid_no = form.rfid_no.data
+        detected_plate_number = request.form.get('detected_plate_number', '')
+
         print(f"RFID scanned: {rfid_no}")
+        print(f"Detected plate number: {detected_plate_number}")
 
         if rfid_no:
             cursor, connection = get_cursor()
