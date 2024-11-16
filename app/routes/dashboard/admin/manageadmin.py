@@ -73,15 +73,21 @@ def delete_admin(admin_id):
             WHERE admin_id = %s AND deleted_at IS NULL
         """, (admin_id,))
 
-        # Commit the changes
         connection.commit()
 
-        # Flash a success message
+        logged_in_admin_email = session.get('email')
+        cursor.execute("SELECT admin_id FROM admin WHERE email = %s", (logged_in_admin_email,))
+        logged_in_admin_id = cursor.fetchone()[0]
+
+        log_login_activity(logged_in_admin_id, 'Admin', f"Soft-deleted admin {admin_id}")
+
         flash('Admin has been soft-deleted.', 'success')
+
     except Exception as e:
         print(f"Error deleting admin: {e}")
         flash('An error occurred while deleting the admin.', 'error')
         return redirect(url_for('adminlist.adminlist', page=1))
+
     finally:
         cursor.close()
         close_db_connection(connection)
@@ -104,7 +110,7 @@ def toggle_super_admin(admin_id):
         if current_status is None:
             return "Admin not found", 404
 
-        print(f"Current status of super admin for admin {admin_id}: {current_status[0]}")  # Debugging output
+        print(f"Current status of super admin for admin {admin_id}: {current_status[0]}") 
 
         # Toggle the super admin status (flip 1 to 0 or 0 to 1)
         is_super_admin = 0 if current_status[0] == 1 else 1  # Flip the current status

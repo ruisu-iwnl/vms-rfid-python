@@ -41,14 +41,23 @@ def login():
                 cursor, connection = get_cursor()
                 print("Database connection established.")
 
-                cursor.execute("SELECT email, is_super_admin FROM admin WHERE email = %s", (email,))
+                cursor.execute("SELECT email, is_super_admin, deleted_at FROM admin WHERE email = %s", (email,))
                 admin = cursor.fetchone()
                 
                 if admin:
                     user_type = 'admin'
                     table_name = 'admin'
                     user_id_column = 'admin_id'
-                    is_super_admin = admin[1]  
+                    is_super_admin = admin[1]
+                    deleted_at = admin[2]
+                    
+                    if deleted_at:
+                        login_error = 'Your account has been removed. Please contact support.'
+                        flash(login_error, 'danger')
+                        log_login_activity(None, 'Admin', 'Login failed: Account soft-deleted')
+                        cursor.close()
+                        close_db_connection(connection)
+                        return render_template('login/login.html', form=form, recaptcha_error=recaptcha_error, login_error=login_error)
                 else:
                     cursor.execute("SELECT email FROM user WHERE email = %s", (email,))
                     user = cursor.fetchone()
