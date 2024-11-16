@@ -181,9 +181,9 @@
     const rfidSection = document.getElementById('rfidSection');
     const cameraSection = document.getElementById('cameraSection');
     const nextBtn = document.getElementById('nextBtn');
-
+    
     let cameraStream = null;
-
+    
     function toggleCamera() {
         if (cameraStream) {
             const tracks = cameraStream.getTracks();
@@ -194,7 +194,7 @@
             captureBtn.style.display = 'none';
             retryBtn.style.display = 'none';
             detectedTextElement.style.display = 'none';
-            console.log('Camera disabled');
+            toggleCameraBtn.style.display = 'inline';
         } else {
             navigator.mediaDevices.getUserMedia({ video: true })
                 .then(stream => {
@@ -205,36 +205,13 @@
                     captureBtn.style.display = 'inline-block';
                     retryBtn.style.display = 'none';
                     detectedTextElement.style.display = 'none';
-                    console.log('Camera enabled');
                 })
                 .catch(error => {
                     console.error('Error accessing camera: ', error);
                 });
         }
     }
-
-    function captureAndSendFrame() {
-        console.log('Capture button clicked');
-        const canvas = document.createElement('canvas');
-        const context = canvas.getContext('2d');
-        canvas.width = videoElement.videoWidth;
-        canvas.height = videoElement.videoHeight;
-        context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
-
-        const imageData = canvas.toDataURL('image/png');
-        capturedImage.src = imageData;
-        capturedImage.style.display = 'block';
-        videoElement.style.display = 'none';
-        captureBtn.style.display = 'none';
-        toggleCameraBtn.style.display = 'none'; 
-        retryBtn.style.display = 'inline';
-        socket.emit('frame', { image: imageData });
-        console.log('Image sent to server');
-
-        nextBtn.style.display = 'inline-block';
-    }
-
-    // Retry capturing
+    
     function retryCapture() {
         capturedImage.style.display = 'none';
         videoElement.style.display = 'block';
@@ -242,30 +219,77 @@
         retryBtn.style.display = 'none';
         toggleCameraBtn.style.display = 'inline';
         detectedTextElement.style.display = 'none';
+    
+        nextBtn.style.display = 'none';
     }
-
-    // Handle Next Button click
+    
+    function captureAndSendFrame() {
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        canvas.width = videoElement.videoWidth;
+        canvas.height = videoElement.videoHeight;
+    
+        context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+    
+        const imageData = canvas.toDataURL('image/png');
+    
+        const img = new Image();
+        img.onload = function() {
+            const maxWidth = 500;
+            const maxHeight = 500;
+            let width = img.width;
+            let height = img.height;
+    
+            if (width > height) {
+                if (width > maxWidth) {
+                    height = Math.round(height * (maxWidth / width));
+                    width = maxWidth;
+                }
+            } else {
+                if (height > maxHeight) {
+                    width = Math.round(width * (maxHeight / height));
+                    height = maxHeight;
+                }
+            }
+    
+            capturedImage.width = width;
+            capturedImage.height = height;
+            capturedImage.src = img.src;
+    
+            capturedImage.style.display = 'block';
+            videoElement.style.display = 'none';
+            captureBtn.style.display = 'none';
+            toggleCameraBtn.style.display = 'none';
+            retryBtn.style.display = 'inline';
+            detectedTextElement.style.display = 'none';
+            socket.emit('frame', { image: imageData });
+    
+            nextBtn.style.display = 'inline-block';
+        };
+    
+        img.src = imageData;
+    }
+    
     nextBtn.addEventListener('click', function() {
-        // Switch to RFID section
         cameraSection.style.display = 'none';
         rfidSection.style.display = 'block';
         nextBtn.style.display = 'none';
     });
-
+    
     captureBtn.addEventListener('click', captureAndSendFrame);
     retryBtn.addEventListener('click', retryCapture);
     toggleCameraBtn.addEventListener('click', toggleCamera);
-
+    
     socket.on('update_text', (data) => {
         detectedTextElement.innerText = 'Detected Plate Number: ' + data.text;
         detectedTextElement.style.display = 'block';
     });
-
+    
     function goBackToCamera() {
-    rfidSection.style.display = 'none'; 
-    cameraSection.style.display = 'block'; 
-    nextBtn.style.display = 'inline-block'; 
-}
-</script>
-
+        rfidSection.style.display = 'none'; 
+        cameraSection.style.display = 'block'; 
+        nextBtn.style.display = 'inline-block'; 
+    }
+    </script>
+    
 {% endblock %}
