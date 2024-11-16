@@ -28,12 +28,13 @@ CREATE TABLE `user` (
 CREATE TABLE `vehicle` (
   `vehicle_id` INT AUTO_INCREMENT PRIMARY KEY,
   `user_id` INT NOT NULL,
-  `licenseplate` VARCHAR(255) UNIQUE NOT NULL,
+  `licenseplate` VARCHAR(255) NOT NULL UNIQUE,  
   `make` VARCHAR(255) NOT NULL,
   `model` VARCHAR(255) NOT NULL,
   `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (`user_id`) REFERENCES `user`(`user_id`) ON DELETE CASCADE
 );
+
 
 
 CREATE TABLE `rfid` (
