@@ -70,9 +70,16 @@
         </button>
         </div>
 
+        <!-- Scanning Text -->
         <div id="scanningText" class="text-lg font-semibold text-center" style="display: none;">
             Scanning... Please wait.
         </div>
+
+        <!-- Progress Bar with smaller width (e.g., 50% of the container) -->
+        <div id="progressBarContainer" class="bg-gray-300 mt-4 h-2 mx-auto" style="display: none; width: 50%;">
+            <div id="progressBar" class="bg-green-500 h-2" style="width: 0%;"></div>
+        </div>
+
         <div id="detectedText" class="mt-4 text-lg font-semibold text-center text-black" style="display: none;"></div>
 
         <!-- Captured Images -->
@@ -234,6 +241,22 @@
     scanningText.style.display = 'block';
     typeScanningText("Scanning... Please wait.");
 
+    // Show the progress bar container
+    document.getElementById('progressBarContainer').style.display = 'block';
+    
+    // Reset progress bar width
+    let progress = 0;
+    const progressBar = document.getElementById('progressBar');
+    
+    // Update progress bar every 500ms until the text is detected
+    const progressInterval = setInterval(() => {
+        progress += 5;
+        if (progress >= 100) {
+            clearInterval(progressInterval); // Stop updating when it reaches 100%
+        }
+        progressBar.style.width = progress + '%';
+    }, 500);
+
     const canvas = document.createElement('canvas');
     const context = canvas.getContext('2d');
     canvas.width = videoElement.videoWidth;
@@ -255,6 +278,19 @@
 
     socket.emit('frame', { image: frame });
 }
+
+// Handle server response when the text is detected
+socket.on('update_text', (data) => {
+    detectedTextElement.textContent = "Detected Plate Number: " + data.text;
+    detectedTextElement.style.display = 'block';
+
+    // Hide "Scanning..." text once the result is received
+    scanningText.style.display = 'none';
+
+    // Hide progress bar once text is detected
+    document.getElementById('progressBarContainer').style.display = 'none';
+});
+
 
 
     // Retry Capture Functionality
