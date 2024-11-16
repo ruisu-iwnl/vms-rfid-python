@@ -95,6 +95,7 @@ def handle_rfid():
         if rfid_no:
             cursor, connection = get_cursor()
             try:
+                # First, check if the RFID is registered
                 cursor.execute("""
                     SELECT rfid_id, vehicle_id FROM rfid WHERE rfid_no = %s
                 """, (rfid_no,))
@@ -105,10 +106,37 @@ def handle_rfid():
                     return redirect(url_for('timeinout.timeinout'))
 
                 rfid_id, vehicle_id = rfid_data
+                print(f"Found RFID: {rfid_no} with associated vehicle_id: {vehicle_id}")
+
                 if not vehicle_id:
                     flash('RFID is registered but not associated with a vehicle.', 'error')
                     return redirect(url_for('timeinout.timeinout'))
 
+                # Now check if the detected plate number matches the vehicle's license plate
+                print(f"Checking if detected plate number {detected_plate_number} exists in the database...")
+                cursor.execute("""
+                    SELECT vehicle_id, licenseplate FROM vehicle WHERE licenseplate = %s
+                """, (detected_plate_number,))
+                vehicle_data = cursor.fetchone()
+
+                if not vehicle_data:
+                    print(f"Vehicle with plate number {detected_plate_number} not found in the database.")
+                    flash(f"Vehicle with plate number {detected_plate_number} not found.", 'error')
+                    return redirect(url_for('timeinout.timeinout'))
+
+                detected_vehicle_id, license_plate = vehicle_data
+                print(f"Found vehicle with plate number {detected_plate_number}: vehicle_id {detected_vehicle_id}")
+
+                # Check if the vehicle_id associated with the detected plate number matches the rfid's vehicle_id
+                print(f"Comparing RFID vehicle_id {vehicle_id} with detected vehicle_id {detected_vehicle_id}")
+                if vehicle_id != detected_vehicle_id:
+                    print(f"Cross-check failed: RFID vehicle_id {vehicle_id} does not match detected vehicle_id {detected_vehicle_id}")
+                    flash(f"The detected plate number {detected_plate_number} is not associated with this RFID.", 'error')
+                    return redirect(url_for('timeinout.timeinout'))
+                else:
+                    print(f"Cross-check successful: RFID vehicle_id {vehicle_id} matches detected vehicle_id {detected_vehicle_id}")
+
+                # Now proceed with checking the time status and logging the time
                 user_status = check_user_time_status(rfid_no)
                 print(f"User status for RFID {rfid_no}: {user_status}")
 
