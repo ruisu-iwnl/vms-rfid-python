@@ -75,12 +75,16 @@ function captureAndSendFrame() {
     socket.emit('frame', { image: frame });
 }
 
+let detectedPlateNumber = ''; 
+
 socket.on('update_text', (data) => {
-    detectedTextElement.textContent = "Detected Plate Number: " + data.text;
+    detectedPlateNumber = data.text; 
+    detectedTextElement.textContent = "Detected Plate Number: " + detectedPlateNumber;
     detectedTextElement.style.display = 'block';
     scanningText.style.display = 'none';
     document.getElementById('progressBarContainer').style.display = 'none';
 });
+
 
 function retryCapture() {
     location.reload();
