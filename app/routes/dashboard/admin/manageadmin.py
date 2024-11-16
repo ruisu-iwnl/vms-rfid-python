@@ -20,19 +20,20 @@ def adminlist(page, sort_by='emp_no', order='asc'):
 
     sort_column = valid_columns.get(sort_by, 'a.employee_id')
 
-    logged_in_admin_email = session.get('email')  # assuming email is stored in session
+    logged_in_admin_email = session.get('email')
 
     try:
         cursor, connection = get_cursor()
         
         cursor.execute(f"""
             SELECT a.employee_id AS emp_no, CONCAT(a.firstname, ' ', a.lastname) AS full_name, a.contactnumber, 
-                a.email, a.created_at, a.profile_image
+                a.email, a.created_at, a.profile_image, a.is_super_admin  -- Include is_super_admin field
             FROM admin a
             WHERE a.deleted_at IS NULL
             AND a.email != %s  -- Exclude the logged-in admin
             ORDER BY {sort_column} {order}, a.employee_id
         """, (logged_in_admin_email,))
+
 
         admins = cursor.fetchall()
         

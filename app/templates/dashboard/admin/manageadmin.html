@@ -56,7 +56,7 @@
                             {% endif %}
                         </a>
                     </th>
-                    <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">Action</th>
+                    <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">Super</th>
                 </tr>
             </thead>
             
@@ -76,10 +76,22 @@
                         <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ admin[2] }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ admin[4] }}</td>
                         
-                        <!-- Delete Button Column -->
+                        <!-- Toggle for Super Admin Status -->
+                        <td class="px-6 py-4 whitespace-nowrap text-lg text-black">
+                            <label for="toggle-{{ admin[0] }}" class="inline-flex items-center cursor-pointer">
+                                <span class="mr-2 text-black"></span>
+                                <span class="relative">
+                                    <!-- Check if the admin is a super admin -->
+                                    <input type="checkbox" id="toggle-{{ admin[0] }}" class="sr-only peer" {% if admin[6] %} checked {% endif %} />
+                                    <div class="toggle-track bg-gray-300 w-10 h-5 rounded-full transition-colors duration-200 ease-in-out peer-checked:bg-green-500"></div>
+                                    <div class="toggle-dot absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full transition-all duration-200 ease-in-out peer-checked:translate-x-5"></div>
+                                </span>
+                            </label>
+                        </td>
+
                         <td class="px-6 py-4 whitespace-nowrap text-lg text-black">
                             <button class="delete-admin-btn bg-red-500 text-white py-2 px-4 rounded border border-black hover:bg-red-700" data-admin-id="{{ admin[0] }}" data-url="{{ url_for('adminlist.delete_admin', admin_id=admin[0]) }}">
-                                <img src="{{ url_for('static', filename='images/icons/delete.svg') }}" alt="Delete Admin" class="inline h-6 w-6 mr-2"> Delete
+                                <img src="{{ url_for('static', filename='images/icons/delete.svg') }}" alt="Delete Admin" class="inline h-6 w-6 mr-2">
                             </button>
                         </td>
                     </tr>
@@ -87,7 +99,38 @@
             </tbody>
         </table>
         
-        <!-- Pagination code omitted for brevity -->
+    <!-- Pagination -->
+    <div class="flex justify-center mt-4">
+        <nav class="relative z-0 inline-flex shadow-lg -space-x-px" aria-label="Pagination">
+            {% if page > 1 %}
+                <a href="{{ url_for('adminlist.adminlist', page=1, sort_by=sort_by, order=order) }}" class="relative inline-flex items-center px-4 py-2 border border-gray-400 text-base font-medium text-white bg-indigo-600 rounded-full hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition ease-in-out duration-300">
+                    <i class="fas fa-angle-double-left"></i>
+                </a>
+            {% endif %}
+            
+            {% set start_page = page - 2 %}
+            {% set end_page = page + 2 %}
+            
+            {% if start_page < 1 %}
+                {% set start_page = 1 %}
+            {% endif %}
+            
+            {% if end_page > total_pages %}
+                {% set end_page = total_pages %}
+            {% endif %}
+            
+            {% for p in range(start_page, end_page + 1) %}
+                <a href="{{ url_for('adminlist.adminlist', page=p, sort_by=sort_by, order=order) }}" class="relative inline-flex items-center px-4 py-2 border border-gray-400 text-base font-medium {{ 'bg-indigo-600' if p == page else 'bg-gray-300' }} rounded-full text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition ease-in-out duration-300">
+                    {{ p }}
+                </a>
+            {% endfor %}
+            
+            {% if page < total_pages %}
+                <a href="{{ url_for('adminlist.adminlist', page=total_pages, sort_by=sort_by, order=order) }}" class="relative inline-flex items-center px-4 py-2 border border-gray-400 text-base font-medium text-white bg-indigo-600 rounded-full hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition ease-in-out duration-300">
+                    <i class="fas fa-angle-double-right"></i>
+                </a>
+            {% endif %}
+        </nav>
     </div>
 </div>
 
