@@ -160,6 +160,19 @@
                     <label for="togglePasswordCheckbox" class="  text-sm">Show Password</label>
                 </div>
 
+                <!-- Terms and Conditions -->
+                <div class="mt-4 w-full flex items-center">
+                    <input type="checkbox" id="termsCheckbox" name="terms" required class="mr-3">
+                    <label for="termsCheckbox" class="text-lg font-medium">
+                        I agree to the 
+                        <a href="{{ url_for('tc.tc') }}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 underline font-semibold">
+                            Terms and Conditions
+                        </a>.
+                    </label>
+                </div>                
+
+                <br>
+
                 {% if recaptcha_error %}
                     <p class="text-red-700 text-sm italic mt-2 text-center">{{ recaptcha_error }}</p>
                 {% endif %}
@@ -173,8 +186,6 @@
                     <p class="mt-2 text-base  ">Already have an account? <a href="{{ url_for('login.login') }}" class="text-blue-600 hover:text-blue-800">Login here</a></p>
                 </div>
             </form>
-        </div>
-
     </div>
 
     <script>
@@ -189,6 +200,17 @@
                 passwordConfirmation.type = 'password';
             }
         }
+
+            // Ensure Terms Checkbox is Checked Before Submission
+        const form = document.getElementById('registrationForm');
+        const termsCheckbox = document.getElementById('termsCheckbox');
+
+        form.addEventListener('submit', (event) => {
+            if (!termsCheckbox.checked) {
+                event.preventDefault();
+                alert('Please agree to the Terms and Conditions before registering.');
+            }
+        });
     </script>
 
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>

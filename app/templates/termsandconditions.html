@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TimeGuard</title>
+    <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/custom.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/auth-login-register.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/fonts.css') }}" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='/images/logo.png') }}">
+    <style>
+        body {
+            background-color: #eeeee4;
+            color: black;
+        }
+        /* Animation styles */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeIn 0.8s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+        }
+    
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body class="relative min-h-screen fade-in">
+
+    <!-- Container to hold both sections -->
+    <div class="flex flex-col min-h-screen justify-center items-center p-4">
+
+        <!-- Combined Sections -->
+        <div class="flex flex-col items-center justify-center space-y-4">
+
+            <!-- Left Section: Logo & Title -->
+            <div class="flex flex-col items-center justify-center p-2 md:p-4">
+                <!-- Logo -->
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" class="mb-4 h-16 md:h-24">
+
+                <!-- Title with custom shadow -->
+                <h1 class="text-6xl md:text-6xl font-extrabold leading-tight mb-1 text-center">
+                    TimeGuard
+                </h1>
+                <p class="text-base md:text-lg text-center">
+                    A Web-Based RFID Integrated Time Tracking System.
+                </p>
+                <p class="text-base md:text-lg text-center">
+                    Track vehicle time logs in one place with our platform.
+                </p>
+            </div>
+
+            <!-- Right Section: Terms and Conditions -->
+            <div class="bg-white shadow-lg rounded-lg p-6 md:p-8 max-w-3xl text-gray-800">
+                <h1 class="text-3xl font-bold mb-4 text-center text-blue-600">Terms and Conditions</h1>
+                <p class="mb-4">These Terms and Conditions explain the rules for using our website, TimeGuard. By using our services, you agree to follow these rules, which are in place to keep the platform safe for everyone. It's important to understand these guidelines to help maintain transparency and integrity on the site.</p>
+
+                <h2 class="text-2xl font-semibold text-blue-500 mb-2">1. Acceptance of Terms</h2>
+                <p class="mb-4">By accessing or using the website, you agree to be bound by these Terms and Conditions. If you do not agree with any part of these terms, you must not use the website.</p>
+
+                <h2 class="text-2xl font-semibold text-blue-500 mb-2">2. Data Collection and Usage</h2>
+                <p class="mb-2">We collect and process certain personal information to provide and improve our services. By using our website and services, you agree to the collection and use of this information as outlined below:</p>
+                <ul class="list-disc list-inside space-y-2 mb-4">
+                    <li><strong>Personal Information:</strong> We may collect your name, vehicle details (such as make, model, and license plate number), and other relevant information necessary for providing our services.</li>
+                    <li><strong>Purpose of Data Collection:</strong>
+                        <ul class="list-disc list-inside ml-4">
+                            <li>To identify and track your vehicle when you enter and exit our service area.</li>
+                            <li>To manage and process vehicle-related record requests.</li>
+                            <li>To ensure smooth operation of our services in time tracking.</li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <h2 class="text-2xl font-semibold text-blue-500 mb-2">3. Use of RFID and Camera Technology</h2>
+                <p class="mb-4">We use RFID and cameras to track your vehicle’s entry and exit. The RFID helps identify your vehicle, while cameras cross-match your license plate number with the registered vehicle. This data is stored temporarily and used solely for security, vehicle tracking, and ensuring proper service operation.</p>
+
+                <h2 class="text-2xl font-semibold text-blue-500 mb-2">4. User Rights and Consent</h2>
+                <p class="mb-2">In accordance with the <strong>Data Privacy Act of the Philippines</strong>, you have the right to access, correct, and delete your personal information. You may also withdraw your consent to the collection and use of your data at any time.</p>
+                <ul class="list-disc list-inside space-y-2">
+                    <li><strong>Access:</strong> You can request to view the personal data we have collected about you.</li>
+                    <li><strong>Correction:</strong> If any of your information is incorrect or outdated, you may request corrections.</li>
+                    <li><strong>Deletion:</strong> You have the right to request the deletion of your personal data, subject to applicable laws and retention policies.</li>
+                    <li><strong>Withdrawal of Consent:</strong> You may withdraw your consent to the collection and processing of your personal data. Please note that withdrawing consent may affect your ability to use some of our services.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
