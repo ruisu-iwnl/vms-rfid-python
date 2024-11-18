@@ -142,6 +142,10 @@ def handle_rfid():
                 user_status = check_user_time_status(rfid_no)
                 print(f"User status for RFID {rfid_no}: {user_status}")
 
+                if user_status == "Clock-Out Restricted":
+                    flash("Cannot clock out yet. Please wait at least 30 minutes after clocking in.", "error")
+                    return redirect(url_for("timeinout.timeinout"))
+
                 # Check if the user has already clocked in
                 if user_status == "No Time Logs":
                     log_time(rfid_no, 'in')
@@ -206,15 +210,18 @@ def check_user_time_status(rfid_no):
         print(f"Database query result for RFID {rfid_no}: {result}")  
         
         if result is None:
-            return "No Time Logs" 
-        
+            return "No Time Logs"
+
         time_in, time_out = result
+        now = datetime.now()
+
         if time_in and not time_out:
+            if now - time_in < timedelta(minutes=30):
+                return "Clock-Out Restricted"
             return "Time In"
         elif time_out:
-            return "Already Clocked Out"  
-        else:
-            return "Time In"  
+            return "Already Clocked Out"
+
     except Exception as e:
         print(f"An error occurred in check_user_time_status: {e}")
         return None
@@ -266,7 +273,7 @@ def log_time(rfid_no, action, flag=True):
                 log_login_activity(user_id, 'User', 'Clocked In')
                 flash(f'Clocked in successfully for RFID: {rfid_no}', 'success')
             else:
-                flash(f'Already clocked in for RFID: {rfid_no}. Please clock out first.', 'error')
+                return  # Avoid duplicate flash for already clocked in
         elif action == 'out':
             if latest_log and latest_log[1] is None:
                 cursor.execute("""
@@ -280,7 +287,7 @@ def log_time(rfid_no, action, flag=True):
                 log_login_activity(user_id, 'User', 'Clocked Out')
                 flash(f'Clocked out successfully for RFID: {rfid_no}', 'success')
             else:
-                flash(f'No active clock-in found for RFID: {rfid_no}. Please clock in first.', 'error')
+                return  # Avoid duplicate flash for no active clock-in
 
         connection.commit()
     except Exception as e:

@@ -1,6 +1,6 @@
 Registered Users:
 
-e.luis.pelaez@gmail.com
+e.luispelaez@gmail.com
 julieccaabrera@gmail.com
 vinzzzz@gmail.com
 fooorrddddd@gmail.com
@@ -24,10 +24,7 @@ e.luis.pelaez@gmail.com
 
 ----------------------------
 PASSWORD:
-
 PasswordTest@123
-
-#0a0099
 
 
 
