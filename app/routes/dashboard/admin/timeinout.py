@@ -19,6 +19,15 @@ def timeinout(page):
     response = check_access('admin')
     if response:
         return response
+    
+    is_super_admin = session.get('is_super_admin', False)
+    if is_super_admin:
+        print("This admin is a super admin.")
+
+        super_admin_features = True
+    else:
+        print("This admin is NOT a super admin.")
+        super_admin_features = False
 
     form = RFIDForm()  
     cursor, connection = get_cursor()
@@ -61,7 +70,7 @@ def timeinout(page):
         end = start + per_page
         paginated_records = structured_records[start:end]
 
-        return render_template('dashboard/admin/timeinout.html', records=paginated_records, page=page, total_pages=total_pages, form=form)
+        return render_template('dashboard/admin/timeinout.html', records=paginated_records, page=page, total_pages=total_pages, form=form,super_admin_features=super_admin_features)
 
     except Exception as e:
         print(f"An error occurred: {e}")
@@ -118,6 +127,10 @@ def handle_rfid():
                     flash("Cannot clock out yet. Please wait at least 30 minutes after clocking in.", "error")
                     return redirect(url_for("timeinout.timeinout"))
 
+                if user_status == "Clock-In Restricted":
+                    flash("Cannot clock in yet. Please wait at least 30 minutes after clocking out.", "error")
+                    return redirect(url_for("timeinout.timeinout"))
+
                 if user_status == "No Time Logs":
                     log_time(rfid_no, 'in')
                     flash(f'Successfully scanned RFID: {rfid_no}. User has clocked in.', 'success')
@@ -167,7 +180,10 @@ def check_user_time_status(rfid_no):
                 return "Clock-Out Restricted"
             return "Already Clocked In"
 
-        elif time_out:
+        # Check cooldown after clock-out
+        if time_out:
+            if now - time_out < timedelta(minutes=30):
+                return "Clock-In Restricted"
             return "Already Clocked Out"
 
     except Exception as e:
