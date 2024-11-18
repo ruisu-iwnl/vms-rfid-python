@@ -221,7 +221,16 @@ def log_time(rfid_no, action):
                 time_in = latest_log[0]
                 time_difference = now - time_in
 
-                if time_difference >= timedelta(minutes=30):
+                # If the clock-in was more than 24 hours ago, treat it as a new clock-in
+                if time_difference >= timedelta(days=1):
+                    # Treat as new clock-in (insert a new row)
+                    cursor.execute("""
+                        INSERT INTO time_logs (vehicle_id, rfid_id, time_in)
+                        VALUES (%s, (SELECT rfid_id FROM rfid WHERE rfid_no = %s), %s)
+                    """, (vehicle_id, rfid_no, now))
+                    log_login_activity(user_id, 'User', 'Clocked In')
+                    flash(f'The previous clock-in was more than 24 hours ago. Treated as new clock-in for RFID: {rfid_no}', 'success')
+                elif time_difference >= timedelta(minutes=30):  # Clock-out allowed
                     cursor.execute("""
                         UPDATE time_logs
                         SET time_out = %s
