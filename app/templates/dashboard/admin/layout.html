@@ -65,7 +65,9 @@
             {% endif %}
             
             <a href="{{ url_for('activitylog.activitylog') }}" class="block py-3 rounded hover:bg-gray-100">Activity Logs</a>
+            {% if super_admin_features %}
             <a href="{{ url_for('rfid.add_rfid') }}" class="block py-3 rounded hover:bg-gray-100">RFID</a>
+            {% endif %}
             <button id="logout-button" class="block py-3 rounded hover:bg-gray-100">Logout</button>
         </nav>
     </aside>
@@ -98,9 +100,11 @@
                 <a href="{{ url_for('activitylog.activitylog') }}" class="block py-4 px-5 rounded hover:bg-gray-300">
                     <img src="{{ url_for('static', filename='images/icons/activitylogs.svg') }}" alt="Activity Logs" class="inline h-8 w-8 mr-2">Activity Logs
                 </a>
+                {% if super_admin_features %}
                 <a href="{{ url_for('rfid.add_rfid') }}" class="block py-4 px-5 rounded hover:bg-gray-300">
                     <img src="{{ url_for('static', filename='images/icons/rfid.svg') }}" alt="RFID" class="inline h-8 w-8 mr-2">RFID
                 </a>
+                {% endif %}
                 <button id="logout-button-desktop" class="block py-4 px-5 rounded hover:bg-gray-300 mt-6">
                     <img src="{{ url_for('static', filename='images/icons/logout.svg') }}" alt="Logout" class="inline h-8 w-8 mr-2">Logout
                 </button>
