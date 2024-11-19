@@ -8,14 +8,11 @@
     <!-- Main Content -->
     <div class="w-full h-full p-6">
         <!-- Button to open modal -->
-        <button id="openModalBtn" class="bg-green-500 text-black py-4 px-8 rounded border border-black hover:bg-green-700 mb-4" style="background-color: #eeeee4; font-size: 1.25rem;">
+        <!-- <button id="openModalBtn" class="bg-green-500 text-black py-4 px-8 rounded border border-black hover:bg-green-700 mb-4" style="background-color: #eeeee4; font-size: 1.25rem;">
             <img src="{{ url_for('static', filename='images/icons/addvehicle.svg') }}" alt="Add" class="inline h-8 w-8 mr-2"> Register a Vehicle
         </button>
-        
-        <!-- Include the modal -->
-        {% include 'dashboard/user/modals/addvehicle.html' %}
-    
-        <!-- Table Container -->
+
+        <!- Table Container -->
         <div class="bg-[#eeeee4] p-6 rounded-lg shadow-md w-full max-w-full mb-8 relative">
             <table class="min-w-full divide-y divide-gray-300">
                 <thead class="bg-[#eeeee4]">
@@ -79,6 +76,7 @@
     </div>
     
     <script>
+        /*
         document.getElementById('openModalBtn').addEventListener('click', function() {
             const modal = document.getElementById('vehicleModal');
             modal.classList.remove('hidden');
@@ -90,5 +88,6 @@
             modal.classList.remove('show');
             setTimeout(() => modal.classList.add('hidden'), 300); 
         });
+        */
     </script>
 {% endblock %}
