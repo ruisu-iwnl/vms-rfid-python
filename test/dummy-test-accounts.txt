@@ -18,6 +18,7 @@ Registered Admins
 
 johnnotsuper@gmail.com
 jazpertom@gmail.com
+johnnywrestling@gmail.com
 
 SUPER:
 e.luis.pelaez@gmail.com
@@ -25,6 +26,7 @@ e.luis.pelaez@gmail.com
 ----------------------------
 PASSWORD:
 PasswordTest@123
+
 
 
 
