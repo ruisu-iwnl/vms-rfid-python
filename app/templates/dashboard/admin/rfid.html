@@ -6,7 +6,7 @@
 
 {% block content %}
 
-<div class="bg-[#eeeee4] p-6 rounded-lg shadow-md w-full max-w-full relative">
+<!-- <div class="bg-[#eeeee4] p-6 rounded-lg shadow-md w-full max-w-full relative">
     <form action="{{ url_for('rfid.add_rfid') }}" method="POST" class="flex flex-col items-start space-y-4 mb-4" autocomplete="off" onsubmit="return handleSubmit(event);">
         {{ form.csrf_token }}
 
@@ -26,7 +26,7 @@
     </form>
 
     <!-- Table Container -->
-    <div class="mt-4">
+    <!-- <div class="mt-4">
         <table class="min-w-full divide-y divide-gray-300">
             <thead class="bg-[#eeeee4]">
                 <tr>
@@ -55,18 +55,6 @@
                         </a>
                     </th>
                     <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">
-                        <a href="{{ url_for('rfid.list_rfid', page=page, sort_by='vehicle_id', order='asc' if sort_by != 'vehicle_id' or order == 'desc' else 'desc') }}">
-                            Vehicle ID
-                            {% if sort_by == 'vehicle_id' %}
-                                {% if order == 'asc' %}
-                                    ▲
-                                {% else %}
-                                    ▼
-                                {% endif %}
-                            {% endif %}
-                        </a>
-                    </th>
-                    <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">
                         <a href="{{ url_for('rfid.list_rfid', page=page, sort_by='created_at', order='asc' if sort_by != 'created_at' or order == 'desc' else 'desc') }}">
                             Created At
                             {% if sort_by == 'created_at' %}
@@ -80,25 +68,25 @@
                     </th>
                 </tr>
             </thead>
-
+        
             <tbody class="bg-[#eeeee4] divide-y divide-gray-300">
                 {% for record in records %}
                     <tr>
                         <td class="px-6 py-4 whitespace-nowrap text-lg font-medium text-black">{{ record[0] }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ record[1] }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ record[2] }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ record[3] }}</td>
                     </tr>
                 {% else %}
                     <tr>
-                        <td colspan="4" class="px-6 py-4 text-lg text-center text-black">No RFID records found.</td>
+                        <td colspan="3" class="px-6 py-4 text-lg text-center text-black">No RFID records found.</td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
+        
 
     <!-- Pagination -->
-    <div class="flex justify-center mt-4">
+    <!-- <div class="flex justify-center mt-4">
         <nav class="relative z-0 inline-flex shadow-sm -space-x-px" aria-label="Pagination">
             {% if page > 1 %}
                 <a href="{{ url_for('rfid.list_rfid', page=1, sort_by=sort_by, order=order) }}" class="relative inline-flex items-center px-4 py-2 border border-gray-400 text-base font-medium text-white bg-indigo-600 rounded-full hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition ease-in-out duration-300">
@@ -129,12 +117,12 @@
                 </a>
             {% endif %}
         </nav>
-    </div>
+    </div> -->
 
-    </div>
+    </div> -->
 </div>
 
 
-<script src="{{ url_for('static', filename='js/rfid-prod.js') }}"></script>
+<script src="{{ url_for('static', filename='js/rfid-prod.js') }}"></script> -->
 
 {% endblock %}
