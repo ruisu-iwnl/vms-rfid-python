@@ -73,7 +73,7 @@
             </a>
 
             <h2 class="text-2xl font-bold mb-4   text-center">User Registration</h2>
-            <form action="{{ url_for('user_register.user_register') }}" method="POST" class="w-full flex flex-col" enctype="multipart/form-data" autocomplete="off">
+            <form id="registrationForm" action="{{ url_for('user_register.user_register') }}" method="POST" class="w-full flex flex-col" enctype="multipart/form-data" autocomplete="off">
                 {{ form.hidden_tag() }}
 
                 {% if is_registered_as_user %}
@@ -166,7 +166,7 @@
                     <div class="w-1/2">
                         <label for="orcr_image" class="block text-lg font-medium text-black">ORCR</label>
                         <input type="file" id="orcr_image" name="orcr_image" accept="image/*" class="mt-1 block w-full text-gray-900 py-3 px-4 border border-gray-300 rounded-md focus:border-blue-400 focus:outline-none" required>
-                    </div>
+                    </div>                    
                 </div>
 
                 <!-- License Plate and RFID Number (Same Row) -->
@@ -181,19 +181,33 @@
                     </div>
                 </div>
 
-                <!-- Make and Model (Same Row) -->
-                <div class="mb-4 flex space-x-4">
-                    <div class="w-1/2">
-                        <label for="make" class="block text-left text-base font-semibold mb-1">Make</label>
-                        <input type="text" id="make" name="make" class="shadow-sm appearance-none border border-gray-400 rounded-lg w-full py-2 px-3 text-gray-900 leading-tight focus:outline-none focus:ring-1 focus:ring-blue-600" placeholder="Make" required>
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <div>
+                        <label for="car_make" class="block text-lg font-medium text-black">Car Make</label>
+                        <input type="text" id="make-input" name="make" class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white py-3 px-4">
+                        <select id="car_make" class="mt-1 custom-select block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0 py-3 px-4">
+                            <option value="">Select make</option>
+                            <!-- Options will be populated here -->
+                        </select>
+                        {% if form.make.errors %}
+                            <p class="text-red-700 text-sm italic mt-1">{{ form.make.errors[0] }}</p>
+                        {% endif %}
                     </div>
-                    <div class="w-1/2">
-                        <label for="model" class="block text-left text-base font-semibold mb-1">Model</label>
-                        <input type="text" id="model" name="model" class="shadow-sm appearance-none border border-gray-400 rounded-lg w-full py-2 px-3 text-gray-900 leading-tight focus:outline-none focus:ring-1 focus:ring-blue-600" placeholder="Model" required>
+                    
+                    <div>
+                        <label for="car_model" class="block text-lg font-medium text-black">Car Model</label>
+                        <input type="text" id="model-input" name="model" class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white py-3 px-4">
+                        <select id="car_model" class="mt-1 custom-select block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0 py-3 px-4">
+                            <option value="">Select model</option>
+                            <!-- Options will be populated here -->
+                        </select>
+                        {% if form.model.errors %}
+                            <p class="text-red-700 text-sm italic mt-1">{{ form.model.errors[0] }}</p>
+                        {% endif %}
                     </div>
+                    
                 </div>
-
-
+                
 
                 <!-- Terms and Conditions -->
                 <div class="mt-4 w-full flex items-center">
@@ -236,16 +250,91 @@
             }
         }
 
-            // Ensure Terms Checkbox is Checked Before Submission
         const form = document.getElementById('registrationForm');
-        const termsCheckbox = document.getElementById('termsCheckbox');
+const termsCheckbox = document.getElementById('termsCheckbox');
 
-        form.addEventListener('submit', (event) => {
-            if (!termsCheckbox.checked) {
-                event.preventDefault();
-                alert('Please agree to the Terms and Conditions before registering.');
-            }
-        });
+form.addEventListener('submit', (event) => {
+    if (!termsCheckbox.checked) {
+        event.preventDefault();
+        alert('Please agree to the Terms and Conditions before registering.');
+    }
+});
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    const makeSelect = document.getElementById('car_make');
+    const modelSelect = document.getElementById('car_model');
+    const makeInput = document.getElementById('make-input');
+    const modelInput = document.getElementById('model-input');
+
+    if (!makeSelect || !modelSelect) {
+        console.error('Make or Model select element not found.');
+        return;
+    }
+
+    fetchMakes(); // Fetch makes on page load
+
+    makeSelect.addEventListener('change', function() {
+        const selectedMake = makeSelect.value;
+        makeInput.value = selectedMake; // Update make input field
+        fetchModels(selectedMake); // Fetch models based on selected make
+    });
+
+    modelSelect.addEventListener('change', function() {
+        const selectedModel = modelSelect.value;
+        modelInput.value = selectedModel; // Update model input field
+    });
+
+    // Fetch makes from the server
+    function fetchMakes() {
+        fetch('/register/user/search_makes')  // Updated route based on the new Flask route
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(makes => {
+                makeSelect.innerHTML = '<option value="">Select make</option>'; // Reset options
+                makes.forEach(make => {
+                    const option = document.createElement('option');
+                    option.value = make;
+                    option.textContent = make;
+                    makeSelect.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error fetching makes:', error));
+    }
+
+    // Fetch models based on the selected make
+    function fetchModels(make) {
+        if (!make) {
+            modelSelect.innerHTML = '<option value="">Select model</option>';
+            return;
+        }
+
+        fetch(`/register/user/search_models?make=${make}`)  // Updated route based on the new Flask route
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(models => {
+                modelSelect.innerHTML = '<option value="">Select model</option>'; // Reset options
+                models.forEach(model => {
+                    const option = document.createElement('option');
+                    option.value = model;
+                    option.textContent = model;
+                    modelSelect.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error fetching models:', error));
+    }
+});
+
+
+
     </script>
 
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>

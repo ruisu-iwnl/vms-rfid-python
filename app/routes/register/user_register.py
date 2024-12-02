@@ -1,7 +1,7 @@
 import os
-from flask import Blueprint, render_template, redirect, flash, request, make_response
+from flask import Blueprint, render_template, redirect, flash, request, make_response, jsonify
 from ..utils.forms import UserRegisterForm
-from app.models.database import get_cursor, close_db_connection
+from app.models.database import get_cursor, close_db_connection, get_cars_cursor
 from ..utils.utils import hash_password, verify_recaptcha, check_existing_registration
 import mysql.connector
 import uuid
@@ -19,6 +19,70 @@ def sanitize_filename(filename):
     unique_id = uuid.uuid4().hex[:8] 
     file_extension = os.path.splitext(sanitized_filename)[1]
     return f"{unique_id}{file_extension}"
+
+@user_register_bp.route('/search_makes', methods=['GET'])
+def search_makes():
+    makes = set()
+
+    try:
+        cursor, connection = get_cars_cursor()
+        for year in range(1992, 2027):
+            table_name = f"`{year}`"
+            cursor.execute(f"SHOW COLUMNS FROM {table_name}")
+            columns = [column[0] for column in cursor.fetchall()]
+            # print(f"Columns in {table_name}: {columns}")  # Debugging line
+
+            if 'make' in columns:
+                cursor.execute(f"SELECT DISTINCT make FROM {table_name}")
+                makes_list = cursor.fetchall()
+                # print(f"Fetched makes for {table_name}: {makes_list}")  # Debugging line
+                for (make,) in makes_list:
+                    makes.add(make)
+
+        close_db_connection(connection)
+
+        # Debugging: print the makes that are being returned
+        print(f"Makes: {sorted(makes)}")
+
+    except Exception as e:
+        print(f"Error fetching makes: {e}")
+        return jsonify({'error': str(e)}), 500
+
+    return jsonify(sorted(makes))
+
+@user_register_bp.route('/search_models', methods=['GET'])
+def search_models():
+    make = request.args.get('make', '')
+    models = set()
+
+    if not make:
+        return jsonify(list(models))
+
+    try:
+        cursor, connection = get_cars_cursor()
+        for year in range(1992, 2027):
+            table_name = f"`{year}`"
+            cursor.execute(f"SHOW COLUMNS FROM {table_name}")
+            columns = [column[0] for column in cursor.fetchall()]
+            # print(f"Columns in {table_name}: {columns}")  # Debugging line
+
+            if 'make' in columns and 'model' in columns:
+                cursor.execute(f"SELECT DISTINCT model FROM {table_name} WHERE make = %s", (make,))
+                models_list = cursor.fetchall()
+                # print(f"Fetched models for make {make} from {table_name}: {models_list}")  # Debugging line
+                for (model,) in models_list:
+                    models.add(model)
+
+        close_db_connection(connection)
+
+        # Debugging: print the models that are being returned
+        # print(f"Models for {make}: {sorted(models)}")
+
+    except Exception as e:
+        print(f"Error fetching models: {e}")
+        return jsonify({'error': str(e)}), 500
+
+    return jsonify(sorted(models))
 
 @user_register_bp.route('', methods=['GET', 'POST'])
 def user_register():
@@ -38,9 +102,15 @@ def user_register():
     email_already_registered = None
 
     PROFILE_IMAGE_FOLDER = os.path.join(os.path.dirname(__file__), '..', '..', 'static', 'images', 'users')
+    DOCUMENTS_FOLDER = os.path.join(os.path.dirname(__file__), '..', '..', 'static', 'documents')
 
     if not os.path.exists(PROFILE_IMAGE_FOLDER):
         os.makedirs(PROFILE_IMAGE_FOLDER)
+
+    if not os.path.exists(DOCUMENTS_FOLDER):
+        os.makedirs(DOCUMENTS_FOLDER)
+
+    print("Profile image and documents folder setup.")
 
     if form.validate_on_submit():
         print("Form validated on submit. Proceeding with registration.")
@@ -54,20 +124,23 @@ def user_register():
             try:
                 print("reCAPTCHA verified. Proceeding with registration.")
 
-                # Check if email is already registered
                 cursor, connection = get_cursor()
                 cursor.execute("SELECT email FROM user WHERE BINARY email = %s", (form.email.data,))
                 email_record = cursor.fetchone()
+                print(f"Email check result: {email_record}")
+
                 if email_record:
                     email_already_registered = "This email is already registered. Please use a different email."
 
-                # Check if RFID is already registered
                 cursor.execute("SELECT rfid_no FROM rfid WHERE BINARY rfid_no = %s", (form.rfid_number.data,))
                 rfid_record = cursor.fetchone()
+                print(f"RFID check result: {rfid_record}")
+
                 if rfid_record:
                     rfid_already_registered = "This RFID is already registered. Please use a different RFID."
 
                 if email_already_registered or rfid_already_registered:
+                    print("Email or RFID already registered, returning the form with errors.")
                     return render_template(
                         'register/user_register.html',
                         form=form,
@@ -79,39 +152,78 @@ def user_register():
                         rfid_already_registered=rfid_already_registered
                     )
 
-                # Proceed with user creation (remaining logic)
                 profile_image_filename = None
                 profile_image = request.files.get('profile_image')
 
-                if profile_image and profile_image.mimetype.startswith('image/') and profile_image.content_length <= MAX_FILE_SIZE:
-                    profile_image_filename = secure_filename(profile_image.filename)
-                    profile_image_filename = sanitize_filename(profile_image_filename)
-                    image_path = os.path.join(PROFILE_IMAGE_FOLDER, profile_image_filename)
-                    profile_image.save(image_path)
-                    print(f"Image saved at {image_path}")
-                elif profile_image:
-                    if not profile_image.mimetype.startswith('image/'):
-                        flash("Invalid file type. Please upload an image file.", 'danger')
+                if profile_image:
+                    print(f"Received profile image: {profile_image.filename}")
+                    if profile_image.mimetype.startswith('image/') and profile_image.content_length <= MAX_FILE_SIZE:
+                        profile_image_filename = secure_filename(profile_image.filename)
+                        profile_image_filename = sanitize_filename(profile_image_filename)
+                        image_path = os.path.join(PROFILE_IMAGE_FOLDER, profile_image_filename)
+                        profile_image.save(image_path)
+                        print(f"Image saved at {image_path}")
                     else:
-                        flash("Image file is too large. Please upload an image under 25 MB.", 'danger')
-                    return redirect(request.url)
+                        print("Profile image invalid or too large.")
+                        if not profile_image.mimetype.startswith('image/'):
+                            flash("Invalid file type. Please upload an image file.", 'danger')
+                        else:
+                            flash("Image file is too large. Please upload an image under 25 MB.", 'danger')
+                        return redirect(request.url)
+
+                driver_license_filename = None
+                driver_license_image = request.files.get('driver_license')
+
+                if driver_license_image:
+                    print(f"Received driver's license image: {driver_license_image.filename}")
+                    if driver_license_image.mimetype.startswith('image/') and driver_license_image.content_length <= MAX_FILE_SIZE:
+                        driver_license_filename = secure_filename(driver_license_image.filename)
+                        driver_license_filename = sanitize_filename(driver_license_filename)
+                        license_image_path = os.path.join(DOCUMENTS_FOLDER, driver_license_filename)
+                        driver_license_image.save(license_image_path)
+                        print(f"Driver's license image saved at {license_image_path}")
+                    else:
+                        print("Driver's license image invalid or too large.")
+                        if not driver_license_image.mimetype.startswith('image/'):
+                            flash("Invalid file type for driver's license. Please upload an image file.", 'danger')
+                        else:
+                            flash("Driver's license file is too large. Please upload an image under 25 MB.", 'danger')
+                        return redirect(request.url)
+
+                orcr_filename = None
+                orcr_image = request.files.get('orcr_image')  # Corrected field name
+
+                if orcr_image:
+                    print(f"Received ORCR image: {orcr_image.filename}")
+                    if orcr_image.mimetype.startswith('image/') and orcr_image.content_length <= MAX_FILE_SIZE:
+                        orcr_filename = secure_filename(orcr_image.filename)
+                        orcr_filename = sanitize_filename(orcr_filename)
+                        orcr_image_path = os.path.join(DOCUMENTS_FOLDER, orcr_filename)
+                        orcr_image.save(orcr_image_path)
+                        print(f"ORCR image saved at {orcr_image_path}")
+                    else:
+                        print("ORCR image invalid or too large.")
+                        if not orcr_image.mimetype.startswith('image/'):
+                            flash("Invalid file type for ORCR. Please upload an image file.", 'danger')
+                        else:
+                            flash("ORCR file is too large. Please upload an image under 25 MB.", 'danger')
+                        return redirect(request.url)
 
                 hashed_password = hash_password(form.password.data)
                 print(f"Hashed password: {hashed_password}")
 
-                # Insert into passwords table
                 password_query = """
                     INSERT INTO passwords (password_hash) 
                     VALUES (%s)
                 """
                 cursor.execute(password_query, (hashed_password,))
                 connection.commit()
+                print("Password inserted into database.")
 
-                # Get the password_id
                 cursor.execute("SELECT LAST_INSERT_ID()")
                 password_id = cursor.fetchone()[0]
+                print(f"Retrieved password_id: {password_id}")
 
-                # Insert user data
                 query = """
                     INSERT INTO user (emp_no, lastname, firstname, email, contactnumber, password_id, profile_image)
                     VALUES (%s, %s, %s, %s, %s, %s, %s)
@@ -125,28 +237,38 @@ def user_register():
                     password_id,
                     profile_image_filename
                 )
+                print(f"Executing user insert with values: {values}")
                 cursor.execute(query, values)
                 connection.commit()
 
-                # Get user ID
                 cursor.execute("SELECT LAST_INSERT_ID()")
                 user_id = cursor.fetchone()[0]
+                print(f"Retrieved user_id: {user_id}")
 
-                # Insert RFID
                 rfid_query = """
                     INSERT INTO rfid (rfid_no) 
                     VALUES (%s)
                 """
                 cursor.execute(rfid_query, (form.rfid_number.data,))
                 connection.commit()
+                print(f"Inserted RFID {form.rfid_number.data} into database.")
 
-                # Insert vehicle
                 vehicle_query = """
                     INSERT INTO vehicle (user_id, licenseplate, make, model, rfid_no)
                     VALUES (%s, %s, %s, %s, %s)
                 """
                 cursor.execute(vehicle_query, (user_id, form.license_plate.data, form.make.data, form.model.data, form.rfid_number.data))
                 connection.commit()
+                print("Vehicle inserted into database.")
+
+                # Insert ORCR and driver license into user_documents table
+                user_documents_query = """
+                    INSERT INTO user_documents (user_id, orcr, driverlicense)
+                    VALUES (%s, %s, %s)
+                """
+                cursor.execute(user_documents_query, (user_id, orcr_filename, driver_license_filename))
+                connection.commit()
+                print("User documents inserted into database.")
 
                 cursor.close()
                 close_db_connection(connection)
@@ -178,6 +300,7 @@ def user_register():
                 response = disable_caching(response)
                 return response
 
+    print("Form validation failed.")
     response = make_response(render_template(
         'register/user_register.html',
         form=form,
