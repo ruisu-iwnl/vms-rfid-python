@@ -54,63 +54,83 @@ def login():
                     if deleted_at:
                         login_error = 'Your account has been removed. Please contact support.'
                         flash(login_error, 'danger')
-                        log_login_activity(None, 'Admin', 'Login failed: Account soft-deleted')
+                        log_login_activity(None, 'Admin', 'Login failed: Account soft-deleted')  
                         cursor.close()
                         close_db_connection(connection)
                         return render_template('login/login.html', form=form, recaptcha_error=recaptcha_error, login_error=login_error)
                 else:
-                    cursor.execute("SELECT email FROM user WHERE email = %s", (email,))
+                    cursor.execute("SELECT email, is_approved FROM user WHERE email = %s", (email,))
                     user = cursor.fetchone()
                     
                     if user:
                         user_type = 'user'
                         table_name = 'user'
                         user_id_column = 'user_id'
+                        is_approved = user[1]
                     else:
                         login_error = 'Invalid email or password.'
                         flash(login_error, 'danger')
                         print("User not found in both admin and user tables.")
+                        log_login_activity(None, 'User', 'Login failed: User not found') 
                         cursor.close()
                         close_db_connection(connection)
                         return render_template('login/login.html', form=form, recaptcha_error=recaptcha_error, login_error=login_error)
 
-                query = f"SELECT {user_id_column}, password FROM {table_name} WHERE email = %s"
+                    if not is_approved:
+                        login_error = 'You are not verified yet!'
+                        flash(login_error, 'danger')
+                        log_login_activity(None, 'User', 'Login failed: User not verified') 
+                        cursor.close()
+                        close_db_connection(connection)
+                        return render_template('login/login.html', form=form, recaptcha_error=recaptcha_error, login_error=login_error)
+
+                query = f"SELECT {user_id_column}, password_id FROM {table_name} WHERE email = %s"
                 cursor.execute(query, (email,))
                 user = cursor.fetchone()
                 print(f"Database query executed. User: {user}")
 
                 if user:
-                    user_id, hashed_password = user
-                    print(f"User found. User ID: {user_id}, Hashed Password: [PROTECTED]")
+                    user_id, password_id = user
+                    print(f"User found. User ID: {user_id}, Password ID: [PROTECTED]")
 
-                    if verify_password(hashed_password, password):
-                        print("Password verified successfully.")
-                        session[f'{user_type}_id'] = user_id
-                        session['email'] = email
+                    cursor.execute("SELECT password_hash FROM passwords WHERE password_id = %s", (password_id,))
+                    password_record = cursor.fetchone()
 
-                        if user_type == 'admin':
-                            session['is_super_admin'] = is_super_admin
+                    if password_record:
+                        hashed_password = password_record[0] 
+                        print(f"Password retrieved. Hashed Password: [PROTECTED]")
 
-                        print(f"Session after login: {session}")
-                        flash('Login successful!', 'success')
+                        if verify_password(hashed_password, password):  
+                            print("Password verified successfully.")
+                            session[f'{user_type}_id'] = user_id
+                            session['email'] = email
 
-                        log_login_activity(user_id, user_type.capitalize(), 'Login successful')
+                            if user_type == 'admin':
+                                session['is_super_admin'] = is_super_admin
 
-                        dashboard_route = f'{user_type}_dashboard.{user_type}_dashboard'
-                        return redirect_to(dashboard_route)
+                            print(f"Session after login: {session}")
+                            flash('Login successful!', 'success')
+
+                            log_login_activity(user_id, user_type.capitalize(), 'Login successful')  
+
+                            dashboard_route = f'{user_type}_dashboard.{user_type}_dashboard'
+                            return redirect_to(dashboard_route)
+                        else:
+                            login_error = 'Invalid email or password.'
+                            print("Invalid email or password.")
+                            flash('Invalid email or password.', 'danger')
+
+                            log_login_activity(None, user_type.capitalize(), 'Login failed: Invalid password') 
                     else:
-                        login_error = 'Invalid email or password.'
-                        print("Invalid email or password.")
-                        flash('Invalid email or password.', 'danger')
-
-                        log_login_activity(None, user_type.capitalize(), 'Login failed: Invalid password')
+                        login_error = 'Password not found.'
+                        print("Password not found in the database.")
+                        flash('An error occurred. Please try again later.', 'danger')
                 else:
                     login_error = f'{user_type.capitalize()} not found.'
                     print(f"{user_type.capitalize()} not found.")
                     flash('Invalid email or password.', 'danger')
 
-                    log_login_activity(None, user_type.capitalize(), 'Login failed: User not found')
-
+                    log_login_activity(None, user_type.capitalize(), 'Login failed: User not found') 
                 cursor.close()
                 close_db_connection(connection)
                 print("Database connection closed.")
