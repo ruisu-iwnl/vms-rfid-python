@@ -34,6 +34,8 @@ def user_register():
     duplicate_entry_error = None
     is_registered_as_user = None
     is_registered_as_admin = None
+    rfid_already_registered = None
+    email_already_registered = None
 
     PROFILE_IMAGE_FOLDER = os.path.join(os.path.dirname(__file__), '..', '..', 'static', 'images', 'users')
 
@@ -52,19 +54,32 @@ def user_register():
             try:
                 print("reCAPTCHA verified. Proceeding with registration.")
 
-                is_registered_as_user, is_registered_as_admin = check_existing_registration(form.email.data)
-
-                if is_registered_as_user:
-                    is_registered_as_user = "This email is already registered as a user. Cannot register as an admin with the same email."
-                if is_registered_as_admin:
-                    is_registered_as_admin = "This email is already registered as an admin."
-
-                if is_registered_as_user or is_registered_as_admin:
-                    return render_template('register/user_register.html', form=form, recaptcha_error=recaptcha_error, is_registered_as_user=is_registered_as_user, is_registered_as_admin=is_registered_as_admin)
-
+                # Check if email is already registered
                 cursor, connection = get_cursor()
-                print("Database cursor and connection obtained.")
+                cursor.execute("SELECT email FROM user WHERE BINARY email = %s", (form.email.data,))
+                email_record = cursor.fetchone()
+                if email_record:
+                    email_already_registered = "This email is already registered. Please use a different email."
 
+                # Check if RFID is already registered
+                cursor.execute("SELECT rfid_no FROM rfid WHERE BINARY rfid_no = %s", (form.rfid_number.data,))
+                rfid_record = cursor.fetchone()
+                if rfid_record:
+                    rfid_already_registered = "This RFID is already registered. Please use a different RFID."
+
+                if email_already_registered or rfid_already_registered:
+                    return render_template(
+                        'register/user_register.html',
+                        form=form,
+                        recaptcha_error=recaptcha_error,
+                        duplicate_entry_error=duplicate_entry_error,
+                        is_registered_as_user=is_registered_as_user,
+                        is_registered_as_admin=is_registered_as_admin,
+                        email_already_registered=email_already_registered,
+                        rfid_already_registered=rfid_already_registered
+                    )
+
+                # Proceed with user creation (remaining logic)
                 profile_image_filename = None
                 profile_image = request.files.get('profile_image')
 
@@ -81,11 +96,10 @@ def user_register():
                         flash("Image file is too large. Please upload an image under 25 MB.", 'danger')
                     return redirect(request.url)
 
-                # Process the additional fields
                 hashed_password = hash_password(form.password.data)
                 print(f"Hashed password: {hashed_password}")
 
-                # Insert the hashed password into the passwords table
+                # Insert into passwords table
                 password_query = """
                     INSERT INTO passwords (password_hash) 
                     VALUES (%s)
@@ -93,11 +107,11 @@ def user_register():
                 cursor.execute(password_query, (hashed_password,))
                 connection.commit()
 
-                # Get the password_id of the inserted password
+                # Get the password_id
                 cursor.execute("SELECT LAST_INSERT_ID()")
                 password_id = cursor.fetchone()[0]
 
-                # Insert the user data with the password_id
+                # Insert user data
                 query = """
                     INSERT INTO user (emp_no, lastname, firstname, email, contactnumber, password_id, profile_image)
                     VALUES (%s, %s, %s, %s, %s, %s, %s)
@@ -108,63 +122,31 @@ def user_register():
                     form.firstname.data,
                     form.email.data,
                     form.contactnumber.data,
-                    password_id,  # Use the password_id here
+                    password_id,
                     profile_image_filename
                 )
-                print(f"Executing query with values: {values}")
-
                 cursor.execute(query, values)
                 connection.commit()
-                print("User data committed to the database.")
 
-                # Retrieve the user ID
+                # Get user ID
                 cursor.execute("SELECT LAST_INSERT_ID()")
                 user_id = cursor.fetchone()[0]
 
-                # Insert RFID into RFID table
-                rfid_number = form.rfid_number.data
-                license_plate = form.license_plate.data
-                make = form.make.data
-                model = form.model.data
-
+                # Insert RFID
                 rfid_query = """
                     INSERT INTO rfid (rfid_no) 
                     VALUES (%s)
                 """
-                cursor.execute(rfid_query, (rfid_number,))
-                connection.commit()  # Ensure the rfid insert is committed
+                cursor.execute(rfid_query, (form.rfid_number.data,))
+                connection.commit()
 
-                # Retrieve the rfid_no (not rfid_id)
-                cursor.execute("SELECT rfid_no FROM rfid WHERE rfid_no = %s", (rfid_number,))
-                rfid_record = cursor.fetchone()
-                if not rfid_record:
-                    raise Exception("RFID number insertion failed.")
-
-                # Now insert into the vehicle table with the correct rfid_no
+                # Insert vehicle
                 vehicle_query = """
                     INSERT INTO vehicle (user_id, licenseplate, make, model, rfid_no)
                     VALUES (%s, %s, %s, %s, %s)
                 """
-                cursor.execute(vehicle_query, (user_id, license_plate, make, model, rfid_number))
+                cursor.execute(vehicle_query, (user_id, form.license_plate.data, form.make.data, form.model.data, form.rfid_number.data))
                 connection.commit()
-                print("RFID and vehicle data committed to the database.")
-
-                # Insert documents into user_documents table
-                driver_license_filename = sanitize_filename(request.files['driver_license'].filename)
-                orcr_image_filename = sanitize_filename(request.files['orcr_image'].filename)
-                driver_license = request.files['driver_license']
-                orcr_image = request.files['orcr_image']
-
-                driver_license.save(os.path.join(PROFILE_IMAGE_FOLDER, driver_license_filename))
-                orcr_image.save(os.path.join(PROFILE_IMAGE_FOLDER, orcr_image_filename))
-
-                documents_query = """
-                    INSERT INTO user_documents (user_id, driverlicense, orcr)
-                    VALUES (%s, %s, %s)
-                """
-                cursor.execute(documents_query, (user_id, driver_license_filename, orcr_image_filename))
-                connection.commit()
-                print("Documents data committed to the database.")
 
                 cursor.close()
                 close_db_connection(connection)
@@ -175,22 +157,32 @@ def user_register():
 
             except mysql.connector.IntegrityError as e:
                 print(f"Database error: {e}")
-                if e.args[0] == 1062:
-                    duplicate_entry_error = "A user with this employee ID already exists. Please use a different ID."
-                else:
-                    flash(f"Database error: {e}", "danger")
-                response = make_response(render_template('register/user_register.html', form=form, recaptcha_error=recaptcha_error, duplicate_entry_error=duplicate_entry_error, is_registered_as_user=is_registered_as_user, is_registered_as_admin=is_registered_as_admin))
+                duplicate_entry_error = "A database error occurred. Please try again."
+                response = make_response(render_template(
+                    'register/user_register.html',
+                    form=form,
+                    recaptcha_error=recaptcha_error,
+                    duplicate_entry_error=duplicate_entry_error
+                ))
                 response = disable_caching(response)
                 return response
 
             except Exception as e:
                 print(f"Exception occurred: {e}")
                 flash(f"An unexpected error occurred: {e}", "danger")
-                response = make_response(render_template('register/user_register.html', form=form, recaptcha_error=recaptcha_error, duplicate_entry_error=duplicate_entry_error, is_registered_as_user=is_registered_as_user, is_registered_as_admin=is_registered_as_admin))
+                response = make_response(render_template(
+                    'register/user_register.html',
+                    form=form,
+                    recaptcha_error=recaptcha_error
+                ))
                 response = disable_caching(response)
                 return response
 
-    print("Rendering registration form.")
-    response = make_response(render_template('register/user_register.html', form=form, recaptcha_error=recaptcha_error, duplicate_entry_error=duplicate_entry_error, is_registered_as_user=is_registered_as_user, is_registered_as_admin=is_registered_as_admin))
+    response = make_response(render_template(
+        'register/user_register.html',
+        form=form,
+        recaptcha_error=recaptcha_error,
+        duplicate_entry_error=duplicate_entry_error
+    ))
     response = disable_caching(response)
     return response
