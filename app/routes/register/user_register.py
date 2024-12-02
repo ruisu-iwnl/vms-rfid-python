@@ -67,7 +67,7 @@ def user_register():
 
                 profile_image_filename = None
                 profile_image = request.files.get('profile_image')
-                
+
                 if profile_image and profile_image.mimetype.startswith('image/') and profile_image.content_length <= MAX_FILE_SIZE:
                     profile_image_filename = secure_filename(profile_image.filename)
                     profile_image_filename = sanitize_filename(profile_image_filename)
@@ -81,11 +81,25 @@ def user_register():
                         flash("Image file is too large. Please upload an image under 25 MB.", 'danger')
                     return redirect(request.url)
 
+                # Process the additional fields
                 hashed_password = hash_password(form.password.data)
                 print(f"Hashed password: {hashed_password}")
 
+                # Insert the hashed password into the passwords table
+                password_query = """
+                    INSERT INTO passwords (password_hash) 
+                    VALUES (%s)
+                """
+                cursor.execute(password_query, (hashed_password,))
+                connection.commit()
+
+                # Get the password_id of the inserted password
+                cursor.execute("SELECT LAST_INSERT_ID()")
+                password_id = cursor.fetchone()[0]
+
+                # Insert the user data with the password_id
                 query = """
-                    INSERT INTO user (emp_no, lastname, firstname, email, contactnumber, password, profile_image)
+                    INSERT INTO user (emp_no, lastname, firstname, email, contactnumber, password_id, profile_image)
                     VALUES (%s, %s, %s, %s, %s, %s, %s)
                 """
                 values = (
@@ -94,14 +108,63 @@ def user_register():
                     form.firstname.data,
                     form.email.data,
                     form.contactnumber.data,
-                    hashed_password,
-                    profile_image_filename 
+                    password_id,  # Use the password_id here
+                    profile_image_filename
                 )
                 print(f"Executing query with values: {values}")
 
                 cursor.execute(query, values)
                 connection.commit()
-                print("Data committed to the database.")
+                print("User data committed to the database.")
+
+                # Retrieve the user ID
+                cursor.execute("SELECT LAST_INSERT_ID()")
+                user_id = cursor.fetchone()[0]
+
+                # Insert RFID into RFID table
+                rfid_number = form.rfid_number.data
+                license_plate = form.license_plate.data
+                make = form.make.data
+                model = form.model.data
+
+                rfid_query = """
+                    INSERT INTO rfid (rfid_no) 
+                    VALUES (%s)
+                """
+                cursor.execute(rfid_query, (rfid_number,))
+                connection.commit()  # Ensure the rfid insert is committed
+
+                # Retrieve the rfid_no (not rfid_id)
+                cursor.execute("SELECT rfid_no FROM rfid WHERE rfid_no = %s", (rfid_number,))
+                rfid_record = cursor.fetchone()
+                if not rfid_record:
+                    raise Exception("RFID number insertion failed.")
+
+                # Now insert into the vehicle table with the correct rfid_no
+                vehicle_query = """
+                    INSERT INTO vehicle (user_id, licenseplate, make, model, rfid_no)
+                    VALUES (%s, %s, %s, %s, %s)
+                """
+                cursor.execute(vehicle_query, (user_id, license_plate, make, model, rfid_number))
+                connection.commit()
+                print("RFID and vehicle data committed to the database.")
+
+                # Insert documents into user_documents table
+                driver_license_filename = sanitize_filename(request.files['driver_license'].filename)
+                orcr_image_filename = sanitize_filename(request.files['orcr_image'].filename)
+                driver_license = request.files['driver_license']
+                orcr_image = request.files['orcr_image']
+
+                driver_license.save(os.path.join(PROFILE_IMAGE_FOLDER, driver_license_filename))
+                orcr_image.save(os.path.join(PROFILE_IMAGE_FOLDER, orcr_image_filename))
+
+                documents_query = """
+                    INSERT INTO user_documents (user_id, driverlicense, orcr)
+                    VALUES (%s, %s, %s)
+                """
+                cursor.execute(documents_query, (user_id, driver_license_filename, orcr_image_filename))
+                connection.commit()
+                print("Documents data committed to the database.")
 
                 cursor.close()
                 close_db_connection(connection)
@@ -110,10 +173,9 @@ def user_register():
                 flash("Registration successful", "success")
                 return redirect_to('login.login')
 
-
             except mysql.connector.IntegrityError as e:
                 print(f"Database error: {e}")
-                if e.args[0] == 1062:  
+                if e.args[0] == 1062:
                     duplicate_entry_error = "A user with this employee ID already exists. Please use a different ID."
                 else:
                     flash(f"Database error: {e}", "danger")

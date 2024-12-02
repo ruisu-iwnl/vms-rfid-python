@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Registration | TimeGuard </title>
+    <title>User Registration TEST| TimeGuard </title>
     <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/custom.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/auth-login-register.css') }}" rel="stylesheet">
@@ -121,19 +121,16 @@
                 </div>
 
 
-                <!-- Email Address -->
+                <!-- Email and Contact Number -->
                 <div class="mb-4 w-full">
-                    <label for="email" class="block text-left   text-base font-semibold mb-1">Email Address</label>
-                    <input type="email" id="email" name="email" class="shadow-sm appearance-none border border-gray-400 rounded-lg w-full py-2 px-3 text-gray-900 leading-tight focus:outline-none focus:ring-1 focus:ring-blue-600" value="{{ form.email.data or '' }}" placeholder="Email">
+                    <label for="email_contact" class="block text-left text-base font-semibold mb-1">Email and Contact Number</label>
+                    <div class="flex space-x-4">
+                        <input type="email" id="email" name="email" class="shadow-sm appearance-none border border-gray-400 rounded-lg w-1/2 py-2 px-3 text-gray-900 leading-tight focus:outline-none focus:ring-1 focus:ring-blue-600" value="{{ form.email.data or '' }}" placeholder="Email" required>
+                        <input type="text" id="contactnumber" name="contactnumber" class="shadow-sm appearance-none border border-gray-400 rounded-lg w-1/2 py-2 px-3 text-gray-900 leading-tight focus:outline-none focus:ring-1 focus:ring-blue-600" value="{{ form.contactnumber.data or '' }}" placeholder="Contact Number" required>
+                    </div>
                     {% if form.email.errors %}
                         <p class="text-red-700 text-sm italic mt-1">{{ form.email.errors[0] }}</p>
                     {% endif %}
-                </div>
-
-                <!-- Contact Number -->
-                <div class="mb-4 w-full">
-                    <label for="contactnumber" class="block text-left   text-base font-semibold mb-1">Contact Number</label>
-                    <input type="text" id="contactnumber" name="contactnumber" class="shadow-sm appearance-none border border-gray-400 rounded-lg w-full py-2 px-3 text-gray-900 leading-tight focus:outline-none focus:ring-1 focus:ring-blue-600" value="{{ form.contactnumber.data or '' }}" placeholder="Contact Number">
                     {% if form.contactnumber.errors %}
                         <p class="text-red-700 text-sm italic mt-1">{{ form.contactnumber.errors[0] }}</p>
                     {% endif %}
@@ -159,6 +156,44 @@
                     <input type="checkbox" id="togglePasswordCheckbox" class="mr-2" onchange="togglePasswordVisibility()">
                     <label for="togglePasswordCheckbox" class="  text-sm">Show Password</label>
                 </div>
+
+                <!-- Driver's License and ORCR Image (Same Row) -->
+                <div class="mb-6 flex space-x-4">
+                    <div class="w-1/2">
+                        <label for="driver_license" class="block text-lg font-medium text-black">Driver's License</label>
+                        <input type="file" id="driver_license" name="driver_license" accept="image/*" class="mt-1 block w-full text-gray-900 py-3 px-4 border border-gray-300 rounded-md focus:border-blue-400 focus:outline-none" required>
+                    </div>
+                    <div class="w-1/2">
+                        <label for="orcr_image" class="block text-lg font-medium text-black">ORCR</label>
+                        <input type="file" id="orcr_image" name="orcr_image" accept="image/*" class="mt-1 block w-full text-gray-900 py-3 px-4 border border-gray-300 rounded-md focus:border-blue-400 focus:outline-none" required>
+                    </div>
+                </div>
+
+                <!-- License Plate and RFID Number (Same Row) -->
+                <div class="mb-4 flex space-x-4">
+                    <div class="w-1/2">
+                        <label for="license_plate" class="block text-left text-base font-semibold mb-1">License Plate</label>
+                        <input type="text" id="license_plate" name="license_plate" class="shadow-sm appearance-none border border-gray-400 rounded-lg w-full py-2 px-3 text-gray-900 leading-tight focus:outline-none focus:ring-1 focus:ring-blue-600" placeholder="License Plate" required>
+                    </div>
+                    <div class="w-1/2">
+                        <label for="rfid_number" class="block text-left text-base font-semibold mb-1">RFID Number</label>
+                        <input type="text" id="rfid_number" name="rfid_number" class="shadow-sm appearance-none border border-gray-400 rounded-lg w-full py-2 px-3 text-gray-900 leading-tight focus:outline-none focus:ring-1 focus:ring-blue-600" placeholder="RFID Number" required>
+                    </div>
+                </div>
+
+                <!-- Make and Model (Same Row) -->
+                <div class="mb-4 flex space-x-4">
+                    <div class="w-1/2">
+                        <label for="make" class="block text-left text-base font-semibold mb-1">Make</label>
+                        <input type="text" id="make" name="make" class="shadow-sm appearance-none border border-gray-400 rounded-lg w-full py-2 px-3 text-gray-900 leading-tight focus:outline-none focus:ring-1 focus:ring-blue-600" placeholder="Make" required>
+                    </div>
+                    <div class="w-1/2">
+                        <label for="model" class="block text-left text-base font-semibold mb-1">Model</label>
+                        <input type="text" id="model" name="model" class="shadow-sm appearance-none border border-gray-400 rounded-lg w-full py-2 px-3 text-gray-900 leading-tight focus:outline-none focus:ring-1 focus:ring-blue-600" placeholder="Model" required>
+                    </div>
+                </div>
+
+
 
                 <!-- Terms and Conditions -->
                 <div class="mt-4 w-full flex items-center">
@@ -186,7 +221,7 @@
                     <p class="mt-2 text-base  ">Already have an account? <a href="{{ url_for('login.login') }}" class="text-blue-600 hover:text-blue-800">Login here</a></p>
                 </div>
             </form>
-    </div>
+        </div>
 
     <script>
         function togglePasswordVisibility() {
