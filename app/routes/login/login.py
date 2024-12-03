@@ -41,6 +41,7 @@ def login():
                 cursor, connection = get_cursor()
                 print("Database connection established.")
 
+                # Check if the admin account is soft-deleted
                 cursor.execute("SELECT email, is_super_admin, deleted_at FROM admin WHERE email = %s", (email,))
                 admin = cursor.fetchone()
                 
@@ -59,7 +60,7 @@ def login():
                         close_db_connection(connection)
                         return render_template('login/login.html', form=form, recaptcha_error=recaptcha_error, login_error=login_error)
                 else:
-                    cursor.execute("SELECT email, is_approved FROM user WHERE email = %s", (email,))
+                    cursor.execute("SELECT email, is_approved, deleted_at FROM user WHERE email = %s", (email,))
                     user = cursor.fetchone()
                     
                     if user:
@@ -67,11 +68,20 @@ def login():
                         table_name = 'user'
                         user_id_column = 'user_id'
                         is_approved = user[1]
+                        deleted_at = user[2]
                     else:
                         login_error = 'Invalid email or password.'
                         flash(login_error, 'danger')
                         print("User not found in both admin and user tables.")
                         log_login_activity(None, 'User', 'Login failed: User not found') 
+                        cursor.close()
+                        close_db_connection(connection)
+                        return render_template('login/login.html', form=form, recaptcha_error=recaptcha_error, login_error=login_error)
+
+                    if deleted_at:
+                        login_error = 'Your account has been removed. Please contact support.'
+                        flash(login_error, 'danger')
+                        log_login_activity(None, 'User', 'Login failed: Account soft-deleted') 
                         cursor.close()
                         close_db_connection(connection)
                         return render_template('login/login.html', form=form, recaptcha_error=recaptcha_error, login_error=login_error)

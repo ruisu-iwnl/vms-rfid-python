@@ -4,7 +4,7 @@ def get_dashboard_data():
     cursor, connection = get_cursor()
 
     # Get total number of users
-    cursor.execute('SELECT COUNT(*) FROM user')
+    cursor.execute('SELECT COUNT(*) FROM user WHERE deleted_at IS NULL AND is_approved = 1')
     total_users = cursor.fetchone()[0]
     
     # # Get total number of vehicles
