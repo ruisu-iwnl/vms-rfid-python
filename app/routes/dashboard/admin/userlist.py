@@ -16,14 +16,13 @@ def userlist(page, sort_by='emp_no', order='asc'):
     is_super_admin = session.get('is_super_admin', False)
     if is_super_admin:
         print("This admin is a super admin.")
-
         super_admin_features = True
     else:
         print("This admin is NOT a super admin.")
         super_admin_features = False
 
-
-    valid_columns = {'emp_no': 'u.emp_no', 'full_name': 'full_name', 'contactnumber': 'u.contactnumber', 'vehicle_count': 'vehicle_count', 'created_at': 'u.created_at'}
+    valid_columns = {'emp_no': 'u.emp_no', 'full_name': 'full_name', 'contactnumber': 'u.contactnumber', 
+                     'vehicle_count': 'vehicle_count', 'created_at': 'u.created_at'}
     
     sort_column = valid_columns.get(sort_by, 'u.emp_no')
     
@@ -32,7 +31,7 @@ def userlist(page, sort_by='emp_no', order='asc'):
     
     try:
         cursor, connection = get_cursor()
-        
+
         cursor.execute(f"""
             SELECT u.emp_no, CONCAT(u.firstname, ' ', u.lastname) AS full_name, u.contactnumber, 
                 GROUP_CONCAT(CONCAT(v.make, ' ', v.model) SEPARATOR ', ') AS vehicles,
@@ -40,6 +39,7 @@ def userlist(page, sort_by='emp_no', order='asc'):
                 COUNT(v.vehicle_id) AS vehicle_count, u.created_at, u.profile_image
             FROM user u
             LEFT JOIN vehicle v ON u.user_id = v.user_id
+            WHERE u.is_approved = 1
             GROUP BY u.user_id
             ORDER BY {sort_column} {order}, u.emp_no
         """)
