@@ -58,6 +58,7 @@
                     Vehicle/s
                 </th>
                 <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">License Plate</th>
+                <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">Documents</th> <!-- New column for "View" -->
                 <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">Actions</th> <!-- New column for actions -->
             </tr>
         </thead>
@@ -116,6 +117,9 @@
                             No Plate Available
                         {% endif %}
                     </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-lg text-black">
+                        <button class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600" id="openUserModalBtn">View</button>
+                    </td> <!-- View Button -->
                     <td class="px-6 py-4 whitespace-nowrap text-lg text-black"></td> <!-- Empty for approved users -->
                 </tr>
             {% endfor %}
@@ -173,6 +177,9 @@
                         {% endif %}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-lg text-black">
+                        <button class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600" id="openUserModalBtn">View</button>
+                    </td> <!-- View Button -->
+                    <td class="px-6 py-4 whitespace-nowrap text-lg text-black">
                         <!-- Confirm Button -->
                         <form action="{{ url_for('userlist.confirm_user', emp_no=user[0]) }}" method="post" style="display: inline;">
                             {{ form.hidden_tag() }} 
@@ -227,6 +234,44 @@
 
 
 </div>
+
+<!-- Modal Structure -->
+<div id="userModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 hidden">
+    <div class="flex items-center justify-center min-h-screen">
+        <div class="bg-white rounded-lg shadow-lg p-6 max-w-lg w-full relative">
+            <!-- Close Button with Pop-out Design -->
+            <button id="closeUserModalBtn" class="absolute top-2 right-2 text-white text-3xl font-bold bg-blue-500 hover:bg-blue-600 rounded-full p-2 shadow-lg transform transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                &times;
+            </button>
+            
+            <div class="modal-content">
+                {% for user in approved_users + unapproved_users %}
+                    <!-- ORCR Image -->
+                    {% if user[8] %}  <!-- ORCR Field -->
+                        <div class="mb-4">
+                            <h3 class="text-xl font-semibold text-gray-800 mb-2">ORCR</h3>
+                            <img src="{{ url_for('static', filename='documents/' + user[8]) }}" alt="ORCR Image" class="w-full h-auto border-2 border-gray-300 rounded-lg shadow-sm">
+                        </div>
+                    {% else %}
+                        <p class="text-gray-700">No ORCR document available.</p>
+                    {% endif %}
+
+                    <!-- Driver License Image -->
+                    {% if user[9] %}  <!-- Driver License Field -->
+                        <div class="mb-4">
+                            <h3 class="text-xl font-semibold text-gray-800 mb-2">Driver License</h3>
+                            <img src="{{ url_for('static', filename='documents/' + user[9]) }}" alt="Driver License Image" class="w-full h-auto border-2 border-gray-300 rounded-lg shadow-sm">
+                        </div>
+                    {% else %}
+                        <p class="text-gray-700">No Driver License document available.</p>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+
 
 <script>
 
@@ -297,5 +342,19 @@
             }
         });
     });
+
+    // Open and close User Modal
+document.getElementById('openUserModalBtn').addEventListener('click', function() {
+    const modal = document.getElementById('userModal');
+    modal.classList.remove('hidden');
+    // Trigger the transition
+    setTimeout(() => modal.classList.add('show'), 10);
+});
+
+document.getElementById('closeUserModalBtn').addEventListener('click', function() {
+    const modal = document.getElementById('userModal');
+    modal.classList.remove('show');
+    setTimeout(() => modal.classList.add('hidden'), 300); 
+});
 </script>
 {% endblock %}

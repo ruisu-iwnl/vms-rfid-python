@@ -30,33 +30,38 @@ def userlist(page, sort_by='emp_no', order='asc'):
     try:
         cursor, connection = get_cursor()
 
-        # Query for approved users (excluding soft-deleted users)
+        # Query for approved users (including ORCR and Driver License)
         cursor.execute(f"""
             SELECT u.emp_no, CONCAT(u.firstname, ' ', u.lastname) AS full_name, u.contactnumber, 
                 GROUP_CONCAT(CONCAT(v.make, ' ', v.model) SEPARATOR ', ') AS vehicles,
                 GROUP_CONCAT(v.licenseplate SEPARATOR ', ') AS license_plates,
-                COUNT(v.vehicle_id) AS vehicle_count, u.created_at, u.profile_image
+                COUNT(v.vehicle_id) AS vehicle_count, u.created_at, u.profile_image, 
+                ud.orcr, ud.driverlicense
             FROM user u
             LEFT JOIN vehicle v ON u.user_id = v.user_id
+            LEFT JOIN user_documents ud ON u.user_id = ud.user_id  # Joining with user_documents
             WHERE u.is_approved = 1 AND u.deleted_at IS NULL
             GROUP BY u.user_id
             ORDER BY {sort_column} {order}, u.emp_no
         """)
         approved_users = cursor.fetchall()
 
-        # Query for unapproved users (excluding soft-deleted users)
+        # Query for unapproved users (including ORCR and Driver License)
         cursor.execute(f"""
             SELECT u.emp_no, CONCAT(u.firstname, ' ', u.lastname) AS full_name, u.contactnumber, 
                 GROUP_CONCAT(CONCAT(v.make, ' ', v.model) SEPARATOR ', ') AS vehicles,
                 GROUP_CONCAT(v.licenseplate SEPARATOR ', ') AS license_plates,
-                COUNT(v.vehicle_id) AS vehicle_count, u.created_at, u.profile_image
+                COUNT(v.vehicle_id) AS vehicle_count, u.created_at, u.profile_image, 
+                ud.orcr, ud.driverlicense
             FROM user u
             LEFT JOIN vehicle v ON u.user_id = v.user_id
+            LEFT JOIN user_documents ud ON u.user_id = ud.user_id  # Joining with user_documents
             WHERE u.is_approved = 0 AND u.deleted_at IS NULL
             GROUP BY u.user_id
             ORDER BY {sort_column} {order}, u.emp_no
         """)
         unapproved_users = cursor.fetchall()
+
 
         # Pagination for approved users
         per_page = 5
@@ -68,7 +73,6 @@ def userlist(page, sort_by='emp_no', order='asc'):
 
         print("Approved Users:", approved_users)
         print("Unapproved Users:", unapproved_users)
-
 
     except Exception as e:
         print(f"Error fetching user data: {e}")
