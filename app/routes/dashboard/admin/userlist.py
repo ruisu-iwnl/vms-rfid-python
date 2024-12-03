@@ -66,6 +66,10 @@ def userlist(page, sort_by='emp_no', order='asc'):
         end = start + per_page
         paginated_approved_users = approved_users[start:end]
 
+        print("Approved Users:", approved_users)
+        print("Unapproved Users:", unapproved_users)
+
+
     except Exception as e:
         print(f"Error fetching user data: {e}")
         return "An error occurred while fetching user data", 500
