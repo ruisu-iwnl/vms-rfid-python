@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, session, redirect, url_for
+from flask import Blueprint, render_template, session
 from app.routes.utils.session import check_access
 from app.routes.utils.forms import AddVehicleForm
 from app.models.database import get_cursor, close_db_connection
@@ -14,15 +14,14 @@ def vehicles(page):
 
     form = AddVehicleForm()
 
-    user_id = session.get('user_id')
+    user_id = session.get('user_id') 
 
     cursor, connection = get_cursor()
 
     try:
         cursor.execute("""
-            SELECT v.make, v.model, v.licenseplate, v.created_at, r.rfid_no
+            SELECT v.make, v.model, v.licenseplate, v.created_at, v.rfid_no
             FROM vehicle v
-            LEFT JOIN rfid r ON v.vehicle_id = r.vehicle_id
             WHERE v.user_id = %s
         """, (user_id,))
         
@@ -31,12 +30,13 @@ def vehicles(page):
     finally:
         close_db_connection(connection)
 
+    # Pagination logic
     per_page = 5
     total_vehicles = len(vehicles)
     total_pages = (total_vehicles + per_page - 1) // per_page
     start = (page - 1) * per_page
     end = start + per_page
-    paginated_vehicles = vehicles[start:end]
+    paginated_vehicles = vehicles[start:end]  
 
     return render_template(
         'dashboard/user/vehicles.html',
