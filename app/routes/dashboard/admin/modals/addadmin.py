@@ -56,17 +56,29 @@ def add_admin():
                 return redirect(url_for('adminlist.adminlist', page=1, sort_by='emp_no', order='asc'))
 
             cursor, connection = get_cursor()
+
+            # Insert hashed password into the passwords table
             cursor.execute("""
-                INSERT INTO admin (employee_id, lastname, firstname, email, contactnumber, password, profile_image)
+                INSERT INTO passwords (password_hash) VALUES (%s)
+            """, (hashed_password,))
+            connection.commit()
+
+            # Retrieve the last inserted password_id
+            password_id = cursor.lastrowid
+
+            # Insert admin data into the admin table, using the password_id
+            cursor.execute("""
+                INSERT INTO admin (employee_id, lastname, firstname, email, contactnumber, password_id, profile_image)
                 VALUES (%s, %s, %s, %s, %s, %s, %s)
-            """, (emp_no, lastname, firstname, email, contactnumber, hashed_password, filename))
+            """, (emp_no, lastname, firstname, email, contactnumber, password_id, filename))
             connection.commit()
 
             flash('Admin added successfully.', 'success')
             log_login_activity(admin_id, 'Admin', 'Added new admin')
 
             return redirect(url_for('adminlist.adminlist', page=1, sort_by='emp_no', order='asc'))
-        except mysql.connector.IntegrityError:
+        except mysql.connector.IntegrityError as e:
+            print(f"Database error: {e}")
             flash("Database error: could not add admin.", "danger")
         finally:
             close_db_connection(connection)
