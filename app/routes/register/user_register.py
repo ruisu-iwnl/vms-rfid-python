@@ -125,13 +125,16 @@ def user_register():
                 print("reCAPTCHA verified. Proceeding with registration.")
 
                 cursor, connection = get_cursor()
-                cursor.execute("SELECT email FROM user WHERE BINARY email = %s", (form.email.data,))
+
+                # Check if email already exists, disregarding soft-deleted records
+                cursor.execute("SELECT email FROM user WHERE BINARY email = %s AND deleted_at IS NULL", (form.email.data,))
                 email_record = cursor.fetchone()
                 print(f"Email check result: {email_record}")
 
                 if email_record:
                     email_already_registered = "This email is already registered. Please use a different email."
 
+                # Check if RFID already exists
                 cursor.execute("SELECT rfid_no FROM rfid WHERE BINARY rfid_no = %s", (form.rfid_number.data,))
                 rfid_record = cursor.fetchone()
                 print(f"RFID check result: {rfid_record}")
