@@ -8,12 +8,24 @@ from app.routes.utils.utils import get_name, get_emp_profile_info
 from app.models.database import get_cursor, close_db_connection
 from app.routes.utils.forms import ProfileForm
 from flask_wtf.csrf import CSRFProtect
+from werkzeug.utils import secure_filename
+import os
+import uuid
+import re
 
 user_dashboard_bp = Blueprint('user_dashboard', __name__)
 
 from flask import request, redirect, url_for, flash
 
 csrf = CSRFProtect()
+
+MAX_FILE_SIZE = 25 * 1024 * 1024  
+
+def sanitize_filename(filename):
+    sanitized_filename = re.sub(r'[^a-zA-Z0-9_.-]', '_', filename)
+    unique_id = uuid.uuid4().hex[:8] 
+    file_extension = os.path.splitext(sanitized_filename)[1]
+    return f"{unique_id}{file_extension}"
 
 @user_dashboard_bp.route('', methods=['GET', 'POST'])
 def user_dashboard():
@@ -26,45 +38,100 @@ def user_dashboard():
 
     form = ProfileForm()
 
+    PROFILE_IMAGE_FOLDER = os.path.join(os.path.dirname(__file__), '..', '..', '..', 'static', 'images', 'users')
+    DOCUMENTS_FOLDER = os.path.join(os.path.dirname(__file__), '..', '..', '..', 'static', 'documents')
+
+    os.makedirs(PROFILE_IMAGE_FOLDER, exist_ok=True)
+    os.makedirs(DOCUMENTS_FOLDER, exist_ok=True)
+
     if request.method == 'POST' and form.validate_on_submit():
         firstname = form.firstname.data
         lastname = form.lastname.data
         email = form.email.data
         contactnumber = form.contactnumber.data
 
-        # Check if the form data is different from the existing user data
-        cursor, connection = get_cursor()
-        cursor.execute("""
-            SELECT firstname, lastname, email, contactnumber FROM user WHERE user_id = %s
-        """, (user_id,))
-        user_data = cursor.fetchone()
-        cursor.close()
+        profile_image_filename = None
+        profile_image = request.files.get('profile_image')
 
-        # Only update if there are changes
-        update_query = """
-            UPDATE user
-            SET firstname = %s, lastname = %s, email = %s, contactnumber = %s, updated_at = CURRENT_TIMESTAMP
-        """
-        params = [firstname, lastname, email, contactnumber]
+        if profile_image and profile_image.filename:
+            if profile_image.mimetype.startswith('image/') and profile_image.content_length <= MAX_FILE_SIZE:
+                profile_image_filename = secure_filename(profile_image.filename)
+                profile_image_filename = sanitize_filename(profile_image_filename)
+                image_path = os.path.join(PROFILE_IMAGE_FOLDER, profile_image_filename)
+                profile_image.save(image_path)
+            else:
+                flash("Invalid or too large profile image. Please upload a valid image under 25 MB.", 'danger')
+                return redirect(request.url)
 
-        # If any field changed, set is_approved to 0
-        if (user_data[0] != firstname or user_data[1] != lastname or 
-            user_data[2] != email or user_data[3] != contactnumber):
-            update_query += ", is_approved = 0"
+        orcr_filename = None
+        orcr_image = request.files.get('orcr_image')
 
-        update_query += " WHERE user_id = %s"
-        params.append(user_id)
+        if orcr_image and orcr_image.filename:
+            if orcr_image.mimetype.startswith('image/') and orcr_image.content_length <= MAX_FILE_SIZE:
+                orcr_filename = secure_filename(orcr_image.filename)
+                orcr_filename = sanitize_filename(orcr_filename)
+                orcr_image_path = os.path.join(DOCUMENTS_FOLDER, orcr_filename)
+                orcr_image.save(orcr_image_path)
+            else:
+                flash("Invalid or too large ORCR image. Please upload a valid image under 25 MB.", 'danger')
+                return redirect(request.url)
+
+        driver_license_filename = None
+        driver_license_image = request.files.get('driver_license_image')
+
+        if driver_license_image and driver_license_image.filename:
+            if driver_license_image.mimetype.startswith('image/') and driver_license_image.content_length <= MAX_FILE_SIZE:
+                driver_license_filename = secure_filename(driver_license_image.filename)
+                driver_license_filename = sanitize_filename(driver_license_filename)
+                license_image_path = os.path.join(DOCUMENTS_FOLDER, driver_license_filename)
+                driver_license_image.save(license_image_path)
+            else:
+                flash("Invalid or too large driver's license image. Please upload a valid image under 25 MB.", 'danger')
+                return redirect(request.url)
 
         try:
             cursor, connection = get_cursor()
-            cursor.execute(update_query, tuple(params))
-            connection.commit()
 
+            update_user_query = """
+                UPDATE user
+                SET firstname = %s, lastname = %s, email = %s, contactnumber = %s, 
+                    updated_at = CURRENT_TIMESTAMP, is_approved = 0
+                WHERE user_id = %s
+            """
+            cursor.execute(update_user_query, (firstname, lastname, email, contactnumber, user_id))
+
+            if profile_image_filename:
+                cursor.execute("""
+                    UPDATE user
+                    SET profile_image = %s
+                    WHERE user_id = %s
+                """, (profile_image_filename, user_id))
+
+            if orcr_filename or driver_license_filename:
+                cursor.execute("""
+                    SELECT document_id FROM user_documents WHERE user_id = %s
+                """, (user_id,))
+                document_exists = cursor.fetchone()
+
+                if document_exists:
+                    cursor.execute("""
+                        UPDATE user_documents
+                        SET orcr = COALESCE(%s, orcr), driverlicense = COALESCE(%s, driverlicense)
+                        WHERE user_id = %s
+                    """, (orcr_filename, driver_license_filename, user_id))
+                else:
+                    cursor.execute("""
+                        INSERT INTO user_documents (user_id, orcr, driverlicense)
+                        VALUES (%s, %s, %s)
+                    """, (user_id, orcr_filename, driver_license_filename))
+
+            connection.commit()
             flash("Profile updated successfully! Approval status has been reset.", "success")
 
         except Exception as e:
             print(f"Error updating profile: {e}")
             flash("An error occurred while updating the profile.", "error")
+
         finally:
             cursor.close()
             close_db_connection(connection)

@@ -34,6 +34,8 @@ document.getElementById('edit-button').addEventListener('click', () => {
         setTimeout(() => span.classList.add('hidden'), 300); 
     });
 
+    document.getElementById('file-inputs').classList.remove('hidden');
+    
     document.getElementById('edit-button').classList.add('hidden');
     document.getElementById('save-button').classList.remove('hidden');
     document.getElementById('cancel-button').classList.remove('hidden');
@@ -46,7 +48,12 @@ document.getElementById('edit-button').addEventListener('click', () => {
 
     document.getElementById('edit-orcr-icon').classList.remove('hidden');
     document.getElementById('edit-driver-license-icon').classList.remove('hidden');
+
+    document.getElementById('profile-image-input').classList.remove('hidden');
+    document.getElementById('orcr-image-input').classList.remove('hidden');
+    document.getElementById('driver-license-image-input').classList.remove('hidden');
 });
+
 
 document.getElementById('cancel-button').addEventListener('click', () => {
     location.reload();
