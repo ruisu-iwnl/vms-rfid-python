@@ -71,10 +71,7 @@
                     <p class="text-2xl text-gray-700 font-bold">ORCR:</p>
                     {% if user.orcr %}
                         <div class="relative">
-                            <button type="button" class="absolute top-2 left-2 text-white text-3xl hidden" id="edit-orcr-icon">
-                                ✏️
-                            </button>
-                            <img src="{{ url_for('static', filename='documents/' + user.orcr) }}" alt="ORCR" class="w-128 h-80 border-4 border-[#4A90E2] shadow-lg rounded-lg blur-lg" id="orcr-image" onclick="triggerImageUpload('orcr-image')">
+                            <img src="{{ url_for('static', filename='documents/' + user.orcr) }}" alt="ORCR" class="w-128 h-80 border-4 border-[#4A90E2] shadow-lg rounded-lg blur-lg" id="orcr-image">
                             <button type="button" class="absolute top-2 right-2 text-white text-3xl" id="toggle-orcr-blur">
                                 👁️
                             </button>
@@ -88,10 +85,7 @@
                     <p class="text-2xl text-gray-700 font-bold">Driver License:</p>
                     {% if user.driverlicense %}
                         <div class="relative">
-                            <button type="button" class="absolute top-2 left-2 text-white text-3xl hidden" id="edit-driver-license-icon">
-                                ✏️
-                            </button>
-                            <img src="{{ url_for('static', filename='documents/' + user.driverlicense) }}" alt="Driver License" class="w-128 h-80 border-4 border-[#4A90E2] shadow-lg rounded-lg blur-lg" id="driver-license-image" onclick="triggerImageUpload('driver-license-image')">
+                            <img src="{{ url_for('static', filename='documents/' + user.driverlicense) }}" alt="Driver License" class="w-128 h-80 border-4 border-[#4A90E2] shadow-lg rounded-lg blur-lg" id="driver-license-image">
                             <button type="button" class="absolute top-2 right-2 text-white text-3xl" id="toggle-driver-license-blur">
                                 👁️
                             </button>
@@ -101,7 +95,6 @@
                     {% endif %}
                 </div>
             </div>
-
         </div>   
     </div>
     
@@ -130,110 +123,8 @@
     </div>
 
 </div>
-<script>
-    // Toggle blur effect on click and change the eye icon
-    document.getElementById('toggle-orcr-blur').addEventListener('click', function() {
-        var orcrImage = document.getElementById('orcr-image');
-        var icon = this;
 
-        orcrImage.classList.toggle('blur-lg');
-        
-        if (orcrImage.classList.contains('blur-lg')) {
-            icon.textContent = '👁️'; // Open eye icon
-        } else {
-            icon.textContent = '👁️‍🗨️'; // Closed eye icon
-        }
-    });
-
-    document.getElementById('toggle-driver-license-blur').addEventListener('click', function() {
-        var driverLicenseImage = document.getElementById('driver-license-image');
-        var icon = this;
-
-        driverLicenseImage.classList.toggle('blur-lg');
-        
-        if (driverLicenseImage.classList.contains('blur-lg')) {
-            icon.textContent = '👁️'; // Open eye icon
-        } else {
-            icon.textContent = '👁️‍🗨️'; // Closed eye icon
-        }
-    });
-
-    // Image upload trigger function
-    function triggerImageUpload(imageId) {
-        if (document.getElementById('edit-button').classList.contains('hidden')) {
-            let input = document.createElement('input');
-            input.type = 'file';
-            input.accept = 'image/*';
-            input.onchange = function(e) {
-                let file = e.target.files[0];
-                let reader = new FileReader();
-                reader.onload = function(event) {
-                    document.getElementById(imageId).src = event.target.result;
-                };
-                reader.readAsDataURL(file);
-            };
-            input.click();
-        }
-    }
-
-    document.getElementById('edit-button').addEventListener('click', () => {
-        document.querySelectorAll('input').forEach(input => {
-            input.classList.remove('hidden');
-            input.classList.add('opacity-100');
-        });
-        document.querySelectorAll('span[id$="-text"]').forEach(span => {
-            span.classList.add('opacity-0');
-            setTimeout(() => span.classList.add('hidden'), 300); 
-        });
-        document.getElementById('edit-button').classList.add('hidden');
-        document.getElementById('save-button').classList.remove('hidden');
-        document.getElementById('cancel-button').classList.remove('hidden');
-
-        // Show the edit icons on the images
-        document.getElementById('edit-orcr-icon').classList.remove('hidden');
-        document.getElementById('edit-driver-license-icon').classList.remove('hidden');
-
-        // Remove blur effect on images when editing
-        document.getElementById('orcr-image').classList.remove('blur-lg');
-        document.getElementById('driver-license-image').classList.remove('blur-lg');
-    });
-
-    document.getElementById('cancel-button').addEventListener('click', () => {
-        // Revert input fields to their default values
-        document.getElementById('firstname-input').value = "{{ user.firstname }}";
-        document.getElementById('lastname-input').value = "{{ user.lastname }}";
-        document.getElementById('email-input').value = "{{ user.email }}";
-        document.getElementById('contact-input').value = "{{ user.contactnumber }}";
-        document.getElementById('empno-input').value = "{{ user.emp_no }}";
-
-        // Hide input fields again
-        document.querySelectorAll('input').forEach(input => {
-            input.classList.add('hidden');
-            input.classList.remove('opacity-100');
-        });
-        document.querySelectorAll('span[id$="-text"]').forEach(span => {
-            span.classList.remove('hidden');
-            setTimeout(() => span.classList.remove('opacity-0'), 10); 
-        });
-        document.getElementById('edit-button').classList.remove('hidden');
-        document.getElementById('save-button').classList.add('hidden');
-        document.getElementById('cancel-button').classList.add('hidden');
-
-        // Hide the edit icons and reapply blur effect on images when canceling
-        document.getElementById('edit-orcr-icon').classList.add('hidden');
-        document.getElementById('edit-driver-license-icon').classList.add('hidden');
-
-        // Revert images back to their original state
-        document.getElementById('orcr-image').classList.add('blur-lg');
-        document.getElementById('driver-license-image').classList.add('blur-lg');
-        
-        // Revert images to original sources (no file upload or changes)
-        document.getElementById('orcr-image').src = "{{ url_for('static', filename='documents/' + user.orcr) }}";
-        document.getElementById('driver-license-image').src = "{{ url_for('static', filename='documents/' + user.driverlicense) }}";
-    });
-</script>
-
-
+<script src="{{ url_for('static', filename='js/user_dashboard.js') }}"></script>
 <script src="{{ url_for('static', filename='js/timeinout-comparison.js') }}"></script>
 <script src="{{ url_for('static', filename='js/peakhours.js') }}"></script>
 <script src="{{ url_for('static', filename='js/durationofstay.js') }}"></script>
