@@ -95,6 +95,16 @@ def user_dashboard():
         lastname = form.lastname.data
         email = form.email.data
         contactnumber = form.contactnumber.data
+        emp_no = form.emp_no.data  # Assuming emp_no is a field in the form
+
+        # Check for duplicate email or emp_no
+        cursor.execute("""
+            SELECT user_id FROM user WHERE (email = %s OR emp_no = %s) AND user_id != %s
+        """, (email, emp_no, user_id))
+        duplicate_user = cursor.fetchone()
+        if duplicate_user:
+            flash("The email or employee number is already in use. Please choose another.", 'danger')
+            return redirect(request.url)
 
         # Initialize flag to check if images were uploaded
         image_updated = False
