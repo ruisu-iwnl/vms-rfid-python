@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, SelectField, FileField
+from wtforms import StringField, PasswordField, SubmitField, SelectField, FileField, EmailField
 from wtforms.validators import DataRequired, Email, Length, EqualTo,Regexp
 from wtforms import ValidationError
 import phonenumbers
@@ -15,6 +15,13 @@ from app.models.database import get_cursor
 #     email = StringField('Email', validators=[DataRequired(), Email()])
 #     password = PasswordField('Password', validators=[DataRequired()])
 #     submit = SubmitField('Login')
+
+class ProfileForm(FlaskForm):
+    firstname = StringField('First Name', validators=[DataRequired()])
+    lastname = StringField('Last Name', validators=[DataRequired()])
+    email = EmailField('Email', validators=[DataRequired(), Email()])
+    contactnumber = StringField('Contact Number', validators=[DataRequired()])
+
 class Admin_AddUserVehicleForm(FlaskForm):
     user_id = SelectField('Select User', validators=[DataRequired()])
     make = StringField('Vehicle Make', validators=[DataRequired()])  

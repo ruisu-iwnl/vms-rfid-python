@@ -16,24 +16,56 @@
                 <img src="{{ url_for('static', filename='images/users/profile.svg') }}" alt="Default Profile Image" class="w-32 h-32 rounded-full border-4 border-[#4A90E2] shadow-lg">
             {% endif %}
             <div class="text-center md:text-left space-y-4 text-gray-900">
-                <p class="text-3xl font-semibold">
-                    {{ user.firstname }} {{ user.lastname }}
-                    {% if user.is_approved %}
-                        <span class="bg-sky-500 text-white text-sm font-bold py-1 px-2 rounded ml-2">
-                            VERIFIED
-                        </span>
-                    {% else %}
-                        <span class="bg-gray-500 text-white text-sm font-bold py-1 px-2 rounded ml-2">
-                            UNVERIFIED
-                        </span>
-                    {% endif %}
-                </p>
-                <p class="text-xl text-gray-700">Email: <span class="font-medium text-gray-900">{{ user.email }}</span></p>
-                <p class="text-xl text-gray-700">Contact: <span class="font-medium text-gray-900">{{ user.contactnumber }}</span></p>
-                <p class="text-xl text-gray-700">Employee Number: <span class="font-medium text-gray-900">{{ user.emp_no }}</span></p>
-                <p class="text-xl text-gray-700">Registered Vehicles: <span class="font-medium text-gray-900">{{ user.vehicle_count }}</span></p>
-            </div>            
+                <form id="profile-form" method="POST">
+                    {{ form.csrf_token() }}
+                    
+                    <p class="text-3xl font-semibold">
+                        <span id="firstname-text" class="transition-opacity duration-300">{{ user.firstname }}</span>
+                        <input type="text" id="firstname-input" name="firstname" value="{{ form.firstname.data or user.firstname }}" class="hidden transition-opacity duration-300 text-xl font-bold border border-gray-300 rounded p-2">
+                        
+                        <span id="lastname-text" class="transition-opacity duration-300">{{ user.lastname }}</span>
+                        <input type="text" id="lastname-input" name="lastname" value="{{ form.lastname.data or user.lastname }}" class="hidden transition-opacity duration-300 text-xl font-bold border border-gray-300 rounded p-2">
+                        
+                        {% if user.is_approved %}
+                            <span class="bg-sky-500 text-white text-sm font-bold py-1 px-2 rounded ml-2">
+                                VERIFIED
+                            </span>
+                        {% else %}
+                            <span class="bg-gray-500 text-white text-sm font-bold py-1 px-2 rounded ml-2">
+                                UNVERIFIED
+                            </span>
+                        {% endif %}
+                    </p>
+                    <p class="text-xl text-gray-700">
+                        Email: <span id="email-text" class="font-medium text-gray-900 transition-opacity duration-300">{{ form.email.data or user.email }}</span>
+                        <input type="email" id="email-input" name="email" value="{{ form.email.data or user.email }}" class="hidden transition-opacity duration-300 font-medium border border-gray-300 rounded p-2">
+                    </p>
+                    <p class="text-xl text-gray-700">
+                        Contact: <span id="contact-text" class="font-medium text-gray-900 transition-opacity duration-300">{{ form.contactnumber.data or user.contactnumber }}</span>
+                        <input type="text" id="contact-input" name="contactnumber" value="{{ form.contactnumber.data or user.contactnumber }}" class="hidden transition-opacity duration-300 font-medium border border-gray-300 rounded p-2">
+                    </p>
+                    <p class="text-xl text-gray-700">
+                        Employee Number: <span id="empno-text" class="font-medium text-gray-900 transition-opacity duration-300">{{ user.emp_no }}</span>
+                        <input type="text" id="empno-input" name="emp_no" value="{{ user.emp_no }}" class="hidden transition-opacity duration-300 font-medium border border-gray-300 rounded p-2">
+                    </p>
+                    <p class="text-xl text-gray-700">
+                        Registered Vehicles: <span class="font-medium text-gray-900">{{ user.vehicle_count }}</span>
+                    </p>
+                    <button type="button" id="edit-button" class="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-600 transition-colors duration-300">
+                        Edit Information
+                    </button>
+                    <button type="submit" id="save-button" class="hidden bg-green-500 text-white font-bold py-2 px-4 rounded hover:bg-green-600 transition-colors duration-300">
+                        Save Changes
+                    </button>
+                    <button type="button" id="cancel-button" class="hidden bg-red-500 text-white font-bold py-2 px-4 rounded hover:bg-red-600 transition-colors duration-300">
+                        Cancel
+                    </button>
+                </form>
+            </div>
+            
+            
         </div>
+        
     </div>
     <!-- Grid Layout for Charts -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -60,7 +92,35 @@
     </div>
 
 </div>
+<script>
+    document.getElementById('edit-button').addEventListener('click', () => {
+        document.querySelectorAll('input').forEach(input => {
+            input.classList.remove('hidden');
+            input.classList.add('opacity-100');
+        });
+        document.querySelectorAll('span[id$="-text"]').forEach(span => {
+            span.classList.add('opacity-0');
+            setTimeout(() => span.classList.add('hidden'), 300); 
+        });
+        document.getElementById('edit-button').classList.add('hidden');
+        document.getElementById('save-button').classList.remove('hidden');
+        document.getElementById('cancel-button').classList.remove('hidden');
+    });
 
+    document.getElementById('cancel-button').addEventListener('click', () => {
+        document.querySelectorAll('input').forEach(input => {
+            input.classList.add('hidden');
+            input.classList.remove('opacity-100');
+        });
+        document.querySelectorAll('span[id$="-text"]').forEach(span => {
+            span.classList.remove('hidden');
+            setTimeout(() => span.classList.remove('opacity-0'), 10); 
+        });
+        document.getElementById('edit-button').classList.remove('hidden');
+        document.getElementById('save-button').classList.add('hidden');
+        document.getElementById('cancel-button').classList.add('hidden');
+    });
+</script>
 <script src="{{ url_for('static', filename='js/timeinout-comparison.js') }}"></script>
 <script src="{{ url_for('static', filename='js/peakhours.js') }}"></script>
 <script src="{{ url_for('static', filename='js/durationofstay.js') }}"></script>
