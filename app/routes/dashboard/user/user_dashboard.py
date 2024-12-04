@@ -31,16 +31,33 @@ def user_dashboard():
         lastname = form.lastname.data
         email = form.email.data
         contactnumber = form.contactnumber.data
-        
+
+        # Check if the form data is different from the existing user data
+        cursor, connection = get_cursor()
+        cursor.execute("""
+            SELECT firstname, lastname, email, contactnumber FROM user WHERE user_id = %s
+        """, (user_id,))
+        user_data = cursor.fetchone()
+        cursor.close()
+
+        # Only update if there are changes
+        update_query = """
+            UPDATE user
+            SET firstname = %s, lastname = %s, email = %s, contactnumber = %s, updated_at = CURRENT_TIMESTAMP
+        """
+        params = [firstname, lastname, email, contactnumber]
+
+        # If any field changed, set is_approved to 0
+        if (user_data[0] != firstname or user_data[1] != lastname or 
+            user_data[2] != email or user_data[3] != contactnumber):
+            update_query += ", is_approved = 0"
+
+        update_query += " WHERE user_id = %s"
+        params.append(user_id)
+
         try:
             cursor, connection = get_cursor()
-
-            cursor.execute(""" 
-                UPDATE user
-                SET firstname = %s, lastname = %s, email = %s, contactnumber = %s, is_approved = 0, updated_at = CURRENT_TIMESTAMP
-                WHERE user_id = %s
-            """, (firstname, lastname, email, contactnumber, user_id))
-
+            cursor.execute(update_query, tuple(params))
             connection.commit()
 
             flash("Profile updated successfully! Approval status has been reset.", "success")
@@ -52,7 +69,7 @@ def user_dashboard():
             cursor.close()
             close_db_connection(connection)
 
-        return redirect(url_for('user_dashboard.user_dashboard')) 
+        return redirect(url_for('user_dashboard.user_dashboard'))
 
     time_in_time_out_data = get_time_in_time_out_comparison(user_id)
     peak_hours_data = get_peak_hours_of_vehicle_entries()
