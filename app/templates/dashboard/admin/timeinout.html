@@ -13,24 +13,28 @@
     <div id="rfidSection" style="display: block;">
         <form action="{{ url_for('timeinout.handle_rfid') }}" method="POST" class="flex flex-col items-start space-y-4 mb-4" autocomplete="off">
             {{ form.hidden_tag() }}
-
-            <label for="rfid_no" class="text-lg font-bold">RFID Scanner:</label>
-            <input type="text" name="rfid_no" id="rfid-input" class="border border-gray-300 rounded-lg p-4 text-lg w-full" placeholder="RFID Number" style="opacity: 0; position: absolute; left: -9999px;">
-
+        
+            <input type="text" name="rfid_no" id="rfid-input" class="rounded-lg p-4 text-lg w-full" placeholder="RFID Number" style="opacity: 0; position: absolute; left: -9999px;">
+        
             <button 
                 type="button" 
                 id="scan_button"
-                class="bg-green-500 text-black py-4 px-8 rounded border border-black hover:bg-green-700"
-                style="background-color: #eeeee4; font-size: 1.25rem;"
+                class="bg-green-500 text-black py-4 px-8 rounded hover:bg-green-700 flex items-center justify-center mx-auto"
+                style="background-color: #eeeee4; font-size: 1.25rem; width: 50%; height: auto;"
                 onclick="toggleScanning()"
             >
-                Click To Scan
+                <p class="text-center text-5xl font-bold mt-4">TAP TO</p>    
+                <img src="{{ url_for('static', filename='images/icons/rfid.svg') }}" alt="RFID Icon" class="h-[150px] w-[150px] object-contain">
+                <p class="text-center text-5xl font-bold mt-4">SCAN</p>
             </button>
-
+        
             <p id="scanned_display" class="mt-2 text-lg font-semibold"><span id="rfid_number"></span></p> 
         </form>
     </div>
-
+    
+    
+    
+    
     <!-- Time In/Out Table -->
     <div class="bg-[#eeeee4] p-6 rounded-lg shadow-md w-full max-w-full mb-8 relative">
         <table class="min-w-full divide-y divide-gray-300">
