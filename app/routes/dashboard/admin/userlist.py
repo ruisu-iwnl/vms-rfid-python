@@ -5,19 +5,16 @@ from app.models.database import get_cursor, close_db_connection
 
 userlist_bp = Blueprint('userlist', __name__)
 
-@userlist_bp.route('/', defaults={'page': 1, 'sort_by': 'emp_no', 'order': 'asc'})
-@userlist_bp.route('/<int:page>/<string:sort_by>/<string:order>')
-def userlist(page, sort_by='emp_no', order='asc'):
+@userlist_bp.route('/', defaults={'approved_page': 1, 'unapproved_page': 1, 'sort_by': 'emp_no', 'order': 'asc'})
+@userlist_bp.route('/<int:approved_page>/<int:unapproved_page>/<string:sort_by>/<string:order>')
+def userlist(approved_page, unapproved_page, sort_by='emp_no', order='asc'):
     response = check_access('admin')
     
     if response:
         return response
 
     is_super_admin = session.get('is_super_admin', False)
-    if is_super_admin:
-        super_admin_features = True
-    else:
-        super_admin_features = False
+    super_admin_features = is_super_admin
 
     valid_columns = {'emp_no': 'u.emp_no', 'full_name': 'full_name', 'contactnumber': 'u.contactnumber', 
                      'vehicle_count': 'vehicle_count', 'created_at': 'u.created_at'}
@@ -62,14 +59,20 @@ def userlist(page, sort_by='emp_no', order='asc'):
         """)
         unapproved_users = cursor.fetchall()
 
-
         # Pagination for approved users
         per_page = 5
         total_approved_users = len(approved_users)
         total_pages = (total_approved_users + per_page - 1) // per_page
-        start = (page - 1) * per_page
-        end = start + per_page
-        paginated_approved_users = approved_users[start:end]
+        approved_start = (approved_page - 1) * per_page
+        approved_end = approved_start + per_page
+        paginated_approved_users = approved_users[approved_start:approved_end]
+
+        # Pagination for unapproved users
+        total_unapproved_users = len(unapproved_users)
+        unapproved_total_pages = (total_unapproved_users + per_page - 1) // per_page
+        unapproved_start = (unapproved_page - 1) * per_page
+        unapproved_end = unapproved_start + per_page
+        paginated_unapproved_users = unapproved_users[unapproved_start:unapproved_end]
 
         print("Approved Users:", approved_users)
         print("Unapproved Users:", unapproved_users)
@@ -83,17 +86,19 @@ def userlist(page, sort_by='emp_no', order='asc'):
         close_db_connection(connection)
 
     return render_template('dashboard/admin/userlist.html', 
-                           approved_users=paginated_approved_users, 
-                           unapproved_users=unapproved_users, 
-                           page=page, 
-                           total_pages=total_pages, 
-                           sort_by=sort_by, 
-                           order=order, 
-                           form=form,
-                           vehicle_form=vehicle_form,
-                           super_admin_features=super_admin_features)
+        approved_users=paginated_approved_users, 
+        unapproved_users=paginated_unapproved_users, 
+        approved_page=approved_page, 
+        unapproved_page=unapproved_page,
+        total_approved_pages=total_pages,
+        unapproved_total_pages=unapproved_total_pages,  # Ensure this is passed here
+        sort_by=sort_by, 
+        order=order, 
+        form=form,
+        vehicle_form=vehicle_form,
+        super_admin_features=super_admin_features)
 
-
+# Route for confirming users
 @userlist_bp.route('/confirm/<string:emp_no>', methods=['POST'])
 def confirm_user(emp_no):
     try:
@@ -120,6 +125,7 @@ def confirm_user(emp_no):
         cursor.close()
         close_db_connection(connection)
 
+# Route for denying users
 @userlist_bp.route('/deny/<string:emp_no>', methods=['POST'])
 def deny_user(emp_no):
     try:
