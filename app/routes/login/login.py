@@ -1,4 +1,5 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, session, request, make_response
+import os
+from flask import Blueprint, render_template, redirect, url_for, flash, session, request
 from ..utils.forms import BaseLoginForm
 from app.models.database import get_cursor, close_db_connection
 from ..utils.utils import verify_password, verify_recaptcha
@@ -21,13 +22,15 @@ def login():
     recaptcha_error = None
     login_error = None
 
+    disable_recaptcha = os.getenv('DISABLE_RECAPTCHA', 'False').lower() == 'true'
+
     if form.validate_on_submit():
         email = form.email.data
         password = form.password.data
 
         recaptcha_response = request.form.get('g-recaptcha-response')
 
-        if not verify_recaptcha(recaptcha_response):
+        if not disable_recaptcha and not verify_recaptcha(recaptcha_response):
             recaptcha_error = 'reCAPTCHA verification failed. Please try again.'
         else:
             try:

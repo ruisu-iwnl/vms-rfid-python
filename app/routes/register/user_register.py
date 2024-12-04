@@ -100,6 +100,7 @@ def user_register():
     is_registered_as_admin = None
     rfid_already_registered = None
     email_already_registered = None
+    emp_no_already_registered = None
 
     PROFILE_IMAGE_FOLDER = os.path.join(os.path.dirname(__file__), '..', '..', 'static', 'images', 'users')
     DOCUMENTS_FOLDER = os.path.join(os.path.dirname(__file__), '..', '..', 'static', 'documents')
@@ -112,12 +113,14 @@ def user_register():
 
     print("Profile image and documents folder setup.")
 
+    disable_recaptcha = os.getenv('DISABLE_RECAPTCHA', 'False').lower() == 'true'
+
     if form.validate_on_submit():
         print("Form validated on submit. Proceeding with registration.")
         recaptcha_response = request.form.get('g-recaptcha-response')
         print(f"Received reCAPTCHA response: {recaptcha_response}")
 
-        if not verify_recaptcha(recaptcha_response):
+        if not disable_recaptcha and not verify_recaptcha(recaptcha_response):
             recaptcha_error = 'reCAPTCHA verification failed. Please try again.'
             print("reCAPTCHA verification failed.")
         else:
@@ -142,8 +145,20 @@ def user_register():
                 if rfid_record:
                     rfid_already_registered = "This RFID is already registered. Please use a different RFID."
 
-                if email_already_registered or rfid_already_registered:
-                    print("Email or RFID already registered, returning the form with errors.")
+                # Check if employee number already exists in either user or admin tables
+                cursor.execute("SELECT emp_no FROM user WHERE BINARY emp_no = %s AND deleted_at IS NULL", (form.employeenumber.data,))
+                user_emp_no_record = cursor.fetchone()
+                if user_emp_no_record:
+                    emp_no_already_registered = "This employee number is already registered as a user. Please use a different number."
+
+                cursor.execute("SELECT employee_id FROM admin WHERE BINARY employee_id = %s AND deleted_at IS NULL", (form.employeenumber.data,))
+                admin_emp_no_record = cursor.fetchone()
+                if admin_emp_no_record:
+                    emp_no_already_registered = "This employee number is already registered as an admin. Please use a different number."
+
+                # If there are any registration errors, return the form with errors
+                if email_already_registered or rfid_already_registered or emp_no_already_registered:
+                    print("Email, RFID, or Employee number already registered, returning the form with errors.")
                     return render_template(
                         'register/user_register.html',
                         form=form,
@@ -152,7 +167,8 @@ def user_register():
                         is_registered_as_user=is_registered_as_user,
                         is_registered_as_admin=is_registered_as_admin,
                         email_already_registered=email_already_registered,
-                        rfid_already_registered=rfid_already_registered
+                        rfid_already_registered=rfid_already_registered,
+                        emp_no_already_registered=emp_no_already_registered
                     )
 
                 profile_image_filename = None
