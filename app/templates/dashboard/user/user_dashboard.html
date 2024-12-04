@@ -16,12 +16,23 @@
                 <img src="{{ url_for('static', filename='images/users/profile.svg') }}" alt="Default Profile Image" class="w-32 h-32 rounded-full border-4 border-[#4A90E2] shadow-lg">
             {% endif %}
             <div class="text-center md:text-left space-y-4 text-gray-900">
-                <p class="text-3xl font-semibold">{{ user.firstname }} {{ user.lastname }}</p>
+                <p class="text-3xl font-semibold">
+                    {{ user.firstname }} {{ user.lastname }}
+                    {% if user.is_approved %}
+                        <span class="bg-sky-500 text-white text-sm font-bold py-1 px-2 rounded ml-2">
+                            VERIFIED
+                        </span>
+                    {% else %}
+                        <span class="bg-gray-500 text-white text-sm font-bold py-1 px-2 rounded ml-2">
+                            UNVERIFIED
+                        </span>
+                    {% endif %}
+                </p>
                 <p class="text-xl text-gray-700">Email: <span class="font-medium text-gray-900">{{ user.email }}</span></p>
                 <p class="text-xl text-gray-700">Contact: <span class="font-medium text-gray-900">{{ user.contactnumber }}</span></p>
                 <p class="text-xl text-gray-700">Employee Number: <span class="font-medium text-gray-900">{{ user.emp_no }}</span></p>
                 <p class="text-xl text-gray-700">Registered Vehicles: <span class="font-medium text-gray-900">{{ user.vehicle_count }}</span></p>
-            </div>
+            </div>            
         </div>
     </div>
     <!-- Grid Layout for Charts -->
