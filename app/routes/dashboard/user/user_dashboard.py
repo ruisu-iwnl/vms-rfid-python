@@ -96,6 +96,9 @@ def user_dashboard():
         email = form.email.data
         contactnumber = form.contactnumber.data
 
+        # Initialize flag to check if images were uploaded
+        image_updated = False
+
         # Handle profile image upload
         profile_image_filename = None
         profile_image = request.files.get('profile_image')
@@ -105,6 +108,7 @@ def user_dashboard():
                 profile_image_filename = sanitize_filename(profile_image_filename)
                 image_path = os.path.join(PROFILE_IMAGE_FOLDER, profile_image_filename)
                 profile_image.save(image_path)
+                image_updated = True  # Set flag to True as profile image is updated
             else:
                 flash("Invalid or too large profile image. Please upload a valid image under 25 MB.", 'danger')
                 return redirect(request.url)
@@ -118,6 +122,7 @@ def user_dashboard():
                 orcr_filename = sanitize_filename(orcr_filename)
                 orcr_image_path = os.path.join(DOCUMENTS_FOLDER, orcr_filename)
                 orcr_image.save(orcr_image_path)
+                image_updated = True  # Set flag to True as ORCR image is updated
             else:
                 flash("Invalid or too large ORCR image. Please upload a valid image under 25 MB.", 'danger')
                 return redirect(request.url)
@@ -131,6 +136,7 @@ def user_dashboard():
                 driver_license_filename = sanitize_filename(driver_license_filename)
                 license_image_path = os.path.join(DOCUMENTS_FOLDER, driver_license_filename)
                 driver_license_image.save(license_image_path)
+                image_updated = True  # Set flag to True as driver license image is updated
             else:
                 flash("Invalid or too large driver's license image. Please upload a valid image under 25 MB.", 'danger')
                 return redirect(request.url)
@@ -150,6 +156,14 @@ def user_dashboard():
 
             # If there were changes, update the approval status
             if cursor.rowcount > 0:
+                cursor.execute(""" 
+                    UPDATE user
+                    SET is_approved = 0
+                    WHERE user_id = %s
+                """, (user_id,))
+
+            # If any image was uploaded, set is_approved to 0
+            if image_updated:
                 cursor.execute(""" 
                     UPDATE user
                     SET is_approved = 0
