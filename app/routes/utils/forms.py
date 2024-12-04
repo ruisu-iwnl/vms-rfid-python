@@ -21,6 +21,7 @@ class ProfileForm(FlaskForm):
     lastname = StringField('Last Name', validators=[DataRequired()])
     email = EmailField('Email', validators=[DataRequired(), Email()])
     contactnumber = StringField('Contact Number', validators=[DataRequired()])
+    emp_no = StringField('Employee Number', validators=[DataRequired()])
 
 class Admin_AddUserVehicleForm(FlaskForm):
     user_id = SelectField('Select User', validators=[DataRequired()])

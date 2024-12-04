@@ -154,15 +154,17 @@ def user_dashboard():
         try:
             cursor, connection = get_cursor()
 
-            # Check if there are any changes to update
+            # Check if there are any changes to update (including emp_no)
             update_user_query = """
                 UPDATE user
-                SET firstname = %s, lastname = %s, email = %s, contactnumber = %s,
-                    updated_at = CURRENT_TIMESTAMP
+                SET firstname = %s, lastname = %s, email = %s, contactnumber = %s, emp_no = %s, updated_at = CURRENT_TIMESTAMP
                 WHERE user_id = %s
-                AND (firstname != %s OR lastname != %s OR email != %s OR contactnumber != %s)
+                AND (firstname != %s OR lastname != %s OR email != %s OR contactnumber != %s OR emp_no != %s)
             """
-            cursor.execute(update_user_query, (firstname, lastname, email, contactnumber, user_id, firstname, lastname, email, contactnumber))
+            cursor.execute(update_user_query, (
+                firstname, lastname, email, contactnumber, emp_no, user_id, 
+                firstname, lastname, email, contactnumber, emp_no
+            ))
 
             # If there were changes, update the approval status
             if cursor.rowcount > 0:

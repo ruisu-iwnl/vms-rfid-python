@@ -48,9 +48,9 @@
                         <input type="text" id="contact-input" name="contactnumber" value="{{ form.contactnumber.data or user.contactnumber }}" class="hidden transition-opacity duration-300 font-medium border border-gray-300 rounded p-2">
                     </p>
                     <p class="text-xl text-gray-700 space-y-2">
-                        Employee Number: <span id="empno-text" class="font-medium text-gray-900 transition-opacity duration-300">{{ user.emp_no }}</span>
-                        <input type="text" id="empno-input" name="emp_no" value="{{ user.emp_no }}" class="hidden transition-opacity duration-300 font-medium border border-gray-300 rounded p-2">
-                    </p>
+                        Employee Number: <span id="empno-text" class="font-medium text-gray-900 transition-opacity duration-300">{{ form.emp_no.data or user.emp_no }}</span>
+                        <input type="text" id="empno-input" name="emp_no" value="{{ form.emp_no.data or user.emp_no }}" class="hidden transition-opacity duration-300 font-medium border border-gray-300 rounded p-2">
+                    </p>                    
                     <p class="text-xl text-gray-700">
                         Registered Vehicles: <span class="font-medium text-gray-900">{{ user.vehicle_count }}</span>
                     </p>
