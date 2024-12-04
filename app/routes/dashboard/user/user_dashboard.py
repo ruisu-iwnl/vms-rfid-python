@@ -27,6 +27,41 @@ def sanitize_filename(filename):
     file_extension = os.path.splitext(sanitized_filename)[1]
     return f"{unique_id}{file_extension}"
 
+def delete_old_images(profile_image_filename, orcr_filename, driver_license_filename):
+    # Directories where images are stored
+    PROFILE_IMAGE_FOLDER = os.path.join(os.path.dirname(__file__), '..', '..', '..', 'static', 'images', 'users')
+    DOCUMENTS_FOLDER = os.path.join(os.path.dirname(__file__), '..', '..', '..', 'static', 'documents')
+
+    # Delete old profile image if it's being replaced
+    if profile_image_filename:
+        old_profile_image = os.path.join(PROFILE_IMAGE_FOLDER, profile_image_filename)
+        print(f"Checking if old profile image exists: {old_profile_image}")
+        if os.path.exists(old_profile_image):
+            print(f"Deleting old profile image: {old_profile_image}")
+            os.remove(old_profile_image)
+        else:
+            print(f"Old profile image not found: {old_profile_image}")
+
+    # Delete old ORCR image if it's being replaced
+    if orcr_filename:
+        old_orcr_image = os.path.join(DOCUMENTS_FOLDER, orcr_filename)
+        print(f"Checking if old ORCR image exists: {old_orcr_image}")
+        if os.path.exists(old_orcr_image):
+            print(f"Deleting old ORCR image: {old_orcr_image}")
+            os.remove(old_orcr_image)
+        else:
+            print(f"Old ORCR image not found: {old_orcr_image}")
+
+    # Delete old driver license image if it's being replaced
+    if driver_license_filename:
+        old_driver_license_image = os.path.join(DOCUMENTS_FOLDER, driver_license_filename)
+        print(f"Checking if old driver license image exists: {old_driver_license_image}")
+        if os.path.exists(old_driver_license_image):
+            print(f"Deleting old driver license image: {old_driver_license_image}")
+            os.remove(old_driver_license_image)
+        else:
+            print(f"Old driver license image not found: {old_driver_license_image}")
+
 @user_dashboard_bp.route('', methods=['GET', 'POST'])
 def user_dashboard():
     response = check_access('user')
@@ -43,6 +78,17 @@ def user_dashboard():
 
     os.makedirs(PROFILE_IMAGE_FOLDER, exist_ok=True)
     os.makedirs(DOCUMENTS_FOLDER, exist_ok=True)
+
+    # Fetch current user info to get the current filenames
+    cursor, connection = get_cursor()
+    cursor.execute("SELECT profile_image FROM user WHERE user_id = %s", (user_id,))
+    user_data = cursor.fetchone()
+    old_profile_image = user_data[0] if user_data else None
+
+    cursor.execute("SELECT orcr, driverlicense FROM user_documents WHERE user_id = %s", (user_id,))
+    document_data = cursor.fetchone()
+    old_orcr = document_data[0] if document_data else None
+    old_driver_license = document_data[1] if document_data else None
 
     if request.method == 'POST' and form.validate_on_submit():
         firstname = form.firstname.data
@@ -104,7 +150,7 @@ def user_dashboard():
 
             # If there were changes, update the approval status
             if cursor.rowcount > 0:
-                cursor.execute("""
+                cursor.execute(""" 
                     UPDATE user
                     SET is_approved = 0
                     WHERE user_id = %s
@@ -112,6 +158,8 @@ def user_dashboard():
 
             # Update profile image if it was uploaded
             if profile_image_filename:
+                # Delete old profile image before saving the new one
+                delete_old_images(old_profile_image, None, None)  # Deleting old profile image if replaced
                 cursor.execute("""
                     UPDATE user
                     SET profile_image = %s
@@ -126,6 +174,8 @@ def user_dashboard():
                 document_exists = cursor.fetchone()
 
                 if document_exists:
+                    # Delete old documents before saving the new ones
+                    delete_old_images(None, old_orcr, old_driver_license)
                     cursor.execute("""
                         UPDATE user_documents
                         SET orcr = COALESCE(%s, orcr), driverlicense = COALESCE(%s, driverlicense)
