@@ -24,7 +24,7 @@ function toggleScanning() {
         });
         rfidInput.addEventListener('keydown', function(event) {
             if (event.key === 'Enter') {
-                handleSubmit(event); // Submit the form when Enter is pressed
+                handleSubmit(event);
             }
         });
 
@@ -79,19 +79,11 @@ function handleSubmit(event) {
     }
 
     const rfidInput = document.getElementById('rfid-input');
-    const form = document.forms[0];
 
-    // Create a hidden input to store the detected plate number
-    const hiddenPlateInput = document.createElement('input');
-    hiddenPlateInput.type = 'hidden';
-    hiddenPlateInput.name = 'detected_plate_number';
-    hiddenPlateInput.value = detectedPlateNumber; // Set detected plate number value
-
-    form.appendChild(hiddenPlateInput); // Append to form
     if (scanning) {
         stopScanning();
     }
 
     rfidInput.disabled = false;
-    form.submit(); // Submit the form
+    document.forms[0].submit();
 }
