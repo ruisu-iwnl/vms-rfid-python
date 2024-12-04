@@ -50,9 +50,9 @@ def user_dashboard():
         email = form.email.data
         contactnumber = form.contactnumber.data
 
+        # Handle profile image upload
         profile_image_filename = None
         profile_image = request.files.get('profile_image')
-
         if profile_image and profile_image.filename:
             if profile_image.mimetype.startswith('image/') and profile_image.content_length <= MAX_FILE_SIZE:
                 profile_image_filename = secure_filename(profile_image.filename)
@@ -63,9 +63,9 @@ def user_dashboard():
                 flash("Invalid or too large profile image. Please upload a valid image under 25 MB.", 'danger')
                 return redirect(request.url)
 
+        # Handle ORCR image upload
         orcr_filename = None
         orcr_image = request.files.get('orcr_image')
-
         if orcr_image and orcr_image.filename:
             if orcr_image.mimetype.startswith('image/') and orcr_image.content_length <= MAX_FILE_SIZE:
                 orcr_filename = secure_filename(orcr_image.filename)
@@ -76,9 +76,9 @@ def user_dashboard():
                 flash("Invalid or too large ORCR image. Please upload a valid image under 25 MB.", 'danger')
                 return redirect(request.url)
 
+        # Handle driver license image upload
         driver_license_filename = None
         driver_license_image = request.files.get('driver_license_image')
-
         if driver_license_image and driver_license_image.filename:
             if driver_license_image.mimetype.startswith('image/') and driver_license_image.content_length <= MAX_FILE_SIZE:
                 driver_license_filename = secure_filename(driver_license_image.filename)
@@ -92,14 +92,25 @@ def user_dashboard():
         try:
             cursor, connection = get_cursor()
 
+            # Check if there are any changes to update
             update_user_query = """
                 UPDATE user
-                SET firstname = %s, lastname = %s, email = %s, contactnumber = %s, 
-                    updated_at = CURRENT_TIMESTAMP, is_approved = 0
+                SET firstname = %s, lastname = %s, email = %s, contactnumber = %s,
+                    updated_at = CURRENT_TIMESTAMP
                 WHERE user_id = %s
+                AND (firstname != %s OR lastname != %s OR email != %s OR contactnumber != %s)
             """
-            cursor.execute(update_user_query, (firstname, lastname, email, contactnumber, user_id))
+            cursor.execute(update_user_query, (firstname, lastname, email, contactnumber, user_id, firstname, lastname, email, contactnumber))
 
+            # If there were changes, update the approval status
+            if cursor.rowcount > 0:
+                cursor.execute("""
+                    UPDATE user
+                    SET is_approved = 0
+                    WHERE user_id = %s
+                """, (user_id,))
+
+            # Update profile image if it was uploaded
             if profile_image_filename:
                 cursor.execute("""
                     UPDATE user
@@ -107,6 +118,7 @@ def user_dashboard():
                     WHERE user_id = %s
                 """, (profile_image_filename, user_id))
 
+            # Update user documents if they were uploaded
             if orcr_filename or driver_license_filename:
                 cursor.execute("""
                     SELECT document_id FROM user_documents WHERE user_id = %s
@@ -126,7 +138,7 @@ def user_dashboard():
                     """, (user_id, orcr_filename, driver_license_filename))
 
             connection.commit()
-            flash("Profile updated successfully! Approval status has been reset.", "success")
+            flash("Profile updated successfully!", "success")
 
         except Exception as e:
             print(f"Error updating profile: {e}")
@@ -138,6 +150,7 @@ def user_dashboard():
 
         return redirect(url_for('user_dashboard.user_dashboard'))
 
+    # Fetch required data for rendering the dashboard
     time_in_time_out_data = get_time_in_time_out_comparison(user_id)
     peak_hours_data = get_peak_hours_of_vehicle_entries()
     vehicle_stay_durations_data = get_vehicle_stay_durations(user_id)

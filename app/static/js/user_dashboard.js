@@ -29,6 +29,7 @@ document.getElementById('edit-button').addEventListener('click', () => {
         input.classList.remove('hidden');
         input.classList.add('opacity-100');
     });
+
     document.querySelectorAll('span[id$="-text"]').forEach(span => {
         span.classList.add('opacity-0');
         setTimeout(() => span.classList.add('hidden'), 300); 
@@ -53,7 +54,6 @@ document.getElementById('edit-button').addEventListener('click', () => {
     document.getElementById('orcr-image-input').classList.remove('hidden');
     document.getElementById('driver-license-image-input').classList.remove('hidden');
 });
-
 
 document.getElementById('cancel-button').addEventListener('click', () => {
     location.reload();
