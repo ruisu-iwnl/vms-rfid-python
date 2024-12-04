@@ -117,6 +117,17 @@ def handle_rfid():
                     flash('RFID is registered but not associated with a vehicle.', 'error')
                     return redirect(url_for('timeinout.timeinout'))
 
+                # Check if the user is approved
+                cursor.execute("""
+                    SELECT is_approved FROM user WHERE user_id = %s
+                """, (user_id,))
+                user_status = cursor.fetchone()
+                if user_status and user_status[0] == 0:
+                    print("User is not approved.")
+                    flash('User not verified yet. Please contact admin.', 'error')
+                    return redirect(url_for('timeinout.timeinout'))
+
+                # If the user is approved, proceed to check the time logs and log time
                 user_status = check_user_time_status(rfid_no)
                 print(f"User status: {user_status}")
 
