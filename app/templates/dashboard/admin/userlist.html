@@ -9,187 +9,281 @@
 <div class="w-full h-full p-6">
     <div class="mb-4 flex justify-between items-center">
         <!-- Buttons to open modals -->
-        <div class="flex space-x-4 mb-4">
+        <!-- <div class="flex space-x-4 mb-4">
             <button id="openUserModalBtn" class="bg-green-500 text-black py-4 px-8 rounded border border-black hover:bg-green-700" style="background-color: #eeeee4; font-size: 1.25rem;">
                 <img src="{{ url_for('static', filename='images/icons/adduser.svg') }}" alt="Add User" class="inline h-8 w-8 mr-2"> Add User
-            </button>
-            {% include 'dashboard/admin/modals/adduser.html' %}
+            </button> -->
+            <!-- include 'dashboard/admin/modals/adduser.html -->
             
-            <button id="openModalBtn" class="bg-blue-500 text-black py-4 px-8 rounded border border-black hover:bg-blue-700" style="background-color: #eeeee4; font-size: 1.25rem;">
+            <!-- <button id="openModalBtn" class="bg-blue-500 text-black py-4 px-8 rounded border border-black hover:bg-blue-700" style="background-color: #eeeee4; font-size: 1.25rem;">
                 <img src="{{ url_for('static', filename='images/icons/addvehicle.svg') }}" alt="Add Vehicle" class="inline h-8 w-8 mr-2"> Add Vehicle
-            </button>
-            {% include 'dashboard/admin/modals/addvehicle.html' %}
-        </div>
+            </button> -->
+            <!-- include 'dashboard/admin/modals/addvehicle.html'  -->
+        <!-- </div> -->
 
         <!-- Search Bar -->
         <div class="relative w-1/3">
             <input type="text" id="search-bar" placeholder="Search users..." class="block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
         </div>
     </div>
-    
-<!-- Table Container -->
-<div class="bg-[#eeeee4] p-6 rounded-lg shadow-md w-full max-w-full mb-8 relative">
-    <table class="min-w-full divide-y divide-gray-300" id="user-table">
-        <thead class="bg-[#eeeee4]">
-            <tr>
-                <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">
-                    <a href="{{ url_for('userlist.userlist', page=page, sort_by='emp_no', order='asc' if sort_by != 'emp_no' or order == 'desc' else 'desc') }}">
-                        Employee Number
-                        {% if sort_by == 'emp_no' %}
-                            {% if order == 'asc' %}▲{% else %}▼{% endif %}
-                        {% endif %}
-                    </a>
-                </th>
-                <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">
-                    <a href="{{ url_for('userlist.userlist', page=page, sort_by='full_name', order='asc' if sort_by != 'full_name' or order == 'desc' else 'desc') }}">
-                        Full Name
-                        {% if sort_by == 'full_name' %}
-                            {% if order == 'asc' %}▲{% else %}▼{% endif %}
-                        {% endif %}
-                    </a>
-                </th>
-                <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">
-                    <a href="{{ url_for('userlist.userlist', page=page, sort_by='created_at', order='asc' if sort_by != 'created_at' or order == 'desc' else 'desc') }}">
-                        Created At
-                        {% if sort_by == 'created_at' %}
-                            {% if order == 'asc' %}▲{% else %}▼{% endif %}
-                        {% endif %}
-                    </a>
-                </th>
-                <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">
-                    <a href="{{ url_for('userlist.userlist', page=page, sort_by='contactnumber', order='asc' if sort_by != 'contactnumber' or order == 'desc' else 'desc') }}">
-                        Contact Number
-                        {% if sort_by == 'contactnumber' %}
-                            {% if order == 'asc' %}▲{% else %}▼{% endif %}
-                        {% endif %}
-                    </a>
-                </th>
-                <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">
-                    <a href="{{ url_for('userlist.userlist', page=page, sort_by='vehicle_count', order='asc' if sort_by != 'vehicle_count' or order == 'desc' else 'desc') }}">
-                        Vehicle/s
-                        {% if sort_by == 'vehicle_count' %}
-                            {% if order == 'asc' %}▲{% else %}▼{% endif %}
-                        {% endif %}
-                    </a>
-                </th>                    
-                <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">License Plate</th>
-            </tr>
-        </thead>
-        
-        <tbody class="bg-[#eeeee4] divide-y divide-gray-300" id="user-table-body">
-            {% for user in users %}
+
+
+    <!-- Unapproved Users Table -->
+    <div class="bg-[#eeeee4] p-6 rounded-lg shadow-md w-full max-w-full mb-8 relative">
+        <table class="min-w-full divide-y divide-gray-300" id="unapproved-user-table">
+            <thead class="bg-[#eeeee4]">
                 <tr>
-                    <td class="px-6 py-4 whitespace-nowrap text-lg font-medium text-black">{{ user[0] }}</td> <!-- emp_no -->
-                    <td class="px-6 py-4 whitespace-nowrap text-lg text-black flex items-center" style="min-width: 200px; max-width: 300px; overflow: hidden; text-overflow: ellipsis; flex-grow: 1;">
-                        {% if user[7] %}
-                            <img src="{{ url_for('static', filename='images/users/' + user[7]) }}" alt="Profile Image" class="w-[50px] h-[50px] rounded-full mr-4">
-                        {% else %}
-                            <img src="{{ url_for('static', filename='images/users/profile.svg') }}" alt="Default Profile Image" class="w-[50px] h-[50px] rounded-full mr-4">
-                        {% endif %}
-                        {{ user[1] }} <!-- full_name -->
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ user[6] }}</td> <!-- created_at -->
-                    <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ user[2] }}</td> <!-- contactnumber -->
-                    <td class="px-6 py-4 whitespace-nowrap text-lg text-black">
-                        {% if user[3] %}
-                            {% if ',' in user[3] %}
-                                <div class="relative">
-                                    <button class="bg-gray-200 text-gray-700 py-1 px-2 rounded hover:bg-gray-300 focus:outline-none toggle-dropdown" data-dropdown-id="dropdown-{{ loop.index }}">
-                                        View Vehicles
-                                    </button>
-                                    <div id="dropdown-{{ loop.index }}" class="absolute mt-2 py-2 w-48 bg-white rounded-lg shadow-xl z-10 hidden">
-                                        {% for vehicle in user[3].split(', ') %}
-                                            <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">{{ vehicle }}</a>
-                                        {% endfor %}
-                                    </div>
-                                </div>
-                            {% else %}
-                                {{ user[3] }}
-                            {% endif %}
-                        {% else %}
-                            No Vehicle Registered
-                        {% endif %}
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-lg text-black">
-                        {% if user[4] %}
-                            {% if ',' in user[4] %}
-                                <div class="relative">
-                                    <button class="bg-gray-200 text-gray-700 py-1 px-2 rounded hover:bg-gray-300 focus:outline-none toggle-dropdown" data-dropdown-id="plate-dropdown-{{ loop.index }}">
-                                        View Plates
-                                    </button>
-                                    <div id="plate-dropdown-{{ loop.index }}" class="absolute mt-2 py-2 w-48 bg-white rounded-lg shadow-xl z-10 hidden">
-                                        {% for plate in user[4].split(', ') %}
-                                            <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">{{ plate }}</a>
-                                        {% endfor %}
-                                    </div>
-                                </div>
-                            {% else %}
-                                {{ user[4] }}
-                            {% endif %}
-                        {% else %}
-                            No Plate Available
-                        {% endif %}
-                    </td>
+                    <!-- Table Headers for Unapproved Users -->
+                    <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">
+                        Employee Number
+                    </th>
+                    <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">
+                        Full Name
+                    </th>
+                    <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">
+                        Created At
+                    </th>
+                    <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">
+                        Contact Number
+                    </th>
+                    <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">
+                        Vehicle/s
+                    </th>
+                    <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">License Plate</th>
+                    <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">Documents</th>
+                    <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">Actions</th>
                 </tr>
-            {% endfor %}
-        </tbody>
+            </thead>
+            
+            <tbody class="bg-[#eeeee4] divide-y divide-gray-300">
+                {% for user in unapproved_users %}
+                    <tr class="bg-yellow-100">
+                        <!-- Display Unapproved Users -->
+                        <td class="px-6 py-4 whitespace-nowrap text-lg font-medium text-black">{{ user[0] }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-lg text-black flex items-center" style="min-width: 200px; max-width: 300px; overflow: hidden; text-overflow: ellipsis; flex-grow: 1;">
+                            {% if user[7] %}
+                                <img src="{{ url_for('static', filename='images/users/' + user[7]) }}" alt="Profile Image" class="w-[50px] h-[50px] rounded-full mr-4">
+                            {% else %}
+                                <img src="{{ url_for('static', filename='images/users/profile.svg') }}" alt="Default Profile Image" class="w-[50px] h-[50px] rounded-full mr-4">
+                            {% endif %}
+                            {{ user[1] }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ user[6] }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ user[2] }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ user[3] }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ user[4] }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-lg text-black flex items-center">
+                            <button class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 openUserModalBtn" 
+                                    data-user-id="{{ user[0] }}"
+                                    data-user-orcr="{{ url_for('static', filename='documents/' + user[8] if user[8] else '') }}"
+                                    data-user-license="{{ url_for('static', filename='documents/' + user[9] if user[9] else '') }}">
+                                View
+                            </button>
+                        </td>                                       
+                        <td class="px-6 py-4 whitespace-nowrap text-lg text-black">
+                            <!-- Confirm and Deny Actions for Unapproved Users -->
+                            <form action="{{ url_for('userlist.confirm_user', emp_no=user[0]) }}" method="post" style="display: inline;">
+                                {{ form.hidden_tag() }} 
+                                <button type="submit" class="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600">Confirm</button>
+                            </form>
+                            <form action="{{ url_for('userlist.deny_user', emp_no=user[0]) }}" method="post" style="display: inline;">
+                                {{ form.hidden_tag() }} 
+                                <button type="submit" class="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600">Deny</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
         
-    </table>
-<!-- Pagination -->
-<div class="flex justify-center mt-4">
-    <nav class="relative z-0 inline-flex shadow-sm -space-x-px" aria-label="Pagination">
-        {% if page > 1 %}
-            <a href="{{ url_for('userlist.userlist', page=1, sort_by=sort_by, order=order) }}" class="relative inline-flex items-center px-4 py-2 border border-gray-400 text-base font-medium text-white bg-indigo-600 rounded-full hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition ease-in-out duration-300">
-                <i class="fas fa-angle-double-left"></i>
-            </a>
-        {% endif %}
-        
-        {% set start_page = page - 2 %}
-        {% set end_page = page + 2 %}
-        
-        {% if start_page < 1 %}
-            {% set start_page = 1 %}
-        {% endif %}
-        
-        {% if end_page > total_pages %}
-            {% set end_page = total_pages %}
-        {% endif %}
-        
-        {% for p in range(start_page, end_page + 1) %}
-            <a href="{{ url_for('userlist.userlist', page=p, sort_by=sort_by, order=order) }}" class="relative inline-flex items-center px-4 py-2 border border-gray-400 text-base font-medium {{ 'bg-indigo-600' if p == page else 'bg-gray-300' }} rounded-full text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition ease-in-out duration-300">
-                {{ p }}
-            </a>
-        {% endfor %}
-        
-        {% if page < total_pages %}
-            <a href="{{ url_for('userlist.userlist', page=total_pages, sort_by=sort_by, order=order) }}" class="relative inline-flex items-center px-4 py-2 border border-gray-400 text-base font-medium text-white bg-indigo-600 rounded-full hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition ease-in-out duration-300">
-                <i class="fas fa-angle-double-right"></i>
-            </a>
-        {% endif %}
-    </nav>
+
+        <!-- Pagination for Unapproved Users -->
+        <div class="flex justify-center mt-4">
+            <nav class="relative z-0 inline-flex shadow-sm -space-x-px" aria-label="Pagination">
+                {% if unapproved_page > 1 %}
+                    <a href="{{ url_for('userlist.userlist', approved_page=approved_page, unapproved_page=1, sort_by=sort_by, order=order) }}" class="relative inline-flex items-center px-4 py-2 border border-gray-400 text-base font-medium text-white bg-indigo-600 rounded-full hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition ease-in-out duration-300">
+                        <i class="fas fa-angle-double-left"></i>
+                    </a>
+                {% endif %}
+                
+                {% for p in range(1, unapproved_total_pages + 1) %}
+                    <a href="{{ url_for('userlist.userlist', approved_page=approved_page, unapproved_page=p, sort_by=sort_by, order=order) }}" class="relative inline-flex items-center px-4 py-2 border border-gray-400 text-base font-medium {{ 'bg-indigo-600' if p == unapproved_page else 'bg-gray-300' }} rounded-full text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition ease-in-out duration-300">
+                        {{ p }}
+                    </a>
+                {% endfor %}
+                
+                {% if unapproved_page < unapproved_total_pages %}
+                    <a href="{{ url_for('userlist.userlist', approved_page=approved_page, unapproved_page=unapproved_total_pages, sort_by=sort_by, order=order) }}" class="relative inline-flex items-center px-4 py-2 border border-gray-400 text-base font-medium text-white bg-indigo-600 rounded-full hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition ease-in-out duration-300">
+                        <i class="fas fa-angle-double-right"></i>
+                    </a>
+                {% endif %}
+            </nav>
+        </div>
+    </div>
+    <!-- Approved Users Table -->
+    <div class="bg-[#eeeee4] p-6 rounded-lg shadow-md w-full max-w-full mb-8 relative">
+        <table class="min-w-full divide-y divide-gray-300" id="approved-user-table">
+            <thead class="bg-[#eeeee4]">
+                <tr>
+                    <!-- Table Headers for Approved Users -->
+                    <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">
+                        Employee Number
+                    </th>
+                    <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">
+                        Full Name
+                    </th>
+                    <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">
+                        Created At
+                    </th>
+                    <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">
+                        Contact Number
+                    </th>
+                    <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">
+                        Vehicle/s
+                    </th>
+                    <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">License Plate</th>
+                    <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">Documents</th>
+                    <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">Actions</th>
+                </tr>
+            </thead>
+            
+            <tbody class="bg-[#eeeee4] divide-y divide-gray-300">
+                {% for user in approved_users %}
+                    <tr class="bg-green-100">
+                        <!-- Display Approved Users -->
+                        <td class="px-6 py-4 whitespace-nowrap text-lg font-medium text-black">{{ user[0] }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-lg text-black flex items-center" style="min-width: 200px; max-width: 300px; overflow: hidden; text-overflow: ellipsis; flex-grow: 1;">
+                            {% if user[7] %}
+                                <img src="{{ url_for('static', filename='images/users/' + user[7]) }}" alt="Profile Image" class="w-[50px] h-[50px] rounded-full mr-4">
+                            {% else %}
+                                <img src="{{ url_for('static', filename='images/users/profile.svg') }}" alt="Default Profile Image" class="w-[50px] h-[50px] rounded-full mr-4">
+                            {% endif %}
+                            {{ user[1] }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ user[6] }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ user[2] }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ user[3] }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ user[4] }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-lg text-black flex items-center">
+                            <button class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 openUserModalBtn" 
+                                    data-user-id="{{ user[0] }}"
+                                    data-user-orcr="{{ url_for('static', filename='documents/' + user[8] if user[8] else '') }}"
+                                    data-user-license="{{ url_for('static', filename='documents/' + user[9] if user[9] else '') }}">
+                                View
+                            </button>
+                        </td>                                       
+                        <td class="px-6 py-4 whitespace-nowrap text-lg text-black"></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Pagination for Approved Users -->
+        <div class="flex justify-center mt-4">
+            <nav class="relative z-0 inline-flex shadow-sm -space-x-px" aria-label="Pagination">
+                {% if approved_page > 1 %}
+                    <a href="{{ url_for('userlist.userlist', approved_page=1, unapproved_page=unapproved_page, sort_by=sort_by, order=order) }}" class="relative inline-flex items-center px-4 py-2 border border-gray-400 text-base font-medium text-white bg-indigo-600 rounded-full hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition ease-in-out duration-300">
+                        <i class="fas fa-angle-double-left"></i>
+                    </a>
+                {% endif %}
+                
+                {% for p in range(1, total_approved_pages + 1) %}
+                    <a href="{{ url_for('userlist.userlist', approved_page=p, unapproved_page=unapproved_page, sort_by=sort_by, order=order) }}" class="relative inline-flex items-center px-4 py-2 border border-gray-400 text-base font-medium {{ 'bg-indigo-600' if p == approved_page else 'bg-gray-300' }} rounded-full text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition ease-in-out duration-300">
+                        {{ p }}
+                    </a>
+                {% endfor %}
+                
+                {% if approved_page < total_approved_pages %}
+                    <a href="{{ url_for('userlist.userlist', approved_page=total_approved_pages, unapproved_page=unapproved_page, sort_by=sort_by, order=order) }}" class="relative inline-flex items-center px-4 py-2 border border-gray-400 text-base font-medium text-white bg-indigo-600 rounded-full hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition ease-in-out duration-300">
+                        <i class="fas fa-angle-double-right"></i>
+                    </a>
+                {% endif %}
+            </nav>
+        </div>
+    </div>
 </div>
 
-</div>
+<!-- Modal Structure -->
+<div id="userModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 hidden">
+    <div class="flex items-center justify-center min-h-screen">
+        <div class="bg-white rounded-lg shadow-lg p-6 max-w-lg w-full relative">
+            <!-- Close Button with Pop-out Design -->
+            <button id="closeUserModalBtn" class="absolute top-2 right-2 text-white text-3xl font-bold bg-blue-500 hover:bg-blue-600 rounded-full p-2 shadow-lg transform transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                &times;
+            </button>
+            
+            <div class="modal-content">
+                {% for user in approved_users + unapproved_users %}
+                    <!-- ORCR Image -->
+                    {% if user[8] %}  <!-- ORCR Field -->
+                        <div class="mb-4">
+                            <h3 class="text-xl font-semibold text-gray-800 mb-2">ORCR</h3>
+                            <img src="{{ url_for('static', filename='documents/' + user[8]) }}" alt="ORCR Image" class="w-full h-auto border-2 border-gray-300 rounded-lg shadow-sm">
+                        </div>
+                    {% else %}
+                        <p class="text-gray-700">No ORCR document available.</p>
+                    {% endif %}
 
-
-
+                    <!-- Driver License Image -->
+                    {% if user[9] %}  <!-- Driver License Field -->
+                        <div class="mb-4">
+                            <h3 class="text-xl font-semibold text-gray-800 mb-2">Driver License</h3>
+                            <img src="{{ url_for('static', filename='documents/' + user[9]) }}" alt="Driver License Image" class="w-full h-auto border-2 border-gray-300 rounded-lg shadow-sm">
+                        </div>
+                    {% else %}
+                        <p class="text-gray-700">No Driver License document available.</p>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
 
-    // Open and close User Modal
-    document.getElementById('openUserModalBtn').addEventListener('click', function() {
-            const modal = document.getElementById('userModal');
-            modal.classList.remove('hidden');
-            // Trigger the transition
-            setTimeout(() => modal.classList.add('show'), 10);
-        });
+// Open and close User Modal
+document.querySelectorAll('.openUserModalBtn').forEach(button => {
+    button.addEventListener('click', function() {
+        const userId = this.getAttribute('data-user-id');
+        const userOrcr = this.getAttribute('data-user-orcr');
+        const userLicense = this.getAttribute('data-user-license');
+        
+        const modal = document.getElementById('userModal');
+        const modalContent = modal.querySelector('.modal-content');
 
-        document.getElementById('closeUserModalBtn').addEventListener('click', function() {
-            const modal = document.getElementById('userModal');
-            modal.classList.remove('show');
-            setTimeout(() => modal.classList.add('hidden'), 300); 
-        });
+        // Reset modal content
+        modalContent.innerHTML = ''; 
+
+        // Add user documents to modal
+        modalContent.innerHTML = `
+            ${userOrcr ? `
+                <div class="mb-4">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">ORCR</h3>
+                    <img src="${userOrcr}" alt="ORCR Image" class="w-full h-auto border-2 border-gray-300 rounded-lg shadow-sm">
+                </div>
+            ` : `<p class="text-gray-700">No ORCR document available.</p>`}
+
+            ${userLicense ? `
+                <div class="mb-4">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Driver License</h3>
+                    <img src="${userLicense}" alt="Driver License Image" class="w-full h-auto border-2 border-gray-300 rounded-lg shadow-sm">
+                </div>
+            ` : `<p class="text-gray-700">No Driver License document available.</p>`}
+        `;
+
+        // Show modal
+        modal.classList.remove('hidden');
+        setTimeout(() => modal.classList.add('show'), 10);
+    });
+});
+
+// Close the modal when the close button is clicked
+document.getElementById('closeUserModalBtn').addEventListener('click', function() {
+    const modal = document.getElementById('userModal');
+    modal.classList.remove('show');
+    setTimeout(() => modal.classList.add('hidden'), 300); 
+});
+
 
     document.getElementById('openModalBtn').addEventListener('click', function() {
             const modal = document.getElementById('vehicleModal');
@@ -244,5 +338,19 @@
             }
         });
     });
+
+    // Open and close User Modal
+document.getElementById('openUserModalBtn').addEventListener('click', function() {
+    const modal = document.getElementById('userModal');
+    modal.classList.remove('hidden');
+    // Trigger the transition
+    setTimeout(() => modal.classList.add('show'), 10);
+});
+
+document.getElementById('closeUserModalBtn').addEventListener('click', function() {
+    const modal = document.getElementById('userModal');
+    modal.classList.remove('show');
+    setTimeout(() => modal.classList.add('hidden'), 300); 
+});
 </script>
 {% endblock %}

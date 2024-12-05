@@ -7,6 +7,47 @@ from app.models.database import get_cursor, close_db_connection
 
 load_dotenv()
 
+def get_emp_profile_info(user_id):
+    try:
+        cursor, connection = get_cursor()
+        
+        cursor.execute("""
+            SELECT u.user_id, u.firstname, u.lastname, u.email, u.contactnumber, 
+                   u.emp_no, COUNT(v.vehicle_id) AS vehicle_count, u.profile_image, 
+                   u.is_approved, ud.orcr, ud.driverlicense
+            FROM user u
+            LEFT JOIN vehicle v ON u.user_id = v.user_id
+            LEFT JOIN user_documents ud ON u.user_id = ud.user_id
+            WHERE u.user_id = %s
+            GROUP BY u.user_id, ud.orcr, ud.driverlicense
+        """, (user_id,))
+        
+        user_data = cursor.fetchone()
+        
+        if user_data:
+            return {
+                'user_id': user_data[0],
+                'firstname': user_data[1],
+                'lastname': user_data[2],
+                'email': user_data[3],
+                'contactnumber': user_data[4],
+                'emp_no': user_data[5],
+                'vehicle_count': user_data[6],
+                'profile_image': user_data[7],
+                'is_approved': user_data[8],
+                'orcr': user_data[9],
+                'driverlicense': user_data[10]
+            }
+        return None
+
+    except Exception as e:
+        print(f"Error fetching user profile: {e}")
+        return None
+
+    finally:
+        cursor.close()
+        close_db_connection(connection)
+
 def get_user_profile_info(user_id):
     cursor, connection = get_cursor()
     try:

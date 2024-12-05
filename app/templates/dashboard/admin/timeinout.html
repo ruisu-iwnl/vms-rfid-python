@@ -9,116 +9,32 @@
 
     <h1 id="date" class="flex text-4xl justify-center font-bold mb-4">Date Placeholder</h1>
     <h1 id="time" class="flex text-4xl justify-center font-bold mb-4">Time Placeholder</h1>
-
-    <!-- RFID Scanner Section (Initially Hidden) -->
-    <div id="rfidSection" style="display: none;">
+    
+    <div id="rfidSection" style="display: block;">
         <form action="{{ url_for('timeinout.handle_rfid') }}" method="POST" class="flex flex-col items-start space-y-4 mb-4" autocomplete="off">
             {{ form.hidden_tag() }}
-
-            <label for="rfid_no" class="text-lg font-bold">RFID Scanner:</label>
-            <input type="text" name="rfid_no" id="rfid-input" class="border border-gray-300 rounded-lg p-4 text-lg w-full" placeholder="RFID Number" style="opacity: 0; position: absolute; left: -9999px;">
-
+        
+            <input type="text" name="rfid_no" id="rfid-input" class="rounded-lg p-4 text-lg w-full" placeholder="RFID Number" style="opacity: 0; position: absolute; left: -9999px;">
+        
             <button 
                 type="button" 
                 id="scan_button"
-                class="bg-green-500 text-black py-4 px-8 rounded border border-black hover:bg-green-700"
-                style="background-color: #eeeee4; font-size: 1.25rem;"
+                class="bg-green-500 text-black py-4 px-8 rounded hover:bg-green-700 flex items-center justify-center mx-auto"
+                style="background-color: #eeeee4; font-size: 1.25rem; width: 50%; height: auto;"
                 onclick="toggleScanning()"
             >
-                Click To Scan
+                <p class="text-center text-5xl font-bold mt-4">TAP TO</p>    
+                <img src="{{ url_for('static', filename='images/icons/rfid.svg') }}" alt="RFID Icon" class="h-[150px] w-[150px] object-contain">
+                <p class="text-center text-5xl font-bold mt-4">SCAN</p>
             </button>
-
+        
             <p id="scanned_display" class="mt-2 text-lg font-semibold"><span id="rfid_number"></span></p> 
-
-            <!-- Back Button -->
-            <button 
-                id="backBtn" 
-                class="bg-green-500 text-black py-2 px-6 rounded border border-black hover:bg-green-700" 
-                style="background-color: #eeeee4; font-size: 1.25rem; display: inline-block;"
-                onclick="goBackToCamera()"
-            >
-                Back
-            </button>
         </form>
     </div>
-
-    <!-- Camera Section -->
-    <div id="cameraSection" class="flex flex-col items-center space-y-4 mt-6">
-        <!-- <h2 class="text-xl font-semibold">License Plate Detection</h2> -->
-        
-        <!-- Video Feed from Camera -->
-        <div class="flex justify-center">
-            <video id="liveCamera" autoplay style="width: 500px; height: 500px; border: 2px solid black; display: none;"></video>
-        </div>
-
-        <div class="flex space-x-4">
-            <button 
-            id="captureBtn" 
-            class="bg-green-500 text-black py-2 px-6 rounded border border-black hover:bg-green-700"
-            style="background-color: #eeeee4; font-size: 1.25rem; display: none;"
-        >
-            Capture Image
-        </button>
-        
-        <button 
-            id="toggleCameraBtn" 
-            class="bg-green-500 text-black py-2 px-6 rounded border border-black hover:bg-green-700"
-            style="background-color: #eeeee4; font-size: 1.25rem;"
-        >
-            Record Time In/Out
-        </button>
-        </div>
-
-        <!-- Scanning Text -->
-        <div id="scanningText" class="text-lg font-semibold text-center" style="display: none;">
-            Scanning... Please wait.
-        </div>
-
-        <!-- Progress Bar with smaller width (e.g., 50% of the container) -->
-        <div id="progressBarContainer" class="bg-gray-300 mt-4 h-2 mx-auto" style="display: none; width: 50%;">
-            <div id="progressBar" class="bg-green-500 h-2" style="width: 0%;"></div>
-        </div>
-
-        <div id="detectedText" class="mt-4 text-lg font-semibold text-center text-black" style="display: none;"></div>
-
-        <!-- Captured Images -->
-        <img id="capturedImage" alt="Captured Image" style="display: none;">
-        <img id="threshImage" alt="Thresholded Image" style="display: none;">
-        <img id="edgedImage" alt="Edge-detected Image" style="display: none;">
-
-        <!-- Retry Button (moved to the bottom below captured image) -->
-        <div class="flex justify-center mt-4">
-            <button 
-                id="retryBtn" 
-                class="bg-green-500 text-black py-2 px-6 rounded border border-black hover:bg-green-700"
-                style="background-color: #eeeee4; font-size: 1.25rem; display: none;" 
-                onclick="retryCapture()"
-            >
-                Retry
-            </button>
-        </div>
-    </div>
-
-    <!-- Navigation Buttons -->
-    <div class="flex justify-between mt-6">
-        <button 
-            id="nextBtn" 
-            class="bg-green-500 text-black py-2 px-6 rounded border border-black hover:bg-green-700" 
-            style="background-color: #eeeee4; font-size: 1.25rem; display: none;"
-        >
-            Next
-        </button>
-        
-        <button 
-            id="retryBtn" 
-            class="bg-green-500 text-black py-2 px-6 rounded border border-black hover:bg-green-700" 
-            style="background-color: #eeeee4; font-size: 1.25rem; display: none;" 
-            onclick="retryCapture()"
-        >
-            Retry
-        </button>
-    </div>
-
+    
+    
+    
+    
     <!-- Time In/Out Table -->
     <div class="bg-[#eeeee4] p-6 rounded-lg shadow-md w-full max-w-full mb-8 relative">
         <table class="min-w-full divide-y divide-gray-300">
@@ -130,8 +46,8 @@
                     <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">Employee ID</th>
                     <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">Name</th>
                     <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">Phone Number</th>
-                    <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">Vehicles</th>
-                    <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">License Plates</th>
+                    <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">Vehicle</th>
+                    <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">Logged By</th> 
                 </tr>
             </thead>
             <tbody class="bg-[#eeeee4] divide-y divide-gray-300">
@@ -150,54 +66,52 @@
                             {{ record.name }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ record.phone_number }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ record.vehicles }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ record.license_plates }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ record.vehicles if record.vehicles else 'No Vehicle Registered' }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ record.admin_firstname }}</td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
-<!-- Pagination -->
-<div class="flex justify-center mt-4">
-    <nav class="relative z-0 inline-flex shadow-sm -space-x-px" aria-label="Pagination">
-        {% if page > 1 %}
-            <a href="{{ url_for('timeinout.timeinout', page=1) }}" class="relative inline-flex items-center px-4 py-2 border border-gray-400 text-base font-medium text-white bg-indigo-600 rounded-full hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition ease-in-out duration-300">
-                <i class="fas fa-angle-double-left"></i>
-            </a>
-        {% endif %}
         
-        {% set start_page = page - 2 %}
-        {% set end_page = page + 2 %}
-        
-        {% if start_page < 1 %}
-            {% set start_page = 1 %}
-        {% endif %}
-        
-        {% if end_page > total_pages %}
-            {% set end_page = total_pages %}
-        {% endif %}
-        
-        {% for p in range(start_page, end_page + 1) %}
-            <a href="{{ url_for('timeinout.timeinout', page=p) }}" class="relative inline-flex items-center px-4 py-2 border border-gray-400 text-base font-medium {{ 'bg-indigo-600' if p == page else 'bg-gray-300' }} rounded-full text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition ease-in-out duration-300">
-                {{ p }}
-            </a>
-        {% endfor %}
-        
-        {% if page < total_pages %}
-            <a href="{{ url_for('timeinout.timeinout', page=total_pages) }}" class="relative inline-flex items-center px-4 py-2 border border-gray-400 text-base font-medium text-white bg-indigo-600 rounded-full hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition ease-in-out duration-300">
-                <i class="fas fa-angle-double-right"></i>
-            </a>
-        {% endif %}
-    </nav>
-</div>
 
+        <!-- Pagination -->
+        <div class="flex justify-center mt-4">
+            <nav class="relative z-0 inline-flex shadow-sm -space-x-px" aria-label="Pagination">
+                {% if page > 1 %}
+                    <a href="{{ url_for('timeinout.timeinout', page=1) }}" class="relative inline-flex items-center px-4 py-2 border border-gray-400 text-base font-medium text-white bg-indigo-600 rounded-full hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition ease-in-out duration-300">
+                        <i class="fas fa-angle-double-left"></i>
+                    </a>
+                {% endif %}
+                
+                {% set start_page = page - 2 %}
+                {% set end_page = page + 2 %}
+                
+                {% if start_page < 1 %}
+                    {% set start_page = 1 %}
+                {% endif %}
+                
+                {% if end_page > total_pages %}
+                    {% set end_page = total_pages %}
+                {% endif %}
+                
+                {% for p in range(start_page, end_page + 1) %}
+                    <a href="{{ url_for('timeinout.timeinout', page=p) }}" class="relative inline-flex items-center px-4 py-2 border border-gray-400 text-base font-medium {{ 'bg-indigo-600' if p == page else 'bg-gray-300' }} rounded-full text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition ease-in-out duration-300">
+                        {{ p }}
+                    </a>
+                {% endfor %}
+                
+                {% if page < total_pages %}
+                    <a href="{{ url_for('timeinout.timeinout', page=total_pages) }}" class="relative inline-flex items-center px-4 py-2 border border-gray-400 text-base font-medium text-white bg-indigo-600 rounded-full hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition ease-in-out duration-300">
+                        <i class="fas fa-angle-double-right"></i>
+                    </a>
+                {% endif %}
+            </nav>
+        </div>
 
     </div>
+
 
 </div>
 
 <script src="{{ url_for('static', filename='js/rfid_scanner.js') }}"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.1/socket.io.min.js"></script>
-<script src="{{ url_for('static', filename='js/crossmatch.js') }}"></script>
-
-    
 {% endblock %}

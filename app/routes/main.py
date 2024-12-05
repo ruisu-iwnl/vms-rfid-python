@@ -2,10 +2,9 @@ from flask import Blueprint, render_template, make_response
 from app.routes.utils.utils import logout
 from app.routes.utils.session import check_logged_in_redirect
 from app.routes.utils.cache import disable_caching, redirect,url_for
+from flask import redirect, url_for, make_response, render_template
 
 main_bp = Blueprint('main', __name__)
-
-from flask import redirect, url_for, make_response, render_template
 
 @main_bp.route('/')
 def index():

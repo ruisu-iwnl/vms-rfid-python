@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Registration | TimeGuard </title>
+    <title>User Registration TEST| TimeGuard </title>
     <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/custom.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/auth-login-register.css') }}" rel="stylesheet">
@@ -65,7 +65,8 @@
         </div>
 
         <!-- Registration Form Section -->
-        <div class="w-full md:w-1/4 p-4 flex flex-col items-center bg-transparent rounded-lg mx-auto">
+        <div class="w-full md:w-1/3 p-4 flex flex-col items-center bg-transparent rounded-lg mx-auto">
+
             <a href="{{ url_for('login.login') }}" class="absolute top-2 left-2 flex items-center justify-center w-6 h-6 rounded-full bg-transparent shadow-md hover:bg-gray-100 transition duration-300 ease-in-out">
                 <svg class="w-4 h-4 text-blue-600 hover:text-blue-800" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l-7-7 7-7"></path>
@@ -73,7 +74,7 @@
             </a>
 
             <h2 class="text-2xl font-bold mb-4   text-center">User Registration</h2>
-            <form action="{{ url_for('user_register.user_register') }}" method="POST" class="w-full flex flex-col" enctype="multipart/form-data" autocomplete="off">
+            <form id="registrationForm" action="{{ url_for('user_register.user_register') }}" method="POST" class="w-full flex flex-col" enctype="multipart/form-data" autocomplete="off">
                 {{ form.hidden_tag() }}
 
                 {% if is_registered_as_user %}
@@ -85,7 +86,7 @@
                 {% endif %}
 
                 <div class="mb-6">
-                    <label for="profile_image" class="block text-lg font-medium text-black">Profile Image (Max 25 MB)</label>
+                    <label for="profile_image" class="block text-lg font-medium text-black">Profile Image</label>
                     <input type="file" name="profile_image" accept="image/*" class="mt-1 block w-full text-gray-900 py-3 px-4 border border-gray-300 rounded-md focus:border-blue-400 focus:outline-none" required>
                 </div>
 
@@ -121,19 +122,16 @@
                 </div>
 
 
-                <!-- Email Address -->
+                <!-- Email and Contact Number -->
                 <div class="mb-4 w-full">
-                    <label for="email" class="block text-left   text-base font-semibold mb-1">Email Address</label>
-                    <input type="email" id="email" name="email" class="shadow-sm appearance-none border border-gray-400 rounded-lg w-full py-2 px-3 text-gray-900 leading-tight focus:outline-none focus:ring-1 focus:ring-blue-600" value="{{ form.email.data or '' }}" placeholder="Email">
+                    <label for="email_contact" class="block text-left text-base font-semibold mb-1">Email and Contact Number</label>
+                    <div class="flex space-x-4">
+                        <input type="email" id="email" name="email" class="shadow-sm appearance-none border border-gray-400 rounded-lg w-1/2 py-2 px-3 text-gray-900 leading-tight focus:outline-none focus:ring-1 focus:ring-blue-600" value="{{ form.email.data or '' }}" placeholder="Email" required>
+                        <input type="text" id="contactnumber" name="contactnumber" class="shadow-sm appearance-none border border-gray-400 rounded-lg w-1/2 py-2 px-3 text-gray-900 leading-tight focus:outline-none focus:ring-1 focus:ring-blue-600" value="{{ form.contactnumber.data or '' }}" placeholder="Contact Number" required>
+                    </div>
                     {% if form.email.errors %}
                         <p class="text-red-700 text-sm italic mt-1">{{ form.email.errors[0] }}</p>
                     {% endif %}
-                </div>
-
-                <!-- Contact Number -->
-                <div class="mb-4 w-full">
-                    <label for="contactnumber" class="block text-left   text-base font-semibold mb-1">Contact Number</label>
-                    <input type="text" id="contactnumber" name="contactnumber" class="shadow-sm appearance-none border border-gray-400 rounded-lg w-full py-2 px-3 text-gray-900 leading-tight focus:outline-none focus:ring-1 focus:ring-blue-600" value="{{ form.contactnumber.data or '' }}" placeholder="Contact Number">
                     {% if form.contactnumber.errors %}
                         <p class="text-red-700 text-sm italic mt-1">{{ form.contactnumber.errors[0] }}</p>
                     {% endif %}
@@ -160,6 +158,71 @@
                     <label for="togglePasswordCheckbox" class="  text-sm">Show Password</label>
                 </div>
 
+                <!-- Driver's License and ORCR Image (Same Row) -->
+                <div class="mb-6 flex space-x-4">
+                    <div class="w-1/2">
+                        <label for="driver_license" class="block text-lg font-medium text-black">Driver's License</label>
+                        <input type="file" id="driver_license" name="driver_license" accept="image/*" class="mt-1 block w-full text-gray-900 py-3 px-4 border border-gray-300 rounded-md focus:border-blue-400 focus:outline-none" required>
+                    </div>
+                    <div class="w-1/2">
+                        <label for="orcr_image" class="block text-lg font-medium text-black">ORCR</label>
+                        <input type="file" id="orcr_image" name="orcr_image" accept="image/*" class="mt-1 block w-full text-gray-900 py-3 px-4 border border-gray-300 rounded-md focus:border-blue-400 focus:outline-none" required>
+                    </div>                    
+                </div>
+
+                <!-- License Plate and RFID Number (Same Row) -->
+                <div class="mb-4 flex space-x-4">
+                    <div class="w-1/2">
+                        <label for="license_plate" class="block text-left text-base font-semibold mb-1">License Plate</label>
+                        <input type="text" id="license_plate" name="license_plate" class="shadow-sm appearance-none border border-gray-400 rounded-lg w-full py-2 px-3 text-gray-900 leading-tight focus:outline-none focus:ring-1 focus:ring-blue-600" placeholder="License Plate" required>
+                    </div>
+                    <div class="w-1/2">
+                        <label for="rfid_number" class="block text-left text-base font-semibold mb-1">RFID Number</label>
+                        <input type="text" id="rfid_number" name="rfid_number" class="shadow-sm appearance-none border border-gray-400 rounded-lg w-full py-2 px-3 text-gray-900 leading-tight focus:outline-none focus:ring-1 focus:ring-blue-600" placeholder="RFID Number" required>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <div>
+                        <label for="car_make" class="block text-lg font-medium text-black">Car Make</label>
+                        <input type="text" id="make-input" name="make" class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white py-3 px-4">
+                        <select id="car_make" class="mt-1 custom-select block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0 py-3 px-4">
+                            <option value="">Select make</option>
+                            <!-- Options will be populated here -->
+                        </select>
+                        {% if form.make.errors %}
+                            <p class="text-red-700 text-sm italic mt-1">{{ form.make.errors[0] }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <div>
+                        <label for="car_model" class="block text-lg font-medium text-black">Car Model</label>
+                        <input type="text" id="model-input" name="model" class="mt-1 block w-full border border-gray-300 rounded-md text-gray-900 bg-white py-3 px-4">
+                        <select id="car_model" class="mt-1 custom-select block w-full border border-gray-300 rounded-md text-gray-900 bg-white focus:border-blue-400 focus:outline-none focus:ring-0 py-3 px-4">
+                            <option value="">Select model</option>
+                            <!-- Options will be populated here -->
+                        </select>
+                        {% if form.model.errors %}
+                            <p class="text-red-700 text-sm italic mt-1">{{ form.model.errors[0] }}</p>
+                        {% endif %}
+                    </div>
+                    
+                </div>
+                
+
+                <!-- Terms and Conditions -->
+                <div class="mt-4 w-full flex items-center">
+                    <input type="checkbox" id="termsCheckbox" name="terms" required class="mr-3">
+                    <label for="termsCheckbox" class="text-lg font-medium">
+                        I agree to the 
+                        <a href="{{ url_for('tc.tc') }}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 underline font-semibold">
+                            Terms and Conditions
+                        </a>.
+                    </label>
+                </div>                
+
+                <br>
+
                 {% if recaptcha_error %}
                     <p class="text-red-700 text-sm italic mt-2 text-center">{{ recaptcha_error }}</p>
                 {% endif %}
@@ -175,8 +238,6 @@
             </form>
         </div>
 
-    </div>
-
     <script>
         function togglePasswordVisibility() {
             var password = document.getElementById('password');
@@ -189,6 +250,92 @@
                 passwordConfirmation.type = 'password';
             }
         }
+
+        const form = document.getElementById('registrationForm');
+const termsCheckbox = document.getElementById('termsCheckbox');
+
+form.addEventListener('submit', (event) => {
+    if (!termsCheckbox.checked) {
+        event.preventDefault();
+        alert('Please agree to the Terms and Conditions before registering.');
+    }
+});
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    const makeSelect = document.getElementById('car_make');
+    const modelSelect = document.getElementById('car_model');
+    const makeInput = document.getElementById('make-input');
+    const modelInput = document.getElementById('model-input');
+
+    if (!makeSelect || !modelSelect) {
+        console.error('Make or Model select element not found.');
+        return;
+    }
+
+    fetchMakes(); // Fetch makes on page load
+
+    makeSelect.addEventListener('change', function() {
+        const selectedMake = makeSelect.value;
+        makeInput.value = selectedMake; // Update make input field
+        fetchModels(selectedMake); // Fetch models based on selected make
+    });
+
+    modelSelect.addEventListener('change', function() {
+        const selectedModel = modelSelect.value;
+        modelInput.value = selectedModel; // Update model input field
+    });
+
+    // Fetch makes from the server
+    function fetchMakes() {
+        fetch('/register/user/search_makes')  // Updated route based on the new Flask route
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(makes => {
+                makeSelect.innerHTML = '<option value="">Select make</option>'; // Reset options
+                makes.forEach(make => {
+                    const option = document.createElement('option');
+                    option.value = make;
+                    option.textContent = make;
+                    makeSelect.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error fetching makes:', error));
+    }
+
+    // Fetch models based on the selected make
+    function fetchModels(make) {
+        if (!make) {
+            modelSelect.innerHTML = '<option value="">Select model</option>';
+            return;
+        }
+
+        fetch(`/register/user/search_models?make=${make}`)  // Updated route based on the new Flask route
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(models => {
+                modelSelect.innerHTML = '<option value="">Select model</option>'; // Reset options
+                models.forEach(model => {
+                    const option = document.createElement('option');
+                    option.value = model;
+                    option.textContent = model;
+                    modelSelect.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error fetching models:', error));
+    }
+});
+
+
+
     </script>
 
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>

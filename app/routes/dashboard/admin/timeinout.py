@@ -1,13 +1,11 @@
-from flask import Blueprint, render_template, redirect, url_for, request, flash,session
+from flask import Blueprint, render_template, redirect, url_for, request, flash, session
 from app.routes.utils.session import check_access
 from app.models.database import get_cursor, close_db_connection
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
 from flask_wtf import FlaskForm
-from datetime import datetime
-from app.routes.utils.activity_log import log_login_activity
 from datetime import datetime, timedelta
-
+from app.routes.utils.activity_log import log_login_activity
 
 class RFIDForm(FlaskForm):
     rfid_no = StringField('RFID Scanner', validators=[DataRequired()])
@@ -21,34 +19,33 @@ def timeinout(page):
     response = check_access('admin')
     if response:
         return response
-    
+
+    # Check if user is a super admin
     is_super_admin = session.get('is_super_admin', False)
     if is_super_admin:
         print("This admin is a super admin.")
-
         super_admin_features = True
     else:
         print("This admin is NOT a super admin.")
         super_admin_features = False
 
-
     form = RFIDForm()  
     cursor, connection = get_cursor()
 
     try:
+        # Updated query to fetch admin's first name
         cursor.execute("""
             SELECT tl.time_in, tl.time_out, u.emp_no AS employee_id, 
                 CONCAT(u.firstname, ' ', u.lastname) AS name, u.contactnumber,
                 GROUP_CONCAT(CONCAT(v.make, ' ', v.model) SEPARATOR ', ') AS vehicles,
-                GROUP_CONCAT(v.licenseplate SEPARATOR ', ') AS license_plates,
-                u.profile_image
+                u.profile_image, a.firstname AS admin_firstname  -- Changed to fetch admin's first name
             FROM time_logs tl
             JOIN vehicle v ON tl.vehicle_id = v.vehicle_id
             JOIN user u ON v.user_id = u.user_id
-            WHERE tl.time_out IS NULL OR tl.time_out IS NOT NULL  -- includes records with empty time_out
-            GROUP BY tl.time_in, tl.time_out, u.user_id
-            ORDER BY 
-                GREATEST(tl.time_in, COALESCE(tl.time_out, tl.time_in)) DESC
+            LEFT JOIN admin a ON tl.admin_id = a.admin_id  -- Join to get the admin's first name
+            WHERE tl.time_out IS NULL OR tl.time_out IS NOT NULL
+            GROUP BY tl.time_in, tl.time_out, u.user_id, tl.admin_id
+            ORDER BY GREATEST(tl.time_in, COALESCE(tl.time_out, tl.time_in)) DESC
         """)
 
         records = cursor.fetchall()
@@ -63,8 +60,8 @@ def timeinout(page):
                 'name': record[3],
                 'phone_number': record[4],
                 'vehicles': record[5] if record[5] else 'No Vehicle Registered',
-                'license_plates': record[6] if record[6] else 'No Plate Available',
-                'profile_image': record[7]
+                'profile_image': record[6],
+                'admin_firstname': record[7]  # Changed to admin_firstname
             })
 
         per_page = 5
@@ -78,121 +75,107 @@ def timeinout(page):
 
     except Exception as e:
         print(f"An error occurred: {e}")
-        return redirect(url_for('timeinout.timeinout')) 
+        return redirect(url_for('timeinout.timeinout'))
 
     finally:
         cursor.close()
         close_db_connection(connection)
-
-from datetime import datetime, timedelta
 
 @timeinout_bp.route('/time_logs/rfid', methods=['POST'])
 def handle_rfid():
     form = RFIDForm()
     if form.validate_on_submit():
         rfid_no = form.rfid_no.data
-        detected_plate_number = request.form.get('detected_plate_number', '')
-
         print(f"RFID scanned: {rfid_no}")
-        print(f"Detected plate number: {detected_plate_number}")
 
         if rfid_no:
             cursor, connection = get_cursor()
             try:
+                print("Querying RFID data...")
+
+                # Query the RFID table for the provided RFID number
                 cursor.execute("""
-                    SELECT rfid_id, vehicle_id FROM rfid WHERE rfid_no = %s
+                    SELECT r.rfid_id, v.vehicle_id, v.user_id
+                    FROM rfid r
+                    JOIN vehicle v ON r.rfid_no = v.rfid_no
+                    WHERE r.rfid_no = %s
                 """, (rfid_no,))
                 rfid_data = cursor.fetchone()
+                print(f"RFID data fetched: {rfid_data}")
 
                 if not rfid_data:
-                    flash('RFID is not registered.', 'error')
+                    print(f"RFID {rfid_no} is not registered or not associated with a vehicle.")
+                    flash('RFID is not registered or not associated with a vehicle.', 'error')
                     return redirect(url_for('timeinout.timeinout'))
 
-                rfid_id, vehicle_id = rfid_data
-                print(f"Found RFID: {rfid_no} with associated vehicle_id: {vehicle_id}")
+                rfid_id, vehicle_id, user_id = rfid_data
+                print(f"RFID ID: {rfid_id}, Vehicle ID: {vehicle_id}, User ID: {user_id}")
 
+                # Check if the vehicle is assigned to a user
                 if not vehicle_id:
+                    print("RFID is registered but not associated with a vehicle.")
                     flash('RFID is registered but not associated with a vehicle.', 'error')
                     return redirect(url_for('timeinout.timeinout'))
 
-                print(f"Checking if detected plate number {detected_plate_number} exists in the database...")
-
-                cleaned_detected_plate_number = detected_plate_number.replace(" ", "")
+                # Check if the user is approved
                 cursor.execute("""
-                    SELECT vehicle_id, licenseplate FROM vehicle WHERE REPLACE(licenseplate, ' ', '') = %s
-                """, (cleaned_detected_plate_number,))
-                vehicle_data = cursor.fetchone()
-
-                if not vehicle_data:
-                    print(f"Vehicle with plate number {detected_plate_number} not found in the database.")
-                    flash(f"Vehicle with plate number {detected_plate_number} not found.", 'error')
+                    SELECT is_approved FROM user WHERE user_id = %s
+                """, (user_id,))
+                user_status = cursor.fetchone()
+                if user_status and user_status[0] == 0:
+                    print("User is not approved.")
+                    flash('User not verified yet. Please contact admin.', 'error')
                     return redirect(url_for('timeinout.timeinout'))
 
-                detected_vehicle_id, license_plate = vehicle_data
-                print(f"Found vehicle with plate number {detected_plate_number}: vehicle_id {detected_vehicle_id}")
-
-                print(f"Comparing RFID vehicle_id {vehicle_id} with detected vehicle_id {detected_vehicle_id}")
-                if vehicle_id != detected_vehicle_id:
-                    print(f"Cross-check failed: RFID vehicle_id {vehicle_id} does not match detected vehicle_id {detected_vehicle_id}")
-                    flash(f"The detected plate number {detected_plate_number} is not associated with this RFID.", 'error')
-                    return redirect(url_for('timeinout.timeinout'))
-                else:
-                    print(f"Cross-check successful: RFID vehicle_id {vehicle_id} matches detected vehicle_id {detected_vehicle_id}")
-
+                # If the user is approved, proceed to check the time logs and log time
                 user_status = check_user_time_status(rfid_no)
-                print(f"User status for RFID {rfid_no}: {user_status}")
+                print(f"User status: {user_status}")
 
-                # Check if the user has already clocked in
+                if user_status == "Clock-Out Restricted":
+                    print("Cannot clock out yet. Waiting period not met.")
+                    flash("Cannot clock out yet. Please wait at least 30 minutes after clocking in.", "error")
+                    return redirect(url_for("timeinout.timeinout"))
+
+                if user_status == "Clock-In Restricted":
+                    print("Cannot clock in yet. Waiting period not met.")
+                    flash("Cannot clock in yet. Please wait at least 30 minutes after clocking out.", "error")
+                    return redirect(url_for("timeinout.timeinout"))
+
                 if user_status == "No Time Logs":
-                    log_time(rfid_no, 'in')
+                    print(f"Logging clock-in for RFID: {rfid_no}")
+                    log_time(rfid_no, 'in', vehicle_id, rfid_id, user_id)
                     flash(f'Successfully scanned RFID: {rfid_no}. User has clocked in.', 'success')
-                elif user_status == "Time In":
-                    # Fetch the date of the last "clock-in"
-                    cursor.execute("""
-                        SELECT time_in FROM time_logs WHERE rfid_id = %s AND time_out IS NULL ORDER BY time_in DESC LIMIT 1
-                    """, (rfid_id,))
-                    last_time_in_data = cursor.fetchone()
 
-                    if last_time_in_data:
-                        last_time_in = last_time_in_data[0]
-                        last_clock_in_date = last_time_in.date()
-                        current_date = datetime.now().date()
-
-                        if last_clock_in_date != current_date:
-                            print(f"Clock-in from previous day detected. Allowing new clock-in.")
-                            # User clocked in on a previous day, so they can clock in again
-                            log_time(rfid_no, 'in')
-                            flash(f'Successfully scanned RFID: {rfid_no}. User has clocked in.', 'success')
-                            return redirect(url_for('timeinout.timeinout'))
-
-                        # Check if 30 minutes have passed since the last clock-in
-                        if datetime.now() - last_time_in < timedelta(minutes=30):
-                            flash(f"Cannot clock out yet. Please wait at least 30 minutes after clocking in.", 'error')
-                            print(f"User {rfid_no} tried to clock out too soon. Last clock-in was at {last_time_in}")
-                            return redirect(url_for('timeinout.timeinout'))
-
-                    log_time(rfid_no, 'out')
+                elif user_status == "Already Clocked In":
+                    print(f"Logging clock-out for RFID: {rfid_no}")
+                    log_time(rfid_no, 'out', vehicle_id, rfid_id, user_id)
                     flash(f'Successfully scanned RFID: {rfid_no}. User has clocked out.', 'success')
+
                 elif user_status == "Already Clocked Out":
-                    log_time(rfid_no, 'in')
-                    flash(f'Successfully scanned RFID: {rfid_no}. User has clocked in.', 'success')
+                    print(f"Logging clock-in again for RFID: {rfid_no}")
+                    log_time(rfid_no, 'in', vehicle_id, rfid_id, user_id)
+                    flash(f'Successfully scanned RFID: {rfid_no}. User has clocked in again.', 'success')
 
             except Exception as e:
-                print(f"An error occurred: {e}")
+                print(f"Error occurred: {e}")
                 flash('An error occurred while processing the RFID.', 'error')
+
             finally:
                 cursor.close()
                 close_db_connection(connection)
+
         else:
+            print("No RFID number scanned.")
             flash('No RFID number scanned', 'error')
-    else:
-        flash('Invalid RFID form submission.', 'error')
 
     return redirect(url_for('timeinout.timeinout'))
 
 def check_user_time_status(rfid_no):
     cursor, connection = get_cursor()
     try:
+        print(f"Checking time status for RFID: {rfid_no}")
+
+        # Fetch the most recent time log entry for the given RFID number
         cursor.execute("""
             SELECT tl.time_in, tl.time_out
             FROM time_logs tl
@@ -201,91 +184,132 @@ def check_user_time_status(rfid_no):
             ORDER BY tl.created_at DESC
             LIMIT 1
         """, (rfid_no,))
-        
+
         result = cursor.fetchone()
-        print(f"Database query result for RFID {rfid_no}: {result}")  
-        
+        print(f"Fetched result: {result}")
+
         if result is None:
-            return "No Time Logs" 
-        
+            print("No time logs found for RFID.")
+            return "No Time Logs"
+
         time_in, time_out = result
+        now = datetime.now()
+        print(f"Time In: {time_in}, Time Out: {time_out} | Current Time: {now}")
+
+        # If user is clocked in but hasn't clocked out yet
         if time_in and not time_out:
-            return "Time In"
-        elif time_out:
-            return "Already Clocked Out"  
-        else:
-            return "Time In"  
+            print(f"User is clocked in, but hasn't clocked out.")
+            if now - time_in < timedelta(minutes=30):
+                print("Clock-out restricted. Less than 30 minutes passed since clock-in.")
+                return "Clock-Out Restricted"
+            print("User is already clocked in.")
+            return "Already Clocked In"
+
+        # If user has clocked out, check if they can clock in again
+        if time_out:
+            print(f"User has clocked out. Checking if they can clock in again.")
+            if now - time_out < timedelta(minutes=30):
+                print("Clock-in restricted. Less than 30 minutes passed since clock-out.")
+                return "Clock-In Restricted"
+            print("User can clock in again.")
+            return "Already Clocked Out"
+
     except Exception as e:
-        print(f"An error occurred in check_user_time_status: {e}")
+        print(f"Error occurred while checking time status: {e}")
         return None
     finally:
+        print("Closing cursor and connection.")
         cursor.close()
         close_db_connection(connection)
 
-def log_time(rfid_no, action, flag=True):
-    print(f"Logging time for RFID {rfid_no} with action: {action} (Flag: {flag})")
+from flask import session
 
-    if not flag:
-        print("Action held. Flag is False. Not logging time.")
-        return
-
+def log_time(rfid_no, action, vehicle_id, rfid_id, user_id):
     cursor, connection = get_cursor()
     try:
-        cursor.execute("""
-            SELECT vehicle_id FROM rfid WHERE rfid_no = %s
-        """, (rfid_no,))
-        vehicle_id = cursor.fetchone()
-
-        if not vehicle_id:
-            flash(f'RFID {rfid_no} is not associated with any vehicle.', 'error')
-            return
-
-        vehicle_id = vehicle_id[0]
         now = datetime.now()
+        print(f"Logging time for RFID: {rfid_no} | Action: {action} | Vehicle ID: {vehicle_id} | RFID ID: {rfid_id} | User ID: {user_id}")
 
-        cursor.execute("""
-            SELECT user_id FROM vehicle WHERE vehicle_id = %s
-        """, (vehicle_id,))
-        user_id_result = cursor.fetchone()
-        user_id = user_id_result[0] if user_id_result else None
+        # Fetch admin_id from session, use fallback value (admin_id = 16) if not present
+        admin_id = session.get('admin_id')
+        if not admin_id:
+            # If no admin_id in session, fetch the admin_id 16 from the database
+            print("No admin_id in session, fetching admin_id = 16 from database.")
+            cursor.execute("SELECT admin_id FROM admin WHERE admin_id = %s", (16,))
+            admin_result = cursor.fetchone()
+            if admin_result:
+                admin_id = admin_result[0]
+            else:
+                # If admin_id 16 does not exist, use "Guest" for debugging purposes
+                print("Admin ID 16 not found, using 'Guest' for admin_id.")
+                admin_id = 'Guest'
+        print(f"Using admin_id: {admin_id}")
 
+        # Fetch the latest time log for the vehicle and RFID
         cursor.execute("""
-            SELECT time_in, time_out FROM time_logs
-            WHERE vehicle_id = %s AND rfid_id = (SELECT rfid_id FROM rfid WHERE rfid_no = %s)
+            SELECT time_in, time_out, created_at FROM time_logs
+            WHERE vehicle_id = %s AND rfid_id = %s
             ORDER BY created_at DESC
             LIMIT 1
-        """, (vehicle_id, rfid_no))
+        """, (vehicle_id, rfid_id))
         latest_log = cursor.fetchone()
+        print(f"Latest log fetched: {latest_log}")
 
         if action == 'in':
-            if not latest_log or latest_log[1] is not None:
+            print("Processing clock-in...")
+            if not latest_log or latest_log[1] is not None:  # No active clock-in
+                print(f"Performing clock-in for RFID {rfid_no} at {now}")
                 cursor.execute("""
-                    INSERT INTO time_logs (vehicle_id, rfid_id, time_in)
-                    VALUES (%s, (SELECT rfid_id FROM rfid WHERE rfid_no = %s), %s)
-                """, (vehicle_id, rfid_no, now))
+                    INSERT INTO time_logs (vehicle_id, rfid_id, time_in, admin_id)
+                    VALUES (%s, %s, %s, %s)
+                """, (vehicle_id, rfid_id, now, admin_id))  # Use fetched admin_id
                 log_login_activity(user_id, 'User', 'Clocked In')
                 flash(f'Clocked in successfully for RFID: {rfid_no}', 'success')
             else:
-                flash(f'Already clocked in for RFID: {rfid_no}. Please clock out first.', 'error')
+                print(f"User with RFID {rfid_no} is already clocked in today.")
+                flash(f'User with RFID {rfid_no} is already clocked in today.', 'info')
+
         elif action == 'out':
-            if latest_log and latest_log[1] is None:
-                cursor.execute("""
-                    UPDATE time_logs
-                    SET time_out = %s
-                    WHERE vehicle_id = %s AND rfid_id = (SELECT rfid_id FROM rfid WHERE rfid_no = %s)
-                    AND time_out IS NULL
-                    ORDER BY created_at DESC
-                    LIMIT 1
-                """, (now, vehicle_id, rfid_no))
-                log_login_activity(user_id, 'User', 'Clocked Out')
-                flash(f'Clocked out successfully for RFID: {rfid_no}', 'success')
+            print("Processing clock-out...")
+            if latest_log and latest_log[1] is None:  # Active clock-in
+                time_in = latest_log[0]
+                time_difference = now - time_in
+                print(f"Time difference: {time_difference} | Clock-out allowed?")
+
+                # If the clock-in was more than 24 hours ago, treat it as a new clock-in
+                if time_difference >= timedelta(days=1):
+                    print(f"Clock-in more than 24 hours ago. Treating as new clock-in.")
+                    cursor.execute("""
+                        INSERT INTO time_logs (vehicle_id, rfid_id, time_in, admin_id)
+                        VALUES (%s, %s, %s, %s)
+                    """, (vehicle_id, rfid_id, now, admin_id))  # Use fetched admin_id
+                    log_login_activity(user_id, 'User', 'Clocked In')
+                    flash(f'The previous clock-in was more than 24 hours ago. Treated as new clock-in for RFID: {rfid_no}', 'success')
+                elif time_difference >= timedelta(minutes=30):  # Clock-out allowed
+                    print(f"Clock-out allowed. Updating time_out for RFID {rfid_no}")
+                    cursor.execute("""
+                        UPDATE time_logs
+                        SET time_out = %s
+                        WHERE vehicle_id = %s AND rfid_id = %s
+                        AND time_out IS NULL
+                        ORDER BY created_at DESC
+                        LIMIT 1
+                    """, (now, vehicle_id, rfid_id))
+                    log_login_activity(user_id, 'User', 'Clocked Out')
+                    flash(f'Clocked out successfully for RFID: {rfid_no}', 'success')
+                else:
+                    print(f"Clock-out not allowed. Please wait at least 30 minutes.")
+                    flash(f'You cannot clock out yet. Please wait at least 30 minutes.', 'error')
             else:
-                flash(f'No active clock-in found for RFID: {rfid_no}. Please clock in first.', 'error')
+                print(f"User with RFID {rfid_no} already clocked out.")
+                flash(f'User with RFID {rfid_no} already clocked out.', 'info')
 
         connection.commit()
+
     except Exception as e:
-        print(f"An error occurred while logging time: {e}")
+        print(f"Error occurred: {e}")
         flash('An error occurred while logging time.', 'error')
     finally:
+        print("Closing cursor and connection.")
         cursor.close()
         close_db_connection(connection)

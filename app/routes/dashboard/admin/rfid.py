@@ -81,13 +81,12 @@ def list_rfid(page, sort_by='rfid_id', order='asc'):
     is_super_admin = session.get('is_super_admin', False)
     if is_super_admin:
         print("This admin is a super admin.")
-
         super_admin_features = True
     else:
         print("This admin is NOT a super admin.")
         super_admin_features = False
 
-    valid_columns = {'rfid_id': 'rfid_id', 'rfid_no': 'rfid_no', 'vehicle_id': 'vehicle_id', 'created_at': 'created_at'}
+    valid_columns = {'rfid_id': 'rfid_id', 'rfid_no': 'rfid_no', 'created_at': 'created_at'}
     
     sort_column = valid_columns.get(sort_by, 'rfid_id')
     sort_order = 'ASC' if order == 'asc' else 'DESC'
@@ -97,7 +96,7 @@ def list_rfid(page, sort_by='rfid_id', order='asc'):
 
     # Query to get RFID entries with sorting
     query = f"""
-        SELECT rfid_id, rfid_no, vehicle_id, created_at
+        SELECT rfid_id, rfid_no, created_at
         FROM rfid
         ORDER BY {sort_column} {sort_order}
         LIMIT %s OFFSET %s;
@@ -125,7 +124,7 @@ def list_rfid(page, sort_by='rfid_id', order='asc'):
 def fetch_rfids():
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT rfid_id, rfid_no, vehicle_id, created_at FROM rfid")
+    cursor.execute("SELECT rfid_id, rfid_no, created_at FROM rfid")
     records = cursor.fetchall()
     cursor.close()
     close_db_connection(conn)
