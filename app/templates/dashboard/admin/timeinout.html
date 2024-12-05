@@ -30,49 +30,47 @@
         
             <p id="scanned_display" class="mt-2 text-lg font-semibold"><span id="rfid_number"></span></p> 
         </form>
-    </div>
-    
-    
-    
-    
+    </div> 
     <!-- Time In/Out Table -->
-    <div class="bg-[#eeeee4] p-6 rounded-lg shadow-md w-full max-w-full mb-8 relative">
-        <table class="min-w-full divide-y divide-gray-300">
-            <thead class="bg-[#eeeee4]">
-                <tr>
-                    <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">Date</th>
-                    <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">Time In</th>
-                    <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">Time Out</th>
-                    <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">Employee ID</th>
-                    <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">Name</th>
-                    <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">Phone Number</th>
-                    <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">Vehicle</th>
-                    <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">Logged By</th> 
-                </tr>
-            </thead>
-            <tbody class="bg-[#eeeee4] divide-y divide-gray-300">
-                {% for record in records %}
+    <div class="bg-[#eeeee4] p-6 rounded-lg w-full max-w-full mb-8 relative">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-300">
+                <thead class="bg-[#eeeee4]">
                     <tr>
-                        <td class="px-6 py-4 whitespace-nowrap text-lg font-medium text-black">{{ record.date }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ record.time_in }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ record.time_out if record.time_out else "Pending" }}</td>                        
-                        <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ record.employee_id }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-lg text-black flex items-center" style="min-width: 150px; max-width: 300px; overflow: hidden; text-overflow: ellipsis; flex-grow: 1;">
-                            {% if record.profile_image %}
-                                <img src="{{ url_for('static', filename='images/users/' + record.profile_image) }}" alt="Profile Image" class="w-[50px] h-[50px] rounded-full mr-4">
-                            {% else %}
-                                <img src="{{ url_for('static', filename='images/users/profile.svg') }}" alt="Default Profile Image" class="w-[50px] h-[50px] rounded-full mr-4">
-                            {% endif %}
-                            {{ record.name }}
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ record.phone_number }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ record.vehicles if record.vehicles else 'No Vehicle Registered' }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ record.admin_firstname }}</td>
+                        <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">Date</th>
+                        <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">Time In</th>
+                        <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">Time Out</th>
+                        <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">Employee ID</th>
+                        <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">Name</th>
+                        <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">Phone Number</th>
+                        <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">Vehicle</th>
+                        <th class="px-6 py-3 text-left text-lg font-medium text-black uppercase tracking-wider">Logged By</th> 
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        
+                </thead>
+                <tbody class="bg-[#eeeee4] divide-y divide-gray-300">
+                    {% for record in records %}
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-lg font-medium text-black">{{ record.date }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ record.time_in }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ record.time_out if record.time_out else "Pending" }}</td>                        
+                            <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ record.employee_id }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-lg text-black flex items-center" style="min-width: 150px; max-width: 400px; flex-grow: 1;">
+                                {% if record.profile_image %}
+                                    <img src="{{ url_for('static', filename='images/users/' + record.profile_image) }}" alt="Profile Image" class="w-[50px] h-[50px] rounded-full mr-4">
+                                {% else %}
+                                    <img src="{{ url_for('static', filename='images/users/profile.svg') }}" alt="Default Profile Image" class="w-[50px] h-[50px] rounded-full mr-4">
+                                {% endif %}
+                                <span class="whitespace-normal break-words">{{ record.name }}</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ record.phone_number }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ record.vehicles if record.vehicles else 'No Vehicle Registered' }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-lg text-black">{{ record.admin_firstname }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+                
+            </table>
+        </div>
 
         <!-- Pagination -->
         <div class="flex justify-center mt-4">
@@ -107,11 +105,25 @@
                 {% endif %}
             </nav>
         </div>
-
     </div>
 
-
 </div>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+
+    const rows = document.querySelectorAll('tbody tr');
+    const firstRow = rows[0]; 
+
+    if (firstRow) {
+        firstRow.classList.add('new-row');
+
+        setTimeout(() => {
+            firstRow.classList.remove('new-row');
+        }, 500); 
+    }
+});
+
+</script>
 
 <script src="{{ url_for('static', filename='js/rfid_scanner.js') }}"></script>
 {% endblock %}
