@@ -13,6 +13,7 @@ from werkzeug.utils import secure_filename
 import os
 import uuid
 import re
+from app.routes.utils.activity_log import log_login_activity
 
 user_dashboard_bp = Blueprint('user_dashboard', __name__)
 
@@ -203,6 +204,8 @@ def user_dashboard():
 
             connection.commit()
             flash("Profile updated successfully!", "success")
+            
+            log_login_activity(user_id, 'User', 'Profile updated successfully')
 
         except Exception as e:
             print(f"Error updating profile: {e}")
