@@ -68,8 +68,37 @@
       npm run build:css
       ```
       - Note that you may have to run this every time you make an update with the design.
+### 9. Set Up a Self-Signed SSL Certificate for Flask
 
-### 9. Run the Flask App
+follow these steps to generate and configure a self-signed certificate.
+
+   #### Steps for Linux:
+   1. **Create the necessary directories**:
+      ```bash
+      sudo mkdir -p /etc/ssl/certs /etc/ssl/private
+      ```
+
+   2. **Generate the private key and certificate**:
+      ```bash
+      sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+          -keyout /etc/ssl/private/selfsigned-key.pem \
+          -out /etc/ssl/certs/selfsigned-cert.pem
+      ```
+
+   3. **Set proper permissions**:
+      ```bash
+      sudo chmod 600 /etc/ssl/private/selfsigned-key.pem
+      sudo chmod 644 /etc/ssl/certs/selfsigned-cert.pem
+      ```
+
+   4. **IF IT SAYS PERMISSION DENIED**:
+      - Try running it as root or configure your user to run as an admin.
+   #### Steps for Windows:
+   1. **Copy the certs folder from the cloned repository**
+      - It should be able to run now.
+
+
+### 10. Run the Flask App
 
    1. **Run the Flask app**:
       - Run the application with:
