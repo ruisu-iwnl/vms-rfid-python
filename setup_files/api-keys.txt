@@ -1,1 +1,17 @@
 RECAPTCHA_SECRET_KEY=6LcxWkIqAAAAAL3WFjii_pmnzo8MdIZjXYtr-Z7-
+
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=
+DB_NAME=testdb
+CARS_DB_NAME=cars
+
+DISABLE_RECAPTCHA=True
+
+SMTP_SERVER=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USE_TLS=true
+SMTP_USERNAME=e.luis.pelaez@gmail.com
+SMTP_PASSWORD="qmwb bbcu aazr ghss"
+SMTP_RECIPIENT=herroin29@gmail.com
+SEND_TEST_EMAIL=false

@@ -1,6 +1,8 @@
 from flask import Flask
 from flask_wtf.csrf import CSRFProtect
+from flask_mail import Mail, Message
 import os
+from dotenv import load_dotenv
 
 from .routes.main import main_bp
 from .routes.login.login import login_bp
@@ -28,6 +30,20 @@ def create_app():
 
     CSRFProtect(app)
 
+    # Load environment variables from .env file
+    load_dotenv()
+
+    # Load SMTP configuration
+    app.config.update(
+        MAIL_SERVER=os.getenv('SMTP_SERVER'),
+        MAIL_PORT=int(os.getenv('SMTP_PORT')),
+        MAIL_USE_TLS=bool(os.getenv('SMTP_USE_TLS')),
+        MAIL_USERNAME=os.getenv('SMTP_USERNAME'),
+        MAIL_PASSWORD=os.getenv('SMTP_PASSWORD')
+    )
+
+    mail = Mail(app)
+
     app.register_blueprint(main_bp)
     app.register_blueprint(login_bp, url_prefix='/login')
     app.register_blueprint(admin_register_bp, url_prefix='/register/admin')
@@ -50,4 +66,32 @@ def create_app():
     app.register_blueprint(addadmin_bp)
 
     app.register_blueprint(tc_bp)
+
+    # Configuration for test email sending
+    app.config['SEND_TEST_EMAIL'] = os.getenv('SEND_TEST_EMAIL', 'false').lower() in ['true', '1', 't']
+
+    @app.route('/send-email')
+    def send_email():
+        if not app.config['SEND_TEST_EMAIL']:
+            return "Test email sending is disabled."
+
+        try:
+            print("Attempting to connect to the SMTP server...")
+            with mail.connect() as conn:
+                print(f"Connected to SMTP server: {os.getenv('SMTP_SERVER')}:{os.getenv('SMTP_PORT')}")
+                msg = Message(
+                    subject='Subject',
+                    sender=os.getenv('SMTP_USERNAME'),
+                    recipients=[os.getenv('SMTP_RECIPIENT')],
+                    body="This is a test email."
+                )
+                print(f"Sending email to {os.getenv('SMTP_RECIPIENT')}")
+                conn.send(msg)
+                print("Email sent successfully!")
+        except Exception as e:
+            print(f"Error occurred: {e}")
+            return f"Error: {e}"
+
+        return "Email sent!"
+
     return app

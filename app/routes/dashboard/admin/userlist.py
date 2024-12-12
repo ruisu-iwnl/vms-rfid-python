@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, session, redirect, url_for, flash
 from app.routes.utils.session import check_access
 from app.routes.utils.forms import AddUserForm, Admin_AddUserVehicleForm
 from app.models.database import get_cursor, close_db_connection
+from app.routes.utils.mail_helper import send_approved_notification, send_deny_notification
 
 userlist_bp = Blueprint('userlist', __name__)
 
@@ -98,24 +99,31 @@ def userlist(approved_page, unapproved_page, sort_by='emp_no', order='asc'):
         vehicle_form=vehicle_form,
         super_admin_features=super_admin_features)
 
-# Route for confirming users
 @userlist_bp.route('/confirm/<string:emp_no>', methods=['POST'])
 def confirm_user(emp_no):
     try:
         cursor, connection = get_cursor()
 
-        # Update the user to approved (is_approved = 1) using emp_no
-        cursor.execute("""
-            UPDATE user
-            SET is_approved = 1
-            WHERE emp_no = %s
-        """, (emp_no,))
-        connection.commit()
+        cursor.execute("SELECT email FROM user WHERE emp_no = %s", (emp_no,))
+        result = cursor.fetchone()
 
-        # Optionally, you can flash a success message
-        flash('User approved successfully!', 'success')
-        
-        return redirect(url_for('userlist.userlist'))  # Redirect back to the user list page
+        if result:
+            email = result[0]
+
+            send_approved_notification(email)
+
+            cursor.execute("""
+                UPDATE user
+                SET is_approved = 1
+                WHERE emp_no = %s
+            """, (emp_no,))
+            connection.commit()
+
+            flash('User approved successfully and approve notification sent!', 'success')
+        else:
+            flash('User not found.', 'error')
+
+        return redirect(url_for('userlist.userlist'))
 
     except Exception as e:
         print(f"Error confirming user: {e}")
@@ -125,21 +133,17 @@ def confirm_user(emp_no):
         cursor.close()
         close_db_connection(connection)
 
-# Route for denying users
 @userlist_bp.route('/deny/<string:emp_no>', methods=['POST'])
 def deny_user(emp_no):
     try:
         cursor, connection = get_cursor()
 
-        # Soft delete the user by setting the deleted_at field
         cursor.execute("""
             UPDATE user
             SET deleted_at = NOW()
             WHERE emp_no = %s
         """, (emp_no,))
 
-        # Optionally, you can also soft delete the user's vehicles by setting a deleted_at field for vehicles
-        # (If you choose to add a `deleted_at` column to the vehicle table too)
         cursor.execute("""
             UPDATE vehicle
             SET deleted_at = NOW()
@@ -148,10 +152,14 @@ def deny_user(emp_no):
 
         connection.commit()
 
-        # Optionally, you can flash a success message
-        flash('User and their data soft-deleted successfully!', 'success')
+        cursor.execute("SELECT email FROM user WHERE emp_no = %s", (emp_no,))
+        result = cursor.fetchone()
+        if result:
+            send_deny_notification(result[0])
 
-        return redirect(url_for('userlist.userlist'))  # Redirect back to the user list page
+        flash('User and their data soft-deleted successfully and denial notification sent!', 'success')
+
+        return redirect(url_for('userlist.userlist')) 
 
     except Exception as e:
         print(f"Error denying user: {e}")
